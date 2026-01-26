@@ -1,0 +1,20 @@
+# Compiled binaries
+hello
+functions
+vectors
+maps
+warnings
+
+# Object files
+*.o
+*.obj
+
+# Debug files
+*.dSYM/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

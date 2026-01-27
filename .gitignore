@@ -1,16 +1,29 @@
-# Compiled binaries
-hello
-functions
-vectors
-maps
-warnings
+# C++ compiled binaries (in cpp/ folder)
+cpp/**/*.out
+cpp/**/a.out
 
-# Object files
+# C++ object files
 *.o
 *.obj
 
 # Debug files
 *.dSYM/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
 
 # IDE files
 .vscode/
@@ -18,3 +31,4 @@ warnings
 *.swp
 *.swo
 *~
+.DS_Store

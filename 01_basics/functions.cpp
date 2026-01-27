@@ -1,3 +1,18 @@
+/*
+ * TOPIC: Functions
+ *
+ * USE CASES:
+ *   - Modularize code into reusable units
+ *   - Robotics: Separate logic (sensors, motors, planning)
+ *   - Any non-trivial program structure
+ *
+ * KEY POINTS:
+ *   - Declare before use (prototype) or define before main()
+ *   - Return type must match return statement
+ *   - void = no return value
+ *   - Pass by value (copy) vs reference (see 04_memory)
+ */
+
 #include <iostream>
 
 // Function declaration (prototype) - tells compiler the function exists

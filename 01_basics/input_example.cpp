@@ -1,3 +1,18 @@
+/*
+ * TOPIC: User Input & cin
+ *
+ * USE CASES:
+ *   - Command-line tools that need user interaction
+ *   - Reading configuration values at runtime
+ *   - Interactive debugging/testing
+ *
+ * KEY POINTS:
+ *   - cin >> reads whitespace-delimited tokens
+ *   - getline() reads entire lines including spaces
+ *   - Use cin.ignore() after >> before getline() to clear newline
+ *   - Chain >> operators: cin >> a >> b >> c
+ */
+
 #include <iostream>
 #include <string>
 

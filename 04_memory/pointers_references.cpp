@@ -1,3 +1,20 @@
+/*
+ * TOPIC: Pointers & References
+ *
+ * USE CASES:
+ *   - Passing large objects without copying
+ *   - Modifying variables in functions (out parameters)
+ *   - Dynamic data structures (linked lists, trees)
+ *   - Polymorphism (base pointer to derived object)
+ *
+ * KEY POINTS:
+ *   - Reference (&) = alias, cannot be null, cannot reassign
+ *   - Pointer (*) = address, can be null, can reassign
+ *   - Use references by default, pointers when nullability needed
+ *   - const T& for read-only large objects (most common)
+ *   - * dereferences pointer, & gets address
+ */
+
 #include <iostream>
 #include <vector>
 

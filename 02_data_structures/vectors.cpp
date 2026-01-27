@@ -1,3 +1,19 @@
+/*
+ * TOPIC: Vectors (Dynamic Arrays)
+ *
+ * USE CASES:
+ *   - Robotics: Store sensor readings, waypoints, trajectories
+ *   - AV: Point clouds (LiDAR), detected objects list
+ *   - Any collection that grows/shrinks at runtime
+ *
+ * KEY POINTS:
+ *   - std::vector is THE default container in C++
+ *   - Dynamic size (unlike fixed arrays)
+ *   - push_back() adds, pop_back() removes from end
+ *   - Access with [] or .at() (bounds-checked)
+ *   - 2D vectors for matrices/grids
+ */
+
 #include <iostream>
 #include <vector>
 

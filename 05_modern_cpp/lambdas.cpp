@@ -1,3 +1,21 @@
+/*
+ * TOPIC: Lambda Expressions
+ *
+ * USE CASES:
+ *   - STL algorithms (sort, find_if, transform)
+ *   - Callbacks, event handlers
+ *   - ROS2: Timer callbacks, subscriber handlers
+ *   - Short, one-off functions inline
+ *
+ * KEY POINTS:
+ *   - [capture](params) { body }
+ *   - [=] capture all by value, [&] by reference
+ *   - [x, &y] mixed: x by value, y by reference
+ *   - mutable allows modifying captured copies
+ *   - auto for storage, std::function for type erasure
+ *   - Generic lambdas use auto parameters (C++14)
+ */
+
 #include <iostream>
 #include <vector>
 #include <algorithm>

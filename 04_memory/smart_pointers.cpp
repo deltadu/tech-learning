@@ -1,3 +1,20 @@
+/*
+ * TOPIC: Smart Pointers & Memory Management
+ *
+ * USE CASES:
+ *   - Robotics (ROS2): Standard for node/publisher ownership
+ *   - Any heap allocation (replace raw new/delete)
+ *   - Shared resources, caches, observer patterns
+ *
+ * KEY POINTS:
+ *   - unique_ptr = single owner, cannot copy, use std::move
+ *   - shared_ptr = multiple owners, reference counted
+ *   - weak_ptr = observer, doesn't prevent deletion
+ *   - RAII = resource cleanup in destructor (automatic)
+ *   - Use make_unique/make_shared (exception safe)
+ *   - Raw pointers = non-owning only, never delete them
+ */
+
 #include <iostream>
 #include <memory>
 #include <string>

@@ -1,3 +1,19 @@
+/*
+ * TOPIC: Enums & Structs
+ *
+ * USE CASES:
+ *   - Robotics: State machines (IDLE, MOVING, ERROR)
+ *   - AV: Object types (CAR, PEDESTRIAN, CYCLIST)
+ *   - Grouping related data (Point, Pose, SensorReading)
+ *
+ * KEY POINTS:
+ *   - enum class = strongly typed, scoped (prefer over old enum)
+ *   - struct = public by default, use for plain data
+ *   - class = private by default, use for encapsulated objects
+ *   - Structs can have methods, constructors, etc.
+ *   - Use aggregate initialization: Point p = {1.0, 2.0}
+ */
+
 #include <iostream>
 #include <string>
 #include <vector>

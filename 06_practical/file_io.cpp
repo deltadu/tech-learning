@@ -1,3 +1,20 @@
+/*
+ * TOPIC: File I/O
+ *
+ * USE CASES:
+ *   - Robotics: Log sensor data, load configs, save maps
+ *   - AV: Record driving data, load calibration files
+ *   - Any data persistence or external file processing
+ *
+ * KEY POINTS:
+ *   - ifstream for reading, ofstream for writing
+ *   - Always check .is_open() before using
+ *   - getline() for line-by-line, >> for tokens
+ *   - stringstream for parsing CSV/structured data
+ *   - ios::binary for binary files
+ *   - Files auto-close when stream goes out of scope (RAII)
+ */
+
 #include <iostream>
 #include <fstream>
 #include <sstream>

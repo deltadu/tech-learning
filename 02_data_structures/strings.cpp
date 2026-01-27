@@ -1,3 +1,20 @@
+/*
+ * TOPIC: Strings
+ *
+ * USE CASES:
+ *   - Logging, debugging messages
+ *   - Parsing config files, sensor data formats
+ *   - Building commands for hardware communication
+ *
+ * KEY POINTS:
+ *   - std::string is mutable (unlike Python)
+ *   - Concatenate with + or +=
+ *   - .find() returns npos if not found
+ *   - Use std::stoi/stod for string->number
+ *   - Use std::to_string for number->string
+ *   - Splitting requires stringstream (no built-in split)
+ */
+
 #include <iostream>
 #include <string>
 #include <algorithm>  // for transform, reverse

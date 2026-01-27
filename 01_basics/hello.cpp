@@ -1,3 +1,18 @@
+/*
+ * TOPIC: Hello World & Basic Syntax
+ *
+ * USE CASES:
+ *   - First program to verify compiler/toolchain setup
+ *   - Basic I/O with std::cout and std::cin
+ *   - Simple loops and string handling
+ *
+ * KEY POINTS:
+ *   - #include brings in library headers
+ *   - std:: prefix for standard library (cout, cin, endl, string)
+ *   - main() is the program entry point, returns int
+ *   - Use std::getline() for input with spaces
+ */
+
 #include <iostream>
 #include <string>
 

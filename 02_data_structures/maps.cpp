@@ -1,3 +1,19 @@
+/*
+ * TOPIC: Maps (Dictionaries / Hash Tables)
+ *
+ * USE CASES:
+ *   - Robotics: Parameter lookup, sensor ID -> readings
+ *   - AV: Object tracking (ID -> object state)
+ *   - Caching, configuration, any key-value storage
+ *
+ * KEY POINTS:
+ *   - std::map = ordered by key (red-black tree), O(log n)
+ *   - std::unordered_map = hash table, O(1) average
+ *   - Use unordered_map for speed, map if order matters
+ *   - Check existence with .find() or .count()
+ *   - [] creates entry if missing; .at() throws if missing
+ */
+
 #include <iostream>
 #include <map>
 #include <unordered_map>

@@ -1,3 +1,21 @@
+/*
+ * TOPIC: STL Algorithms
+ *
+ * USE CASES:
+ *   - Robotics: Sort waypoints, find obstacles, filter data
+ *   - AV: Process sensor readings, search detections
+ *   - Any collection manipulation (cleaner than raw loops)
+ *
+ * KEY POINTS:
+ *   - Operate on iterators (begin, end), not containers
+ *   - sort, partial_sort for ordering
+ *   - find, find_if, binary_search for searching
+ *   - transform for mapping, accumulate for reducing
+ *   - count, count_if for counting
+ *   - remove + erase idiom for filtering
+ *   - all_of, any_of, none_of for predicates
+ */
+
 #include <iostream>
 #include <vector>
 #include <algorithm>

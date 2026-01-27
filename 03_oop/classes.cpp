@@ -1,3 +1,19 @@
+/*
+ * TOPIC: Classes & Object-Oriented Programming
+ *
+ * USE CASES:
+ *   - Robotics: Model sensors, actuators, robots as objects
+ *   - AV: Vehicle, Obstacle, Planner classes
+ *   - Any complex system with encapsulated state/behavior
+ *
+ * KEY POINTS:
+ *   - private = internal state, public = interface
+ *   - Constructors initialize objects (use initializer lists)
+ *   - virtual + override = polymorphism (base ptr to derived)
+ *   - static members shared across all instances
+ *   - Operator overloading for intuitive syntax (+, ==, <<)
+ */
+
 #include <iostream>
 #include <string>
 

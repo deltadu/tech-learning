@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>C++ Quick Reference</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">C++ Quick Reference</h1>
+</header>
+<h1 id="c-quick-reference">C++ Quick Reference</h1>
+<h2 id="compiling-running">Compiling &amp; Running</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic compile</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-o</span> program program.cpp</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># With warnings (recommended)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-Wall</span> <span class="at">-o</span> program program.cpp</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># With C++17 features</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-Wall</span> <span class="at">-std</span><span class="op">=</span>c++17 <span class="at">-o</span> program program.cpp</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Run</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./program</span></span></code></pre></div>
+<hr />
+<h2 id="io-streams">I/O Streams</h2>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Meaning</th>
+<th>Operator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>std::cout</code></td>
+<td>Output to screen</td>
+<td><code>&lt;&lt;</code> (insertion)</td>
+</tr>
+<tr>
+<td><code>std::cin</code></td>
+<td>Input from keyboard</td>
+<td><code>&gt;&gt;</code> (extraction)</td>
+</tr>
+<tr>
+<td><code>std::endl</code></td>
+<td>Newline + flush</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">&quot;Hello &quot;</span> <span class="op">&lt;&lt;</span> name <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>cin <span class="op">&gt;&gt;</span> number<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>getline<span class="op">(</span><span class="bu">std::</span>cin<span class="op">,</span> line<span class="op">);</span>  <span class="co">// Read entire line with spaces</span></span></code></pre></div>
+<hr />
+<h2 id="vector-dynamic-array-list">Vector (Dynamic Array / List)</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;vector&gt;</span></span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create empty</td>
+<td><code>std::vector&lt;int&gt; v;</code></td>
+</tr>
+<tr>
+<td>Create with values</td>
+<td><code>std::vector&lt;int&gt; v = {1, 2, 3};</code></td>
+</tr>
+<tr>
+<td>Create with size</td>
+<td><code>std::vector&lt;int&gt; v(10);</code> (10 zeros)</td>
+</tr>
+<tr>
+<td>Create with size &amp; value</td>
+<td><code>std::vector&lt;int&gt; v(10, 5);</code> (10 fives)</td>
+</tr>
+<tr>
+<td>Add to end</td>
+<td><code>v.push_back(4);</code></td>
+</tr>
+<tr>
+<td>Remove from end</td>
+<td><code>v.pop_back();</code></td>
+</tr>
+<tr>
+<td>Access by index</td>
+<td><code>v[0]</code> or <code>v.at(0)</code></td>
+</tr>
+<tr>
+<td>First element</td>
+<td><code>v.front()</code></td>
+</tr>
+<tr>
+<td>Last element</td>
+<td><code>v.back()</code></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><code>v.size()</code></td>
+</tr>
+<tr>
+<td>Check empty</td>
+<td><code>v.empty()</code></td>
+</tr>
+<tr>
+<td>Clear all</td>
+<td><code>v.clear()</code></td>
+</tr>
+<tr>
+<td>Insert at index i</td>
+<td><code>v.insert(v.begin() + i, value);</code></td>
+</tr>
+<tr>
+<td>Erase at index i</td>
+<td><code>v.erase(v.begin() + i);</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="iterating">Iterating</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Range-based (preferred)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">:</span> v<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> x<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">// With index</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> v<span class="op">.</span>size<span class="op">();</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> v<span class="op">[</span>i<span class="op">];</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">// By reference (to modify or avoid copy)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span><span class="op">&amp;</span> x <span class="op">:</span> v<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    x <span class="op">*=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="d-vector-matrix">2D Vector (Matrix)</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;vector&gt;</span></span></code></pre></div>
+<table>
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create</td>
+<td><code>std::vector&lt;std::vector&lt;int&gt;&gt; m = {{1,2}, {3,4}};</code></td>
+</tr>
+<tr>
+<td>Create empty rows x cols</td>
+<td><code>std::vector&lt;std::vector&lt;int&gt;&gt; m(rows, std::vector&lt;int&gt;(cols));</code></td>
+</tr>
+<tr>
+<td>Create with default value</td>
+<td><code>std::vector&lt;std::vector&lt;int&gt;&gt; m(rows, std::vector&lt;int&gt;(cols, val));</code></td>
+</tr>
+<tr>
+<td>Access element</td>
+<td><code>m[row][col]</code></td>
+</tr>
+<tr>
+<td>Number of rows</td>
+<td><code>m.size()</code></td>
+</tr>
+<tr>
+<td>Number of cols in row i</td>
+<td><code>m[i].size()</code></td>
+</tr>
+<tr>
+<td>Add new row</td>
+<td><code>m.push_back({5, 6, 7});</code></td>
+</tr>
+<tr>
+<td>Add to existing row</td>
+<td><code>m[0].push_back(99);</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="iterating-1">Iterating</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="at">const</span> <span class="kw">auto</span><span class="op">&amp;</span> row <span class="op">:</span> m<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> val <span class="op">:</span> row<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> val <span class="op">&lt;&lt;</span> <span class="st">&quot; &quot;</span><span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="map-dictionary-hash-table">Map (Dictionary / Hash Table)</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;map&gt;</span><span class="pp">           </span><span class="co">// Sorted by key, O(log n) lookup</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unordered_map&gt;</span><span class="pp"> </span><span class="co">// Unsorted, O(1) average lookup</span></span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create</td>
+<td><code>std::map&lt;std::string, int&gt; m;</code></td>
+</tr>
+<tr>
+<td>Insert/Update</td>
+<td><code>m["key"] = value;</code></td>
+</tr>
+<tr>
+<td>Insert (alternative)</td>
+<td><code>m.insert({"key", value});</code></td>
+</tr>
+<tr>
+<td>Access</td>
+<td><code>m["key"]</code></td>
+</tr>
+<tr>
+<td>Safe access (throws if missing)</td>
+<td><code>m.at("key")</code></td>
+</tr>
+<tr>
+<td>Check if key exists</td>
+<td><code>m.count("key") &gt; 0</code></td>
+</tr>
+<tr>
+<td>Check if key exists (alt)</td>
+<td><code>m.find("key") != m.end()</code></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><code>m.size()</code></td>
+</tr>
+<tr>
+<td>Check empty</td>
+<td><code>m.empty()</code></td>
+</tr>
+<tr>
+<td>Erase by key</td>
+<td><code>m.erase("key");</code></td>
+</tr>
+<tr>
+<td>Clear all</td>
+<td><code>m.clear()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="iterating-2">Iterating</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// C++17 structured bindings (preferred)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="at">const</span> <span class="kw">auto</span><span class="op">&amp;</span> <span class="op">[</span>key<span class="op">,</span> value<span class="op">]</span> <span class="op">:</span> m<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> key <span class="op">&lt;&lt;</span> <span class="st">&quot; -&gt; &quot;</span> <span class="op">&lt;&lt;</span> value<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Pre-C++17</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="at">const</span> <span class="kw">auto</span><span class="op">&amp;</span> pair <span class="op">:</span> m<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> pair<span class="op">.</span>first <span class="op">&lt;&lt;</span> <span class="st">&quot; -&gt; &quot;</span> <span class="op">&lt;&lt;</span> pair<span class="op">.</span>second<span class="op">;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="map-vs-unordered_map">map vs unordered_map</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Order</th>
+<th>Lookup</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>std::map</code></td>
+<td>Sorted by key</td>
+<td>O(log n)</td>
+<td>Need sorted iteration</td>
+</tr>
+<tr>
+<td><code>std::unordered_map</code></td>
+<td>No order</td>
+<td>O(1) avg</td>
+<td>Need fast lookups</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="string-operations">String Operations</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string&gt;</span></span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create</td>
+<td><code>std::string s = "hello";</code></td>
+</tr>
+<tr>
+<td>Length</td>
+<td><code>s.length()</code> or <code>s.size()</code></td>
+</tr>
+<tr>
+<td>Access char</td>
+<td><code>s[0]</code> or <code>s.at(0)</code></td>
+</tr>
+<tr>
+<td>Concatenate</td>
+<td><code>s + " world"</code> or <code>s += " world"</code></td>
+</tr>
+<tr>
+<td>Substring</td>
+<td><code>s.substr(start, length)</code></td>
+</tr>
+<tr>
+<td>Find</td>
+<td><code>s.find("ell")</code> (returns index or
+<code>std::string::npos</code>)</td>
+</tr>
+<tr>
+<td>Compare</td>
+<td><code>s == "hello"</code> or <code>s.compare("hello")</code></td>
+</tr>
+<tr>
+<td>Check empty</td>
+<td><code>s.empty()</code></td>
+</tr>
+<tr>
+<td>Clear</td>
+<td><code>s.clear()</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="functions">Functions</h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Declaration (prototype)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> add<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">);</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> greet<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string<span class="op">&amp;</span> name<span class="op">);</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Definition</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> add<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> greet<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string<span class="op">&amp;</span> name<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">&quot;Hello, &quot;</span> <span class="op">&lt;&lt;</span> name <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">// Invocation</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> result <span class="op">=</span> add<span class="op">(</span><span class="dv">5</span><span class="op">,</span> <span class="dv">3</span><span class="op">);</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>greet<span class="op">(</span><span class="st">&quot;Alice&quot;</span><span class="op">);</span></span></code></pre></div>
+<hr />
+<h2 id="references-vs-copies-rule-of-thumb">References vs Copies (Rule
+of Thumb)</h2>
+<p>When iterating or passing to functions:</p>
+<table>
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 51%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Recommendation</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primitives (<code>int</code>, <code>double</code>,
+<code>char</code>, <code>bool</code>)</td>
+<td>Copy</td>
+<td><code>for (int x : nums)</code></td>
+</tr>
+<tr>
+<td>Objects (<code>string</code>, <code>vector</code>, custom
+classes)</td>
+<td><code>const</code> reference</td>
+<td><code>for (const auto&amp; s : strings)</code></td>
+</tr>
+<tr>
+<td>Need to modify</td>
+<td>Non-const reference</td>
+<td><code>for (int&amp; x : nums) { x *= 2; }</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why?</strong> - Primitives are small (4-8 bytes) - copying is
+cheap - References add indirection overhead - Objects can be large -
+copying is expensive</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Primitives: just copy</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> x <span class="op">:</span> numbers<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">double</span> d <span class="op">:</span> values<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Objects: use const reference</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="at">const</span> <span class="kw">auto</span><span class="op">&amp;</span> row <span class="op">:</span> matrix<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string<span class="op">&amp;</span> name <span class="op">:</span> names<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Function parameters follow the same rule</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> process<span class="op">(</span><span class="dt">int</span> n<span class="op">);</span>                    <span class="co">// Copy small primitives</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> process<span class="op">(</span><span class="at">const</span> <span class="bu">std::</span>string<span class="op">&amp;</span> s<span class="op">);</span>     <span class="co">// Reference for objects</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> modify<span class="op">(</span><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;&amp;</span> v<span class="op">);</span>       <span class="co">// Non-const ref to modify</span></span></code></pre></div>
+<hr />
+<h2 id="pointers-when-you-need-them">Pointers (When You Need Them)</h2>
+<p>Modern C++ minimizes raw pointer usage. Here’s when to use what:</p>
+<h3 id="prefer-these-no-raw-pointers-needed">Prefer These (No Raw
+Pointers Needed)</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Use Instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dynamic arrays</td>
+<td><code>std::vector</code></td>
+</tr>
+<tr>
+<td>Strings</td>
+<td><code>std::string</code></td>
+</tr>
+<tr>
+<td>Optional values</td>
+<td><code>std::optional</code> (C++17)</td>
+</tr>
+<tr>
+<td>Pass large objects</td>
+<td><code>const T&amp;</code> reference</td>
+</tr>
+<tr>
+<td>Modify in function</td>
+<td><code>T&amp;</code> reference</td>
+</tr>
+</tbody>
+</table>
+<h3 id="when-you-still-need-pointers">When You Still Need Pointers</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heap allocation with ownership</td>
+<td><code>std::unique_ptr&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td>Shared ownership</td>
+<td><code>std::shared_ptr&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td>Nullable reference</td>
+<td><code>T*</code> (raw pointer)</td>
+</tr>
+<tr>
+<td>Interfacing with C libraries</td>
+<td><code>T*</code> (raw pointer)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="smart-pointers-modern-c">Smart Pointers (Modern C++)</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;memory&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">// unique_ptr: single owner, auto-deleted</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;</span> p1 <span class="op">=</span> <span class="bu">std::</span>make_unique<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span><span class="dv">42</span><span class="op">);</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="op">*</span>p1<span class="op">;</span>  <span class="co">// 42</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">// shared_ptr: multiple owners, deleted when last owner gone</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>shared_ptr<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;</span> p2 <span class="op">=</span> <span class="bu">std::</span>make_shared<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span><span class="dv">100</span><span class="op">);</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="kw">auto</span> p3 <span class="op">=</span> p2<span class="op">;</span>  <span class="co">// Both point to same int</span></span></code></pre></div>
+<h3 id="raw-pointers-when-necessary">Raw Pointers (When Necessary)</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> x <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span><span class="op">*</span> ptr <span class="op">=</span> <span class="op">&amp;</span>x<span class="op">;</span>      <span class="co">// &amp; gets address</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="op">*</span>ptr<span class="op">;</span>  <span class="co">// * dereferences (prints 10)</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="op">*</span>ptr <span class="op">=</span> <span class="dv">20</span><span class="op">;</span>          <span class="co">// Modify through pointer</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> x<span class="op">;</span>     <span class="co">// 20</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">// nullptr for &quot;points to nothing&quot;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span><span class="op">*</span> p <span class="op">=</span> <span class="kw">nullptr</span><span class="op">;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>p <span class="op">!=</span> <span class="kw">nullptr</span><span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">}</span></span></code></pre></div>
+<h3 id="summary-c-vs-c">Summary: C++ vs C</h3>
+<table>
+<thead>
+<tr>
+<th>C Style</th>
+<th>Modern C++ Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int* arr = malloc(...)</code></td>
+<td><code>std::vector&lt;int&gt; arr</code></td>
+</tr>
+<tr>
+<td><code>char* str = "hello"</code></td>
+<td><code>std::string str = "hello"</code></td>
+</tr>
+<tr>
+<td><code>free(ptr)</code></td>
+<td>Automatic (RAII) or smart pointers</td>
+</tr>
+<tr>
+<td><code>int* p = NULL</code></td>
+<td><code>int* p = nullptr</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bottom line:</strong> In modern C++, you rarely need raw
+pointers. Use containers, references, and smart pointers instead.</p>
+<hr />
+<h2 id="useful-compiler-flags">Useful Compiler Flags</h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-Wall</code></td>
+<td>Enable common warnings</td>
+</tr>
+<tr>
+<td><code>-Wextra</code></td>
+<td>Enable extra warnings</td>
+</tr>
+<tr>
+<td><code>-std=c++17</code></td>
+<td>Use C++17 standard</td>
+</tr>
+<tr>
+<td><code>-std=c++20</code></td>
+<td>Use C++20 standard</td>
+</tr>
+<tr>
+<td><code>-O2</code></td>
+<td>Optimize for speed</td>
+</tr>
+<tr>
+<td><code>-g</code></td>
+<td>Include debug symbols</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

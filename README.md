@@ -1,4 +1,4 @@
-# Dev Learning
+# Tech Learning
 
 Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, and Kubernetes.
 

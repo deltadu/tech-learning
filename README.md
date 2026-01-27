@@ -1,6 +1,6 @@
 # Tech Learning
 
-Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, Kubernetes, and Linear Algebra.
+Personal learning notes for programming languages, ML, infrastructure, and systems.
 
 ## Structure
 
@@ -37,9 +37,13 @@ Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, Kube
 │   ├── 01_FUNDAMENTALS.md  # Architecture, core concepts, workloads, networking, storage
 │   └── 02_PRACTICAL.md     # kubectl commands, debugging, scaling, Helm, patterns
 │
-└── linear-algebra/         # Linear algebra for ML, graphics, and robotics
-    ├── 01_FUNDAMENTALS.md  # Vectors, matrices, eigenvalues, decompositions
-    └── 02_PRACTICAL.md     # NumPy, ML applications, graphics transforms, robotics
+├── linear-algebra/         # Linear algebra for ML, graphics, and robotics
+│   ├── 01_FUNDAMENTALS.md  # Vectors, matrices, eigenvalues, decompositions
+│   └── 02_PRACTICAL.md     # NumPy, ML applications, graphics transforms, robotics
+│
+└── embedded-systems/       # Embedded systems & microcontroller programming
+    ├── 01_FUNDAMENTALS.md  # MCU architecture, memory, interrupts, peripherals, protocols
+    └── 02_PRACTICAL.md     # Debugging, patterns, state machines, FreeRTOS, gotchas
 ```
 
 ## Highlights
@@ -50,3 +54,4 @@ Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, Kube
 - **Crypto Practical**: Secure coding for robotics & mobile apps in `cryptography/02_PRACTICAL.md`
 - **K8s Practical**: Essential kubectl commands and debugging in `kubernetes/02_PRACTICAL.md`
 - **Linear Algebra Practical**: NumPy, ML, graphics, and robotics in `linear-algebra/02_PRACTICAL.md`
+- **Embedded Practical**: Debugging, state machines, FreeRTOS in `embedded-systems/02_PRACTICAL.md`

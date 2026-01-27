@@ -1,6 +1,6 @@
 # Dev Learning
 
-Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, and Kubernetes.
+Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, Kubernetes, and Linear Algebra.
 
 ## Structure
 
@@ -33,9 +33,13 @@ Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, and 
 │   ├── 01_FUNDAMENTALS.md  # Symmetric/asymmetric crypto, hashing, signatures, TLS
 │   └── 02_PRACTICAL.md     # Password storage, API auth, robotics & mobile security
 │
-└── kubernetes/             # Container orchestration with Kubernetes
-    ├── 01_FUNDAMENTALS.md  # Architecture, core concepts, workloads, networking, storage
-    └── 02_PRACTICAL.md     # kubectl commands, debugging, scaling, Helm, patterns
+├── kubernetes/             # Container orchestration with Kubernetes
+│   ├── 01_FUNDAMENTALS.md  # Architecture, core concepts, workloads, networking, storage
+│   └── 02_PRACTICAL.md     # kubectl commands, debugging, scaling, Helm, patterns
+│
+└── linear-algebra/         # Linear algebra for ML, graphics, and robotics
+    ├── 01_FUNDAMENTALS.md  # Vectors, matrices, eigenvalues, decompositions
+    └── 02_PRACTICAL.md     # NumPy, ML applications, graphics transforms, robotics
 ```
 
 ## Highlights
@@ -45,3 +49,4 @@ Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, and 
 - **Networking Practical**: Robotics & app dev networking tricks in `networking/02_PRACTICAL.md`
 - **Crypto Practical**: Secure coding for robotics & mobile apps in `cryptography/02_PRACTICAL.md`
 - **K8s Practical**: Essential kubectl commands and debugging in `kubernetes/02_PRACTICAL.md`
+- **Linear Algebra Practical**: NumPy, ML, graphics, and robotics in `linear-algebra/02_PRACTICAL.md`

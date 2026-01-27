@@ -71,23 +71,6 @@ Token: "The" → Index: 256 → Embedding: [0.21, -0.34, 0.12, ..., 0.45]
                                        (typically 512 or 768)
 ```
 
-**PyTorch Implementation:**
-
-```python
-import torch
-import torch.nn as nn
-
-class TokenEmbedding(nn.Module):
-    def __init__(self, vocab_size, d_model):
-        super().__init__()
-        self.embedding = nn.Embedding(vocab_size, d_model)
-        self.d_model = d_model
-
-    def forward(self, x):
-        # Scale embeddings by sqrt(d_model) as per original paper
-        return self.embedding(x) * math.sqrt(self.d_model)
-```
-
 **Why scale by √d_model?**
 - Embeddings are initialized with variance ~1/d_model
 - Positional encodings have variance ~1
@@ -126,50 +109,9 @@ Each position gets a unique "fingerprint" of sine waves at different frequencies
 3. **Relative positions**: For any fixed offset k, PE(pos+k) can be represented as a linear function of PE(pos)
 4. **Extrapolation**: Can handle sequences longer than seen during training
 
-**PyTorch Implementation:**
-
-```python
-import math
-
-class PositionalEncoding(nn.Module):
-    def __init__(self, d_model, max_len=5000, dropout=0.1):
-        super().__init__()
-        self.dropout = nn.Dropout(p=dropout)
-
-        # Create positional encoding matrix
-        pe = torch.zeros(max_len, d_model)
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(
-            torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)
-        )
-
-        pe[:, 0::2] = torch.sin(position * div_term)  # even indices
-        pe[:, 1::2] = torch.cos(position * div_term)  # odd indices
-        pe = pe.unsqueeze(0)  # add batch dimension: (1, max_len, d_model)
-
-        self.register_buffer('pe', pe)  # not a parameter, but saved in state_dict
-
-    def forward(self, x):
-        # x shape: (batch_size, seq_len, d_model)
-        x = x + self.pe[:, :x.size(1), :]
-        return self.dropout(x)
-```
-
 ### Learned Positional Embeddings
 
-Modern models (BERT, GPT) often use learned positional embeddings:
-
-```python
-class LearnedPositionalEncoding(nn.Module):
-    def __init__(self, d_model, max_len=512):
-        super().__init__()
-        self.pos_embedding = nn.Embedding(max_len, d_model)
-
-    def forward(self, x):
-        seq_len = x.size(1)
-        positions = torch.arange(seq_len, device=x.device)
-        return x + self.pos_embedding(positions)
-```
+Modern models (BERT, GPT) often use learned positional embeddings instead.
 
 ---
 
@@ -278,35 +220,6 @@ The dot product Q·K grows with dimension d_k. For large d_k:
 
 Dividing by √d_k keeps the variance at ~1.
 
-**PyTorch Implementation:**
-
-```python
-def scaled_dot_product_attention(query, key, value, mask=None):
-    """
-    Args:
-        query: (batch, seq_len, d_k)
-        key: (batch, seq_len, d_k)
-        value: (batch, seq_len, d_v)
-        mask: optional (batch, seq_len, seq_len)
-    """
-    d_k = query.size(-1)
-
-    # Compute attention scores
-    scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
-
-    # Apply mask (for decoder self-attention or padding)
-    if mask is not None:
-        scores = scores.masked_fill(mask == 0, float('-inf'))
-
-    # Softmax over last dimension (keys)
-    attention_weights = torch.softmax(scores, dim=-1)
-
-    # Compute output
-    output = torch.matmul(attention_weights, value)
-
-    return output, attention_weights
-```
-
 ---
 
 ## Multi-Head Attention
@@ -369,59 +282,6 @@ Different heads can learn to focus on:
 - `h` = 8 (number of heads)
 - `d_k = d_v = d_model / h` = 64 (dimension per head)
 
-**PyTorch Implementation:**
-
-```python
-class MultiHeadAttention(nn.Module):
-    def __init__(self, d_model, num_heads, dropout=0.1):
-        super().__init__()
-        assert d_model % num_heads == 0
-
-        self.d_model = d_model
-        self.num_heads = num_heads
-        self.d_k = d_model // num_heads
-
-        # Linear projections (can be done as one big matrix)
-        self.W_q = nn.Linear(d_model, d_model)
-        self.W_k = nn.Linear(d_model, d_model)
-        self.W_v = nn.Linear(d_model, d_model)
-        self.W_o = nn.Linear(d_model, d_model)
-
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, query, key, value, mask=None):
-        batch_size = query.size(0)
-
-        # 1. Linear projections
-        Q = self.W_q(query)  # (batch, seq_len, d_model)
-        K = self.W_k(key)
-        V = self.W_v(value)
-
-        # 2. Split into heads: (batch, seq_len, d_model) → (batch, num_heads, seq_len, d_k)
-        Q = Q.view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
-        K = K.view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
-        V = V.view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
-
-        # 3. Apply attention
-        scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
-
-        if mask is not None:
-            scores = scores.masked_fill(mask == 0, float('-inf'))
-
-        attention_weights = torch.softmax(scores, dim=-1)
-        attention_weights = self.dropout(attention_weights)
-
-        context = torch.matmul(attention_weights, V)
-
-        # 4. Concatenate heads: (batch, num_heads, seq_len, d_k) → (batch, seq_len, d_model)
-        context = context.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
-
-        # 5. Final linear projection
-        output = self.W_o(context)
-
-        return output
-```
-
 ---
 
 ## Feed-Forward Network
@@ -470,21 +330,6 @@ Output: (batch, seq_len, d_model=512)
 - The expansion provides more capacity for learning complex transformations
 - The "bottleneck" design is computationally efficient
 - Acts like two matrix factorizations of a larger matrix
-
-**PyTorch Implementation:**
-
-```python
-class FeedForward(nn.Module):
-    def __init__(self, d_model, d_ff, dropout=0.1):
-        super().__init__()
-        self.linear1 = nn.Linear(d_model, d_ff)
-        self.linear2 = nn.Linear(d_ff, d_model)
-        self.dropout = nn.Dropout(dropout)
-        self.activation = nn.GELU()
-
-    def forward(self, x):
-        return self.linear2(self.dropout(self.activation(self.linear1(x))))
-```
 
 ---
 
@@ -536,35 +381,6 @@ x = x + sublayer(LayerNorm(x))
 
 Pre-norm is more stable for training very deep models.
 
-**PyTorch Implementation:**
-
-```python
-class TransformerBlock(nn.Module):
-    """A single transformer block with pre-norm."""
-
-    def __init__(self, d_model, num_heads, d_ff, dropout=0.1):
-        super().__init__()
-        self.attention = MultiHeadAttention(d_model, num_heads, dropout)
-        self.feed_forward = FeedForward(d_model, d_ff, dropout)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.norm2 = nn.LayerNorm(d_model)
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x, mask=None):
-        # Pre-norm: normalize before sublayer
-        # Self-attention with residual
-        attn_output = self.attention(
-            self.norm1(x), self.norm1(x), self.norm1(x), mask
-        )
-        x = x + self.dropout(attn_output)
-
-        # Feed-forward with residual
-        ff_output = self.feed_forward(self.norm2(x))
-        x = x + self.dropout(ff_output)
-
-        return x
-```
-
 ---
 
 ## The Complete Encoder
@@ -600,36 +416,6 @@ The encoder processes the input sequence bidirectionally (each position can atte
                         │
                         ▼
               Encoder Output (to Decoder)
-```
-
-**PyTorch Implementation:**
-
-```python
-class TransformerEncoder(nn.Module):
-    def __init__(self, vocab_size, d_model, num_heads, d_ff, num_layers,
-                 max_len=5000, dropout=0.1):
-        super().__init__()
-        self.embedding = nn.Embedding(vocab_size, d_model)
-        self.pos_encoding = PositionalEncoding(d_model, max_len, dropout)
-
-        self.layers = nn.ModuleList([
-            TransformerBlock(d_model, num_heads, d_ff, dropout)
-            for _ in range(num_layers)
-        ])
-
-        self.norm = nn.LayerNorm(d_model)
-        self.d_model = d_model
-
-    def forward(self, x, mask=None):
-        # Embedding + positional encoding
-        x = self.embedding(x) * math.sqrt(self.d_model)
-        x = self.pos_encoding(x)
-
-        # Pass through encoder layers
-        for layer in self.layers:
-            x = layer(x, mask)
-
-        return self.norm(x)
 ```
 
 ---
@@ -704,87 +490,15 @@ Position 4   │ 1  │ 1  │ 1  │ 1  │ 1  │  Can see all positions
 (1 = can attend, 0 = cannot attend → masked to -∞ before softmax)
 ```
 
-**PyTorch Implementation:**
-
-```python
-def generate_causal_mask(size):
-    """Generate causal mask for decoder self-attention."""
-    mask = torch.triu(torch.ones(size, size), diagonal=1)
-    return mask == 0  # True where attention is allowed
-
-
-class TransformerDecoderBlock(nn.Module):
-    def __init__(self, d_model, num_heads, d_ff, dropout=0.1):
-        super().__init__()
-        # Masked self-attention
-        self.self_attention = MultiHeadAttention(d_model, num_heads, dropout)
-        # Cross-attention (to encoder output)
-        self.cross_attention = MultiHeadAttention(d_model, num_heads, dropout)
-        self.feed_forward = FeedForward(d_model, d_ff, dropout)
-
-        self.norm1 = nn.LayerNorm(d_model)
-        self.norm2 = nn.LayerNorm(d_model)
-        self.norm3 = nn.LayerNorm(d_model)
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x, encoder_output, src_mask=None, tgt_mask=None):
-        # Masked self-attention
-        x2 = self.norm1(x)
-        x = x + self.dropout(self.self_attention(x2, x2, x2, tgt_mask))
-
-        # Cross-attention: Q from decoder, K,V from encoder
-        x2 = self.norm2(x)
-        x = x + self.dropout(self.cross_attention(x2, encoder_output, encoder_output, src_mask))
-
-        # Feed-forward
-        x2 = self.norm3(x)
-        x = x + self.dropout(self.feed_forward(x2))
-
-        return x
-```
-
 ---
 
 ## Putting It All Together
 
-### Complete Transformer Model
-
-```python
-class Transformer(nn.Module):
-    def __init__(self, src_vocab_size, tgt_vocab_size, d_model=512,
-                 num_heads=8, d_ff=2048, num_encoder_layers=6,
-                 num_decoder_layers=6, max_len=5000, dropout=0.1):
-        super().__init__()
-
-        self.encoder = TransformerEncoder(
-            src_vocab_size, d_model, num_heads, d_ff,
-            num_encoder_layers, max_len, dropout
-        )
-
-        self.decoder = TransformerDecoder(
-            tgt_vocab_size, d_model, num_heads, d_ff,
-            num_decoder_layers, max_len, dropout
-        )
-
-        self.output_projection = nn.Linear(d_model, tgt_vocab_size)
-
-    def forward(self, src, tgt, src_mask=None, tgt_mask=None):
-        # Encode source sequence
-        encoder_output = self.encoder(src, src_mask)
-
-        # Decode target sequence
-        decoder_output = self.decoder(tgt, encoder_output, src_mask, tgt_mask)
-
-        # Project to vocabulary
-        logits = self.output_projection(decoder_output)
-
-        return logits
-```
-
 ### Using PyTorch's Built-in Transformer
 
 ```python
-# PyTorch provides nn.Transformer for convenience
+import torch.nn as nn
+
 transformer = nn.Transformer(
     d_model=512,
     nhead=8,
@@ -795,7 +509,6 @@ transformer = nn.Transformer(
     batch_first=True
 )
 
-# Forward pass
 src = torch.randn(32, 10, 512)  # (batch, src_seq_len, d_model)
 tgt = torch.randn(32, 20, 512)  # (batch, tgt_seq_len, d_model)
 output = transformer(src, tgt)

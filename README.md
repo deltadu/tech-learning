@@ -1,6 +1,6 @@
 # Dev Learning
 
-Personal learning notes and code examples for C++, Python, and PyTorch/Deep Learning.
+Personal learning notes for C++, Python, PyTorch, Networking, Cryptography, and Kubernetes.
 
 ## Structure
 
@@ -20,13 +20,28 @@ Personal learning notes and code examples for C++, Python, and PyTorch/Deep Lear
 │   ├── 04_performance/     # Concurrency, profiling
 │   └── 05_testing/         # Pytest patterns
 │
-└── pytorch/                # Deep learning with PyTorch
-    ├── 01_basics/          # Tensors, autograd
-    ├── 02_neural_networks/ # nn.Module, training loops
-    └── 03_transformers/    # Transformer architecture explained + implementation
+├── pytorch/                # Deep learning with PyTorch
+│   ├── 01_basics/          # Tensors, autograd
+│   ├── 02_neural_networks/ # nn.Module, training loops
+│   └── 03_transformers/    # Transformer implementation from scratch
+│
+├── networking/             # Computer networking fundamentals & practical skills
+│   ├── 01_FUNDAMENTALS.md  # TCP/IP, DNS, HTTP, how the internet works
+│   └── 02_PRACTICAL.md     # Debugging, APIs, WebSockets, robotics & mobile networking
+│
+├── cryptography/           # Cryptography fundamentals & practical applications
+│   ├── 01_FUNDAMENTALS.md  # Symmetric/asymmetric crypto, hashing, signatures, TLS
+│   └── 02_PRACTICAL.md     # Password storage, API auth, robotics & mobile security
+│
+└── kubernetes/             # Container orchestration with Kubernetes
+    ├── 01_FUNDAMENTALS.md  # Architecture, core concepts, workloads, networking, storage
+    └── 02_PRACTICAL.md     # kubectl commands, debugging, scaling, Helm, patterns
 ```
 
 ## Highlights
 
 - **C++ Cheatsheet**: Quick reference in `cpp/CHEATSHEET.md`
 - **Transformers Guide**: Comprehensive explanation with diagrams in `pytorch/03_transformers/TRANSFORMERS_EXPLAINED.md`
+- **Networking Practical**: Robotics & app dev networking tricks in `networking/02_PRACTICAL.md`
+- **Crypto Practical**: Secure coding for robotics & mobile apps in `cryptography/02_PRACTICAL.md`
+- **K8s Practical**: Essential kubectl commands and debugging in `kubernetes/02_PRACTICAL.md`

@@ -786,6 +786,206 @@ Bell state:        |Φ+⟩ = (|00⟩ + |11⟩)/√2
 
 ---
 
+## Intro Code Examples (Qiskit)
+
+Get started with these beginner-friendly examples. Install first:
+
+```bash
+pip install qiskit qiskit-aer
+```
+
+### Example 1: Your First Qubit
+
+```python
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+
+# Create circuit: 1 qubit, 1 classical bit
+qc = QuantumCircuit(1, 1)
+
+# Put qubit in superposition
+qc.h(0)
+
+# Measure
+qc.measure(0, 0)
+
+# Run 1000 times
+sim = AerSimulator()
+result = sim.run(qc, shots=1000).result()
+print(result.get_counts())
+# Output: {'0': ~500, '1': ~500}  (roughly 50/50)
+```
+
+### Example 2: Visualize the Circuit
+
+```python
+from qiskit import QuantumCircuit
+
+qc = QuantumCircuit(2)
+qc.h(0)        # Hadamard on qubit 0
+qc.cx(0, 1)    # CNOT: entangle qubits
+
+print(qc.draw())
+# Output:
+#      ┌───┐
+# q_0: ┤ H ├──●──
+#      └───┘┌─┴─┐
+# q_1: ─────┤ X ├
+#           └───┘
+```
+
+### Example 3: Create a Bell State (Entanglement)
+
+```python
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+
+qc = QuantumCircuit(2, 2)
+qc.h(0)           # Superposition on qubit 0
+qc.cx(0, 1)       # Entangle with qubit 1
+qc.measure([0, 1], [0, 1])
+
+sim = AerSimulator()
+result = sim.run(qc, shots=1000).result()
+print(result.get_counts())
+# Output: {'00': ~500, '11': ~500}
+# Never '01' or '10' — qubits are correlated!
+```
+
+### Example 4: See the Quantum State (No Measurement)
+
+```python
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+
+qc = QuantumCircuit(2)
+qc.h(0)
+qc.cx(0, 1)
+
+# Get exact state vector
+state = Statevector(qc)
+print(state)
+# Output: [0.707+0.j, 0+0.j, 0+0.j, 0.707+0.j]
+# This is (|00⟩ + |11⟩)/√2
+
+# See probabilities
+print(state.probabilities())
+# Output: [0.5, 0.0, 0.0, 0.5]
+```
+
+### Example 5: Apply Different Gates
+
+```python
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+import numpy as np
+
+qc = QuantumCircuit(1)
+
+# Start in |0⟩
+print("Start:", Statevector(qc).draw('text'))
+
+# Apply X gate (NOT) — flips |0⟩ to |1⟩
+qc.x(0)
+print("After X:", Statevector(qc).draw('text'))
+
+# Apply H gate — creates superposition
+qc.h(0)
+print("After H:", Statevector(qc).draw('text'))
+
+# Apply rotation
+qc.ry(np.pi/4, 0)  # Rotate by 45° around Y-axis
+print("After Ry:", Statevector(qc).draw('text'))
+```
+
+### Example 6: Measure in Different Bases
+
+```python
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+
+# Prepare |+⟩ state
+qc = QuantumCircuit(1, 1)
+qc.h(0)  # Now in |+⟩ = (|0⟩ + |1⟩)/√2
+
+# Measure in Z basis (computational basis)
+qc_z = qc.copy()
+qc_z.measure(0, 0)
+
+# Measure in X basis (apply H before measuring)
+qc_x = qc.copy()
+qc_x.h(0)  # Convert X-basis to Z-basis
+qc_x.measure(0, 0)
+
+sim = AerSimulator()
+
+print("Z-basis:", sim.run(qc_z, shots=1000).result().get_counts())
+# Output: {'0': ~500, '1': ~500}  (random)
+
+print("X-basis:", sim.run(qc_x, shots=1000).result().get_counts())
+# Output: {'0': ~1000}  (deterministic — |+⟩ is eigenstate of X)
+```
+
+### Example 7: Simple Grover's Search (2 qubits)
+
+```python
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+
+# Search for |11⟩ among 4 states
+qc = QuantumCircuit(2, 2)
+
+# 1. Superposition
+qc.h([0, 1])
+
+# 2. Oracle: mark |11⟩ with phase flip
+qc.cz(0, 1)  # Flips phase only when both are |1⟩
+
+# 3. Diffusion operator
+qc.h([0, 1])
+qc.z([0, 1])
+qc.cz(0, 1)
+qc.h([0, 1])
+
+# 4. Measure
+qc.measure([0, 1], [0, 1])
+
+sim = AerSimulator()
+result = sim.run(qc, shots=1000).result()
+print(result.get_counts())
+# Output: {'11': ~1000}  (found it!)
+```
+
+### Quick Reference: Common Operations
+
+```python
+from qiskit import QuantumCircuit
+
+qc = QuantumCircuit(3)
+
+# Single-qubit gates
+qc.h(0)           # Hadamard: |0⟩ → |+⟩
+qc.x(0)           # NOT: |0⟩ ↔ |1⟩
+qc.z(0)           # Phase: |1⟩ → -|1⟩
+qc.s(0)           # S gate: √Z
+qc.t(0)           # T gate: √S
+
+# Rotations (angle in radians)
+qc.rx(3.14, 0)    # Rotate around X
+qc.ry(1.57, 0)    # Rotate around Y
+qc.rz(0.5, 0)     # Rotate around Z
+
+# Two-qubit gates
+qc.cx(0, 1)       # CNOT: flip target if control is |1⟩
+qc.cz(0, 1)       # CZ: phase flip if both |1⟩
+qc.swap(0, 1)     # Swap two qubits
+
+# Three-qubit gates
+qc.ccx(0, 1, 2)   # Toffoli: flip if both controls are |1⟩
+```
+
+---
+
 ## Key Takeaways
 
 1. **Qubits use superposition** — exist in multiple states until measured

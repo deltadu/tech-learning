@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Fundamentals</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="kubernetes-fundamentals">Kubernetes Fundamentals</h1>
+<p>Container orchestration explained without the enterprise jargon.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#what-problem-does-k8s-solve">What Problem Does K8s Solve?</a></li>
+<li><a href="#architecture-overview">Architecture Overview</a></li>
+<li><a href="#core-concepts">Core Concepts</a></li>
+<li><a href="#workload-resources">Workload Resources</a></li>
+<li><a href="#networking">Networking</a></li>
+<li><a href="#storage">Storage</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#how-it-all-fits-together">How It All Fits Together</a></li>
+</ol>
+<hr />
+<h2 id="what-problem-does-k8s-solve">What Problem Does K8s Solve?</h2>
+<p><strong>Without Kubernetes:</strong></p>
+<div class="highlight"><pre><span></span><code>&quot;Deploy my app on 10 servers&quot;
+
+Manual tasks:
+- SSH into each server
+- Pull new container image
+- Stop old container, start new one
+- Hope nothing breaks
+- If server dies, manually move app
+- Scale up? Manually add servers
+- Load balancing? Configure separately
+</code></pre></div>
+
+<p><strong>With Kubernetes:</strong></p>
+<div class="highlight"><pre><span></span><code>&quot;Deploy my app with 10 replicas&quot;
+
+kubectl apply -f deployment.yaml
+
+K8s handles:
+✓ Scheduling containers across nodes
+✓ Restarting failed containers
+✓ Rolling updates with zero downtime
+✓ Auto-scaling based on load
+✓ Service discovery and load balancing
+✓ Storage management
+✓ Secret management
+</code></pre></div>
+
+<hr />
+<h2 id="architecture-overview">Architecture Overview</h2>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         KUBERNETES CLUSTER                           │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │                      CONTROL PLANE                              │ │
+│  │                                                                 │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐ │ │
+│  │  │ API Server   │  │   etcd       │  │ Controller Manager    │ │ │
+│  │  │              │  │ (key-value   │  │ (runs control loops)  │ │ │
+│  │  │ (REST API,   │  │  store for   │  │                       │ │ │
+│  │  │  all comms   │  │  all cluster │  │ • Node controller     │ │ │
+│  │  │  go through  │  │  state)      │  │ • Replication ctrl    │ │ │
+│  │  │  here)       │  │              │  │ • Endpoint controller │ │ │
+│  │  └──────────────┘  └──────────────┘  └───────────────────────┘ │ │
+│  │                                                                 │ │
+│  │  ┌──────────────────────────────────────────────────────────┐  │ │
+│  │  │ Scheduler                                                 │  │ │
+│  │  │ (decides which node runs which pod)                       │  │ │
+│  │  └──────────────────────────────────────────────────────────┘  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │                         WORKER NODES                            │ │
+│  │                                                                 │ │
+│  │  ┌─────────────────────┐    ┌─────────────────────┐            │ │
+│  │  │      Node 1         │    │      Node 2         │            │ │
+│  │  │  ┌───────────────┐  │    │  ┌───────────────┐  │            │ │
+│  │  │  │    kubelet    │  │    │  │    kubelet    │  │            │ │
+│  │  │  │ (node agent)  │  │    │  │ (node agent)  │  │            │ │
+│  │  │  └───────────────┘  │    │  └───────────────┘  │            │ │
+│  │  │  ┌───────────────┐  │    │  ┌───────────────┐  │            │ │
+│  │  │  │  kube-proxy   │  │    │  │  kube-proxy   │  │            │ │
+│  │  │  │ (networking)  │  │    │  │ (networking)  │  │            │ │
+│  │  │  └───────────────┘  │    │  └───────────────┘  │            │ │
+│  │  │  ┌───────────────┐  │    │  ┌───────────────┐  │            │ │
+│  │  │  │   Container   │  │    │  │   Container   │  │            │ │
+│  │  │  │   Runtime     │  │    │  │   Runtime     │  │            │ │
+│  │  │  └───────────────┘  │    │  └───────────────┘  │            │ │
+│  │  │                     │    │                     │            │ │
+│  │  │  [Pod] [Pod] [Pod]  │    │  [Pod] [Pod]        │            │ │
+│  │  └─────────────────────┘    └─────────────────────┘            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="component-responsibilities">Component Responsibilities</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API Server</strong></td>
+<td>Front door to the cluster. All kubectl commands go here.</td>
+</tr>
+<tr>
+<td><strong>etcd</strong></td>
+<td>Stores all cluster state. The "database" of K8s.</td>
+</tr>
+<tr>
+<td><strong>Scheduler</strong></td>
+<td>Watches for new pods, assigns them to nodes.</td>
+</tr>
+<tr>
+<td><strong>Controller Manager</strong></td>
+<td>Runs loops that maintain desired state.</td>
+</tr>
+<tr>
+<td><strong>kubelet</strong></td>
+<td>Agent on each node. Runs and monitors pods.</td>
+</tr>
+<tr>
+<td><strong>kube-proxy</strong></td>
+<td>Manages network rules for pod communication.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="core-concepts">Core Concepts</h2>
+<h3 id="the-declarative-model">The Declarative Model</h3>
+<p>You describe <strong>what you want</strong>, not how to get there:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># &quot;I want 3 copies of my app running&quot;</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">           </span><span class="c1"># Desired state</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app:v1</span>
+</code></pre></div>
+
+<p>K8s continuously works to make <strong>actual state = desired state</strong>.</p>
+<h3 id="labels-and-selectors">Labels and Selectors</h3>
+<p>Labels are key-value pairs for organizing resources:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<span class="w">    </span><span class="nt">team</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">checkout</span>
+</code></pre></div>
+
+<p>Selectors find resources by labels:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">selector</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+</code></pre></div>
+
+<p><strong>Use cases:</strong><br />
+- Services find their pods<br />
+- Deployments manage their pods<br />
+- Queries: <code>kubectl get pods -l app=frontend</code></p>
+<h3 id="namespaces">Namespaces</h3>
+<p>Virtual clusters within a cluster:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────┐
+│ Cluster                                             │
+│                                                     │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │ default     │  │ production  │  │ staging     │ │
+│  │             │  │             │  │             │ │
+│  │  [pods]     │  │  [pods]     │  │  [pods]     │ │
+│  │  [services] │  │  [services] │  │  [services] │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘ │
+│                                                     │
+│  ┌─────────────┐  ┌─────────────┐                  │
+│  │ kube-system │  │ monitoring  │                  │
+│  │ (K8s stuff) │  │             │                  │
+│  └─────────────┘  └─────────────┘                  │
+└─────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1"># Work in a namespace</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>production
+kubectl<span class="w"> </span>config<span class="w"> </span>set-context<span class="w"> </span>--current<span class="w"> </span>--namespace<span class="o">=</span>production
+</code></pre></div>
+
+<hr />
+<h2 id="workload-resources">Workload Resources</h2>
+<h3 id="pod">Pod</h3>
+<p><strong>The smallest deployable unit.</strong> One or more containers that share:<br />
+- Network namespace (same IP, can use localhost)<br />
+- Storage volumes<br />
+- Lifecycle</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.21</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;64Mi&quot;</span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250m&quot;</span>
+<span class="w">      </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+</code></pre></div>
+
+<p><strong>You rarely create pods directly.</strong> Use Deployments instead.</p>
+<h3 id="deployment">Deployment</h3>
+<p>Manages pods with:<br />
+- Desired replica count<br />
+- Rolling updates<br />
+- Rollback capability</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx-deployment</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:1.21</span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+</code></pre></div>
+
+<p><strong>What happens:</strong><br />
+1. Deployment creates a ReplicaSet<br />
+2. ReplicaSet creates 3 Pods<br />
+3. If a pod dies, ReplicaSet creates a new one<br />
+4. Update image? New ReplicaSet, gradual rollover</p>
+<div class="highlight"><pre><span></span><code>Deployment
+    │
+    └──▶ ReplicaSet (v1) ──▶ Pod, Pod, Pod
+    │
+    └──▶ ReplicaSet (v2) ──▶ (created on update)
+</code></pre></div>
+
+<h3 id="statefulset">StatefulSet</h3>
+<p>For stateful applications (databases, message queues):</p>
+<div class="highlight"><pre><span></span><code>Deployment Pods:          StatefulSet Pods:
+┌───────────────────┐     ┌───────────────────┐
+│ Random names:     │     │ Stable names:     │
+│ nginx-7d8f9c-abc  │     │ mysql-0           │
+│ nginx-7d8f9c-def  │     │ mysql-1           │
+│ nginx-7d8f9c-ghi  │     │ mysql-2           │
+│                   │     │                   │
+│ Interchangeable   │     │ Ordered startup   │
+│ No stable storage │     │ Stable storage    │
+│ No stable network │     │ Stable DNS name   │
+└───────────────────┘     └───────────────────┘
+</code></pre></div>
+
+<h3 id="daemonset">DaemonSet</h3>
+<p>Run one pod per node (for node-level services):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DaemonSet</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">log-collector</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">log-collector</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># ... pod template</span>
+</code></pre></div>
+
+<p><strong>Use cases:</strong> Log collectors, monitoring agents, network plugins.</p>
+<h3 id="job-cronjob">Job / CronJob</h3>
+<p><strong>Job:</strong> Run to completion (batch processing)</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data-migration</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">migrate</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">migration-tool:v1</span>
+<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span>
+<span class="w">  </span><span class="nt">backoffLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+</code></pre></div>
+
+<p><strong>CronJob:</strong> Scheduled jobs</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CronJob</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nightly-backup</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0</span><span class="nv"> </span><span class="s">2</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*&quot;</span><span class="w">  </span><span class="c1"># 2 AM daily</span>
+<span class="w">  </span><span class="nt">jobTemplate</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backup</span>
+<span class="w">            </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backup-tool:v1</span>
+<span class="w">          </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OnFailure</span>
+</code></pre></div>
+
+<h3 id="resource-comparison">Resource Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Use Case</th>
+<th>Replicas</th>
+<th>Pod Names</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Deployment</strong></td>
+<td>Stateless apps</td>
+<td>N replicas, interchangeable</td>
+<td>Random</td>
+</tr>
+<tr>
+<td><strong>StatefulSet</strong></td>
+<td>Databases, stateful apps</td>
+<td>Ordered, stable identity</td>
+<td>Indexed (app-0, app-1)</td>
+</tr>
+<tr>
+<td><strong>DaemonSet</strong></td>
+<td>Per-node agents</td>
+<td>One per node</td>
+<td>Per-node</td>
+</tr>
+<tr>
+<td><strong>Job</strong></td>
+<td>Batch processing</td>
+<td>Run to completion</td>
+<td>Random</td>
+</tr>
+<tr>
+<td><strong>CronJob</strong></td>
+<td>Scheduled tasks</td>
+<td>Periodic jobs</td>
+<td>Random</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="networking">Networking</h2>
+<h3 id="service">Service</h3>
+<p>Stable network endpoint for a set of pods:</p>
+<div class="highlight"><pre><span></span><code>Without Service:                With Service:
+┌─────────────────────┐        ┌─────────────────────┐
+│ Pods come and go    │        │  Service            │
+│                     │        │  ┌───────────────┐  │
+│ Pod: 10.0.1.5  ✗    │        │  │ my-service    │  │
+│ Pod: 10.0.1.8  ✓    │        │  │ 10.96.0.1     │  │
+│ Pod: 10.0.1.12 ✓    │        │  │               │  │
+│                     │        │  │    ┌─────┐    │  │
+│ How do clients      │        │  │    │ LB  │    │  │
+│ know which IP?      │        │  │    └──┬──┘    │  │
+└─────────────────────┘        │  └──────┼────────┘  │
+                               │         │           │
+                               │    ┌────┴────┐      │
+                               │    ▼    ▼    ▼      │
+                               │  [Pod] [Pod] [Pod]  │
+                               └─────────────────────┘
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-service</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span><span class="w">       </span><span class="c1"># Find pods with this label</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span><span class="w">          </span><span class="c1"># Service port</span>
+<span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w">  </span><span class="c1"># Pod port</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span><span class="w">     </span><span class="c1"># Internal only (default)</span>
+</code></pre></div>
+
+<h3 id="service-types">Service Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Accessibility</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ClusterIP</strong></td>
+<td>Internal only</td>
+<td>Service-to-service</td>
+</tr>
+<tr>
+<td><strong>NodePort</strong></td>
+<td>External via node IP:port</td>
+<td>Dev/testing</td>
+</tr>
+<tr>
+<td><strong>LoadBalancer</strong></td>
+<td>External via cloud LB</td>
+<td>Production</td>
+</tr>
+<tr>
+<td><strong>ExternalName</strong></td>
+<td>DNS alias</td>
+<td>External services</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># LoadBalancer example (creates cloud LB)</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-public-service</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LoadBalancer</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+</code></pre></div>
+
+<h3 id="ingress">Ingress</h3>
+<p>Layer 7 (HTTP) routing:</p>
+<div class="highlight"><pre><span></span><code>                    ┌─────────────────────────────────────┐
+Internet ──────────▶│           Ingress Controller        │
+                    │                                     │
+                    │  api.example.com ──▶ api-service    │
+                    │  www.example.com ──▶ web-service    │
+                    │  example.com/api ──▶ api-service    │
+                    └─────────────────────────────────────┘
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-ingress</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api.example.com</span>
+<span class="w">    </span><span class="nt">http</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+<span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+<span class="w">        </span><span class="nt">backend</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">service</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api-service</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">www.example.com</span>
+<span class="w">    </span><span class="nt">http</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+<span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+<span class="w">        </span><span class="nt">backend</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">service</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web-service</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+</code></pre></div>
+
+<h3 id="dns-in-kubernetes">DNS in Kubernetes</h3>
+<p>Every service gets a DNS name:</p>
+<div class="highlight"><pre><span></span><code>&lt;service-name&gt;.&lt;namespace&gt;.svc.cluster.local
+
+Examples:
+  my-service.default.svc.cluster.local
+  database.production.svc.cluster.local
+
+Shorthand (same namespace):
+  my-service
+
+Shorthand (different namespace):
+  database.production
+</code></pre></div>
+
+<hr />
+<h2 id="storage">Storage</h2>
+<h3 id="volumes">Volumes</h3>
+<p>Attach storage to pods:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app:v1</span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data</span>
+<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">emptyDir</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w">     </span><span class="c1"># Temporary, deleted with pod</span>
+</code></pre></div>
+
+<h3 id="volume-types">Volume Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Persistence</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>emptyDir</strong></td>
+<td>Pod lifetime</td>
+<td>Temp files, cache</td>
+</tr>
+<tr>
+<td><strong>hostPath</strong></td>
+<td>Node lifetime</td>
+<td>Node-level data</td>
+</tr>
+<tr>
+<td><strong>configMap</strong></td>
+<td>Config changes</td>
+<td>Config files</td>
+</tr>
+<tr>
+<td><strong>secret</strong></td>
+<td>Config changes</td>
+<td>Sensitive config</td>
+</tr>
+<tr>
+<td><strong>persistentVolumeClaim</strong></td>
+<td>Persistent</td>
+<td>Databases, uploads</td>
+</tr>
+</tbody>
+</table>
+<h3 id="persistentvolume-pv-persistentvolumeclaim-pvc">PersistentVolume (PV) &amp; PersistentVolumeClaim (PVC)</h3>
+<p>Decouple storage provisioning from usage:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   Admin creates PV              Dev creates PVC             │
+│   (or dynamic provisioning)     (requests storage)          │
+│                                                             │
+│   ┌─────────────────┐          ┌─────────────────┐         │
+│   │ PersistentVolume│◀─ binds ─│ PersistentVolume│         │
+│   │                 │          │ Claim            │         │
+│   │ 100Gi SSD       │          │ &quot;I need 50Gi&quot;   │         │
+│   │ AWS EBS         │          │                 │         │
+│   └─────────────────┘          └────────┬────────┘         │
+│                                         │                   │
+│                                         ▼                   │
+│                                    ┌─────────┐              │
+│                                    │   Pod   │              │
+│                                    │ (mounts │              │
+│                                    │  PVC)   │              │
+│                                    └─────────┘              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1"># PersistentVolumeClaim</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PersistentVolumeClaim</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-storage</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10Gi</span>
+<span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standard</span><span class="w">  </span><span class="c1"># Use default storage class</span>
+<span class="nn">---</span>
+<span class="c1"># Pod using the PVC</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-pod</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app:v1</span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/data</span>
+<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data</span>
+<span class="w">    </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-storage</span>
+</code></pre></div>
+
+<h3 id="access-modes">Access Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Abbreviation</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReadWriteOnce</td>
+<td>RWO</td>
+<td>Single node read-write</td>
+</tr>
+<tr>
+<td>ReadOnlyMany</td>
+<td>ROX</td>
+<td>Multiple nodes read-only</td>
+</tr>
+<tr>
+<td>ReadWriteMany</td>
+<td>RWX</td>
+<td>Multiple nodes read-write</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<h3 id="configmap">ConfigMap</h3>
+<p>Non-sensitive configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">DATABASE_HOST</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;postgres.default.svc&quot;</span>
+<span class="w">  </span><span class="nt">LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;info&quot;</span>
+<span class="w">  </span><span class="nt">config.json</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">{</span>
+<span class="w">      </span><span class="no">&quot;feature_flags&quot;: {</span>
+<span class="w">        </span><span class="no">&quot;new_ui&quot;: true</span>
+<span class="w">      </span><span class="no">}</span>
+<span class="w">    </span><span class="no">}</span>
+</code></pre></div>
+
+<p><strong>Use in pod:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># As environment variables</span>
+<span class="nt">env</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DATABASE_HOST</span>
+<span class="w">  </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">configMapKeyRef</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DATABASE_HOST</span>
+
+<span class="c1"># As mounted file</span>
+<span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config</span>
+<span class="w">  </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/config</span>
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config</span>
+<span class="w">  </span><span class="nt">configMap</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
+</code></pre></div>
+
+<h3 id="secret">Secret</h3>
+<p>Sensitive data (base64 encoded, not encrypted by default!):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-credentials</span>
+<span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YWRtaW4=</span><span class="w">      </span><span class="c1"># base64 of &quot;admin&quot;</span>
+<span class="w">  </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cGFzc3dvcmQ=</span><span class="w">  </span><span class="c1"># base64 of &quot;password&quot;</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1"># Create from literals</span>
+kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>db-creds<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>admin<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span>secret
+
+<span class="c1"># Create from file</span>
+kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>tls-cert<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-file<span class="o">=</span>cert.pem<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-file<span class="o">=</span>key.pem
+</code></pre></div>
+
+<p><strong>Use in pod:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">env</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_PASSWORD</span>
+<span class="w">  </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-credentials</span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">password</span>
+</code></pre></div>
+
+<hr />
+<h2 id="how-it-all-fits-together">How It All Fits Together</h2>
+<h3 id="example-complete-web-application">Example: Complete Web Application</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. ConfigMap for app settings</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-config</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">API_URL</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;http://api-service:8080&quot;</span>
+<span class="nn">---</span>
+<span class="c1"># 2. Secret for sensitive data</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-secrets</span>
+<span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
+<span class="nt">stringData</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">API_KEY</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;super-secret-key&quot;</span>
+<span class="nn">---</span>
+<span class="c1"># 3. Deployment</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp:v1</span>
+<span class="w">        </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API_URL</span>
+<span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">configMapKeyRef</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-config</span>
+<span class="w">              </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API_URL</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API_KEY</span>
+<span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-secrets</span>
+<span class="w">              </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API_KEY</span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span>
+<span class="w">          </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;256Mi&quot;</span>
+<span class="w">        </span><span class="nt">livenessProbe</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">httpGet</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/health</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">          </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">          </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">        </span><span class="nt">readinessProbe</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">httpGet</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/ready</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">          </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">          </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="nn">---</span>
+<span class="c1"># 4. Service (internal)</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-service</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="nn">---</span>
+<span class="c1"># 5. Ingress (external)</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-ingress</span>
+<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">nginx.ingress.kubernetes.io/ssl-redirect</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tls</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">hosts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp.example.com</span>
+<span class="w">    </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tls-secret</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp.example.com</span>
+<span class="w">    </span><span class="nt">http</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+<span class="w">        </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+<span class="w">        </span><span class="nt">backend</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">service</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webapp-service</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+</code></pre></div>
+
+<h3 id="request-flow">Request Flow</h3>
+<div class="highlight"><pre><span></span><code>1. User → myapp.example.com
+       ↓
+2. DNS → Ingress Controller IP
+       ↓
+3. Ingress Controller → matches host rule
+       ↓
+4. Routes to webapp-service:80
+       ↓
+5. Service → load balances to one of 3 pods
+       ↓
+6. Pod container:3000 handles request
+</code></pre></div>
+
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="resource-hierarchy">Resource Hierarchy</h3>
+<div class="highlight"><pre><span></span><code>Cluster
+ └── Namespace
+      ├── Deployment / StatefulSet / DaemonSet
+      │    └── ReplicaSet (managed by Deployment)
+      │         └── Pod
+      │              └── Container
+      ├── Service
+      ├── Ingress
+      ├── ConfigMap
+      ├── Secret
+      └── PersistentVolumeClaim
+</code></pre></div>
+
+<h3 id="common-kubectl-commands">Common kubectl Commands</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Basics</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w">                    </span><span class="c1"># List pods</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>all<span class="w">                     </span><span class="c1"># List common resources</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>&lt;name&gt;<span class="w">         </span><span class="c1"># Detailed info</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>&lt;pod&gt;<span class="w">                  </span><span class="c1"># View logs</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;pod&gt;<span class="w"> </span>--<span class="w"> </span>/bin/sh<span class="w">  </span><span class="c1"># Shell into pod</span>
+
+<span class="c1"># Apply/Delete</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>manifest.yaml<span class="w">      </span><span class="c1"># Create/update</span>
+kubectl<span class="w"> </span>delete<span class="w"> </span>-f<span class="w"> </span>manifest.yaml<span class="w">     </span><span class="c1"># Delete</span>
+
+<span class="c1"># Debugging</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>events<span class="w">                  </span><span class="c1"># Cluster events</span>
+kubectl<span class="w"> </span>top<span class="w"> </span>pods<span class="w">                    </span><span class="c1"># Resource usage</span>
+kubectl<span class="w"> </span>port-forward<span class="w"> </span>&lt;pod&gt;<span class="w"> </span><span class="m">8080</span>:80<span class="w">  </span><span class="c1"># Local access</span>
+</code></pre></div>
+
+<hr />
+<p>Next: <a href="./02_PRACTICAL.md">Practical Kubernetes</a> - Commands, debugging, and real-world patterns</p>
+</body>
+</html>

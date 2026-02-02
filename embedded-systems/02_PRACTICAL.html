@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Embedded Systems</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="practical-embedded-systems">Practical Embedded Systems</h1>
+<p>Debugging techniques, common patterns, and real-world tips.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#development-workflow">Development Workflow</a></li>
+<li><a href="#debugging-techniques">Debugging Techniques</a></li>
+<li><a href="#common-patterns">Common Patterns</a></li>
+<li><a href="#state-machines">State Machines</a></li>
+<li><a href="#circular-buffers">Circular Buffers</a></li>
+<li><a href="#fixed-point-math">Fixed-Point Math</a></li>
+<li><a href="#watchdog--error-handling">Watchdog &amp; Error Handling</a></li>
+<li><a href="#testing-embedded-code">Testing Embedded Code</a></li>
+<li><a href="#freertos-basics">FreeRTOS Basics</a></li>
+<li><a href="#common-gotchas">Common Gotchas</a></li>
+</ol>
+<hr />
+<h2 id="development-workflow">Development Workflow</h2>
+<h3 id="toolchain">Toolchain</h3>
+<div class="highlight"><pre><span></span><code>┌────────────────────────────────────────────────────────────────┐
+│ Development Workflow                                            │
+│                                                                 │
+│  Source Code (.c/.h)                                            │
+│       │                                                         │
+│       ▼                                                         │
+│  ┌──────────────┐                                               │
+│  │  Compiler    │  arm-none-eabi-gcc                           │
+│  │  (Cross)     │                                               │
+│  └──────┬───────┘                                               │
+│         │                                                       │
+│         ▼                                                       │
+│  Object Files (.o)                                              │
+│         │                                                       │
+│         ▼                                                       │
+│  ┌──────────────┐     ┌──────────────┐                         │
+│  │   Linker     │◀────│ Linker Script│  Memory layout          │
+│  └──────┬───────┘     └──────────────┘                         │
+│         │                                                       │
+│         ▼                                                       │
+│  Executable (.elf)                                              │
+│         │                                                       │
+│         ├──────────────▶ .bin/.hex (for flashing)              │
+│         │                                                       │
+│         ▼                                                       │
+│  ┌──────────────┐     ┌──────────────┐                         │
+│  │   Debugger   │◀───▶│ Debug Probe  │  ST-Link, J-Link        │
+│  │   (GDB)      │     │              │                         │
+│  └──────────────┘     └──────────────┘                         │
+│                              │                                  │
+│                              ▼                                  │
+│                       ┌──────────────┐                         │
+│                       │    Target    │                         │
+│                       │    MCU       │                         │
+│                       └──────────────┘                         │
+└────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="build-system">Build System</h3>
+<p><strong>Makefile basics:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nv">CC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>arm-none-eabi-gcc
+<span class="nv">CFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-mcpu<span class="o">=</span>cortex-m4<span class="w"> </span>-mthumb<span class="w"> </span>-O2<span class="w"> </span>-g
+<span class="nv">LDFLAGS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-T<span class="w"> </span>linker.ld<span class="w"> </span>-nostartfiles
+
+<span class="nv">SRC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>main.c<span class="w"> </span>startup.c
+<span class="nv">OBJ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>SRC:.c<span class="o">=</span>.o<span class="k">)</span>
+
+<span class="nf">firmware.elf</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">OBJ</span><span class="k">)</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$@</span><span class="w"> </span>$^
+
+<span class="nf">%.o</span><span class="o">:</span><span class="w"> </span>%.<span class="n">c</span>
+<span class="w">    </span><span class="k">$(</span>CC<span class="k">)</span><span class="w"> </span><span class="k">$(</span>CFLAGS<span class="k">)</span><span class="w"> </span>-c<span class="w"> </span>-o<span class="w"> </span><span class="nv">$@</span><span class="w"> </span>$&lt;
+
+<span class="nf">flash</span><span class="o">:</span><span class="w"> </span><span class="n">firmware</span>.<span class="n">elf</span>
+<span class="w">    </span>openocd<span class="w"> </span>-f<span class="w"> </span>interface/stlink.cfg<span class="w"> </span>-f<span class="w"> </span>target/stm32f4x.cfg<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-c<span class="w"> </span><span class="s2">&quot;program firmware.elf verify reset exit&quot;</span>
+
+<span class="nf">clean</span><span class="o">:</span>
+<span class="w">    </span>rm<span class="w"> </span>-f<span class="w"> </span><span class="k">$(</span>OBJ<span class="k">)</span><span class="w"> </span>firmware.elf
+</code></pre></div>
+
+<p><strong>Or use CMake with toolchain file.</strong></p>
+<hr />
+<h2 id="debugging-techniques">Debugging Techniques</h2>
+<h3 id="printf-debugging">Printf Debugging</h3>
+<p>Simple but effective:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Redirect printf to UART</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">_write</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart2</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="o">*</span><span class="p">)</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">HAL_MAX_DELAY</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">len</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Usage</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Sensor: %d, State: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sensor_value</span><span class="p">,</span><span class="w"> </span><span class="n">current_state</span><span class="p">);</span>
+
+<span class="c1">// Lightweight alternative (no formatting overhead)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">debug_hex</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0x00000000</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">nibble</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xF</span><span class="p">;</span>
+<span class="w">        </span><span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nibble</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nibble</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nibble</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">        </span><span class="n">val</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="o">*</span><span class="p">)</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="led-debugging">LED Debugging</h3>
+<p>When UART isn't available:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Blink pattern indicates error code</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">indicateError</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">code</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">code</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">LED_ON</span><span class="p">();</span>
+<span class="w">            </span><span class="n">delay_ms</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<span class="w">            </span><span class="n">LED_OFF</span><span class="p">();</span>
+<span class="w">            </span><span class="n">delay_ms</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">delay_ms</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span><span class="w">  </span><span class="c1">// Pause between patterns</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Heartbeat LED (proves main loop is running)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">heartbeat</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">last</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">HAL_GetTick</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">last</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">HAL_GPIO_TogglePin</span><span class="p">(</span><span class="n">LED_PORT</span><span class="p">,</span><span class="w"> </span><span class="n">LED_PIN</span><span class="p">);</span>
+<span class="w">        </span><span class="n">last</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="logic-analyzer-oscilloscope">Logic Analyzer / Oscilloscope</h3>
+<p>Toggle GPIO to measure timing:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Measure function execution time</span>
+<span class="n">GPIO_SET</span><span class="p">(</span><span class="n">DEBUG_PIN</span><span class="p">);</span>
+<span class="n">expensiveFunction</span><span class="p">();</span>
+<span class="n">GPIO_CLEAR</span><span class="p">(</span><span class="n">DEBUG_PIN</span><span class="p">);</span>
+
+<span class="c1">// Measure on oscilloscope: pulse width = execution time</span>
+</code></pre></div>
+
+<h3 id="hardware-debugger-gdb">Hardware Debugger (GDB)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Connect to target</span>
+arm-none-eabi-gdb<span class="w"> </span>firmware.elf
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>target<span class="w"> </span>remote<span class="w"> </span>:3333
+
+<span class="c1"># Common commands</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="nb">break</span><span class="w"> </span>main<span class="w">              </span><span class="c1"># Set breakpoint</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="k">continue</span><span class="w">                </span><span class="c1"># Run</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>step<span class="w">                    </span><span class="c1"># Step into</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>next<span class="w">                    </span><span class="c1"># Step over</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>print<span class="w"> </span>variable<span class="w">          </span><span class="c1"># Print value</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>x/10xw<span class="w"> </span>0x20000000<span class="w">       </span><span class="c1"># Examine memory</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>info<span class="w"> </span>registers<span class="w">          </span><span class="c1"># Show registers</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>backtrace<span class="w">               </span><span class="c1"># Call stack</span>
+</code></pre></div>
+
+<h3 id="fault-debugging">Fault Debugging</h3>
+<p>When hard fault occurs:</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">HardFault_Handler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">__asm</span><span class="w"> </span><span class="k">volatile</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;tst lr, #4          </span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="s">&quot;ite eq              </span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="s">&quot;mrseq r0, msp       </span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="s">&quot;mrsne r0, psp       </span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="s">&quot;b HardFault_Handler_C </span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">HardFault_Handler_C</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">stack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">r0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">r1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">r3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">r12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">lr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span><span class="w">   </span><span class="c1">// Return address</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span><span class="w">   </span><span class="c1">// Faulting instruction</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">psr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">[</span><span class="mi">7</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Set breakpoint here and inspect values</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="debouncing">Debouncing</h3>
+<p>Eliminate button bounce (mechanical switches bounce for ~5-20ms):</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#define DEBOUNCE_MS 20</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">readButtonDebounced</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">lastChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">lastState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">debouncedState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">currentState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GPIO_ReadPin</span><span class="p">(</span><span class="n">BTN_PORT</span><span class="p">,</span><span class="w"> </span><span class="n">BTN_PIN</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GPIO_PIN_SET</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">currentState</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">lastState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">lastChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+<span class="w">        </span><span class="n">lastState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">currentState</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">HAL_GetTick</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lastChange</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">DEBOUNCE_MS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">debouncedState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">currentState</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">debouncedState</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Or simpler: edge detection with debounce</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">getButtonPress</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">lastStable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">current</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readButtonDebounced</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">current</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">lastStable</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">lastStable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w">  </span><span class="c1">// Rising edge</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">lastStable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="timing-without-blocking">Timing Without Blocking</h3>
+<p>Never use busy-wait delays in main loop:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ Bad: blocks everything</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">readSensor</span><span class="p">();</span>
+<span class="w">    </span><span class="n">HAL_Delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w">  </span><span class="c1">// Blocks for 100ms!</span>
+<span class="p">}</span>
+
+<span class="c1">// ✓ Good: non-blocking timing</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">lastSensorRead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">lastLedToggle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lastSensorRead</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">readSensor</span><span class="p">();</span>
+<span class="w">        </span><span class="n">lastSensorRead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lastLedToggle</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">toggleLed</span><span class="p">();</span>
+<span class="w">        </span><span class="n">lastLedToggle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Other tasks run without blocking</span>
+<span class="w">    </span><span class="n">processCommands</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="software-timers">Software Timers</h3>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">interval</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">lastTick</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">callback</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SoftTimer</span><span class="p">;</span>
+
+<span class="n">SoftTimer</span><span class="w"> </span><span class="n">timers</span><span class="p">[</span><span class="n">MAX_TIMERS</span><span class="p">];</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">timerInit</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">interval_ms</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">cb</span><span class="p">)(</span><span class="kt">void</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">timers</span><span class="p">[</span><span class="n">id</span><span class="p">].</span><span class="n">interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interval_ms</span><span class="p">;</span>
+<span class="w">    </span><span class="n">timers</span><span class="p">[</span><span class="n">id</span><span class="p">].</span><span class="n">lastTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+<span class="w">    </span><span class="n">timers</span><span class="p">[</span><span class="n">id</span><span class="p">].</span><span class="n">callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cb</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">timerProcess</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">MAX_TIMERS</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timers</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">callback</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">            </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">timers</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">lastTick</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">timers</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">interval</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">timers</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">lastTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
+<span class="w">            </span><span class="n">timers</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">callback</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Usage</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">onSensorTimer</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">readSensors</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">onHeartbeat</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">toggleLed</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">timerInit</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">onSensorTimer</span><span class="p">);</span>
+<span class="w">    </span><span class="n">timerInit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w"> </span><span class="n">onHeartbeat</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">timerProcess</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="moving-average-filter">Moving Average Filter</h3>
+<p>Smooth noisy sensor readings:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#define FILTER_SIZE 8</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="n">FILTER_SIZE</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MovingAverage</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">maInit</span><span class="p">(</span><span class="n">MovingAverage</span><span class="w"> </span><span class="o">*</span><span class="n">ma</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">memset</span><span class="p">(</span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">));</span>
+<span class="w">    </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int16_t</span><span class="w"> </span><span class="nf">maUpdate</span><span class="p">(</span><span class="n">MovingAverage</span><span class="w"> </span><span class="o">*</span><span class="n">ma</span><span class="p">,</span><span class="w"> </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">sum</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">[</span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">];</span>
+<span class="w">    </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">[</span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">sample</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">FILTER_SIZE</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ma</span><span class="o">-&gt;</span><span class="n">sum</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">FILTER_SIZE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Usage</span>
+<span class="n">MovingAverage</span><span class="w"> </span><span class="n">tempFilter</span><span class="p">;</span>
+<span class="n">maInit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tempFilter</span><span class="p">);</span>
+
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readADC</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">maUpdate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tempFilter</span><span class="p">,</span><span class="w"> </span><span class="n">raw</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="state-machines">State Machines</h2>
+<p>Organize complex behavior:</p>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">STATE_IDLE</span><span class="p">,</span>
+<span class="w">    </span><span class="n">STATE_RUNNING</span><span class="p">,</span>
+<span class="w">    </span><span class="n">STATE_ERROR</span><span class="p">,</span>
+<span class="w">    </span><span class="n">STATE_COUNT</span>
+<span class="p">}</span><span class="w"> </span><span class="n">State</span><span class="p">;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">EVENT_START</span><span class="p">,</span>
+<span class="w">    </span><span class="n">EVENT_STOP</span><span class="p">,</span>
+<span class="w">    </span><span class="n">EVENT_ERROR</span><span class="p">,</span>
+<span class="w">    </span><span class="n">EVENT_RESET</span><span class="p">,</span>
+<span class="w">    </span><span class="n">EVENT_COUNT</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Event</span><span class="p">;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">State</span><span class="w"> </span><span class="n">nextState</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">action</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Transition</span><span class="p">;</span>
+
+<span class="c1">// Transition table</span>
+<span class="n">Transition</span><span class="w"> </span><span class="n">transitions</span><span class="p">[</span><span class="n">STATE_COUNT</span><span class="p">][</span><span class="n">EVENT_COUNT</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// STATE_IDLE</span>
+<span class="w">    </span><span class="p">[</span><span class="n">STATE_IDLE</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_START</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_RUNNING</span><span class="p">,</span><span class="w"> </span><span class="n">onStart</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_STOP</span><span class="p">]</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_IDLE</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_ERROR</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">onError</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_RESET</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_IDLE</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="c1">// STATE_RUNNING</span>
+<span class="w">    </span><span class="p">[</span><span class="n">STATE_RUNNING</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_START</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_RUNNING</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_STOP</span><span class="p">]</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_IDLE</span><span class="p">,</span><span class="w"> </span><span class="n">onStop</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_ERROR</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">onError</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_RESET</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_IDLE</span><span class="p">,</span><span class="w"> </span><span class="n">onReset</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="c1">// STATE_ERROR</span>
+<span class="w">    </span><span class="p">[</span><span class="n">STATE_ERROR</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_START</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_ERROR</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_STOP</span><span class="p">]</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_ERROR</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_ERROR</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_ERROR</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">},</span>
+<span class="w">        </span><span class="p">[</span><span class="n">EVENT_RESET</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">STATE_IDLE</span><span class="p">,</span><span class="w"> </span><span class="n">onReset</span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">};</span>
+
+<span class="n">State</span><span class="w"> </span><span class="n">currentState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">STATE_IDLE</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">processEvent</span><span class="p">(</span><span class="n">Event</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Transition</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">transitions</span><span class="p">[</span><span class="n">currentState</span><span class="p">][</span><span class="n">event</span><span class="p">];</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">action</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">currentState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">nextState</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="circular-buffers">Circular Buffers</h2>
+<p>Safe producer-consumer pattern:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#define BUFFER_SIZE 256  </span><span class="c1">// Must be power of 2</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">BUFFER_SIZE</span><span class="p">];</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">head</span><span class="p">;</span><span class="w">  </span><span class="c1">// Write index</span>
+<span class="w">    </span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">tail</span><span class="p">;</span><span class="w">  </span><span class="c1">// Read index</span>
+<span class="p">}</span><span class="w"> </span><span class="n">CircularBuffer</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">cbInit</span><span class="p">(</span><span class="n">CircularBuffer</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">cbIsFull</span><span class="p">(</span><span class="n">CircularBuffer</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">((</span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">cbIsEmpty</span><span class="p">(</span><span class="n">CircularBuffer</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">cbWrite</span><span class="p">(</span><span class="n">CircularBuffer</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">byte</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cbIsFull</span><span class="p">(</span><span class="n">cb</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">byte</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">cbRead</span><span class="p">(</span><span class="n">CircularBuffer</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">byte</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cbIsEmpty</span><span class="p">(</span><span class="n">cb</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="o">*</span><span class="n">byte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">];</span>
+<span class="w">    </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">uint16_t</span><span class="w"> </span><span class="nf">cbCount</span><span class="p">(</span><span class="n">CircularBuffer</span><span class="w"> </span><span class="o">*</span><span class="n">cb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">head</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cb</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">BUFFER_SIZE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Usage: ISR writes, main loop reads</span>
+<span class="n">CircularBuffer</span><span class="w"> </span><span class="n">uartRxBuffer</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">UART_IRQHandler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">byte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UART</span><span class="o">-&gt;</span><span class="n">DR</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cbWrite</span><span class="p">(</span><span class="o">&amp;</span><span class="n">uartRxBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">byte</span><span class="p">);</span><span class="w">  </span><span class="c1">// ISR produces</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">processUART</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">byte</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">cbRead</span><span class="p">(</span><span class="o">&amp;</span><span class="n">uartRxBuffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">byte</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// Main loop consumes</span>
+<span class="w">        </span><span class="n">handleByte</span><span class="p">(</span><span class="n">byte</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="fixed-point-math">Fixed-Point Math</h2>
+<p>When float is too slow/unavailable:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Q16.16 fixed point (16 bits integer, 16 bits fraction)</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">fixed_t</span><span class="p">;</span>
+
+<span class="cp">#define FIXED_SHIFT     16</span>
+<span class="cp">#define FIXED_ONE       (1 &lt;&lt; FIXED_SHIFT)</span>
+<span class="cp">#define FLOAT_TO_FIXED(f)   ((fixed_t)((f) * FIXED_ONE))</span>
+<span class="cp">#define FIXED_TO_FLOAT(f)   ((float)(f) / FIXED_ONE)</span>
+<span class="cp">#define INT_TO_FIXED(i)     ((fixed_t)(i) &lt;&lt; FIXED_SHIFT)</span>
+<span class="cp">#define FIXED_TO_INT(f)     ((f) &gt;&gt; FIXED_SHIFT)</span>
+
+<span class="c1">// Arithmetic</span>
+<span class="n">fixed_t</span><span class="w"> </span><span class="nf">fixed_add</span><span class="p">(</span><span class="n">fixed_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="n">fixed_t</span><span class="w"> </span><span class="nf">fixed_sub</span><span class="p">(</span><span class="n">fixed_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="n">fixed_t</span><span class="w"> </span><span class="nf">fixed_mul</span><span class="p">(</span><span class="n">fixed_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">fixed_t</span><span class="p">)(((</span><span class="kt">int64_t</span><span class="p">)</span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">FIXED_SHIFT</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">fixed_t</span><span class="w"> </span><span class="nf">fixed_div</span><span class="p">(</span><span class="n">fixed_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">fixed_t</span><span class="p">)(((</span><span class="kt">int64_t</span><span class="p">)</span><span class="n">a</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">FIXED_SHIFT</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Example: PID controller</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">kp</span><span class="p">,</span><span class="w"> </span><span class="n">ki</span><span class="p">,</span><span class="w"> </span><span class="n">kd</span><span class="p">;</span>
+<span class="w">    </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">integral</span><span class="p">;</span>
+<span class="w">    </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">lastError</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">PIDController</span><span class="p">;</span>
+
+<span class="n">fixed_t</span><span class="w"> </span><span class="nf">pidUpdate</span><span class="p">(</span><span class="n">PIDController</span><span class="w"> </span><span class="o">*</span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">dt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">integral</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fixed_add</span><span class="p">(</span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">integral</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_mul</span><span class="p">(</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">dt</span><span class="p">));</span>
+<span class="w">    </span><span class="n">fixed_t</span><span class="w"> </span><span class="n">derivative</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fixed_div</span><span class="p">(</span><span class="n">fixed_sub</span><span class="p">(</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">lastError</span><span class="p">),</span><span class="w"> </span><span class="n">dt</span><span class="p">);</span>
+<span class="w">    </span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">lastError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fixed_add</span><span class="p">(</span>
+<span class="w">        </span><span class="n">fixed_add</span><span class="p">(</span>
+<span class="w">            </span><span class="n">fixed_mul</span><span class="p">(</span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">kp</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">),</span>
+<span class="w">            </span><span class="n">fixed_mul</span><span class="p">(</span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">ki</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">integral</span><span class="p">)</span>
+<span class="w">        </span><span class="p">),</span>
+<span class="w">        </span><span class="n">fixed_mul</span><span class="p">(</span><span class="n">pid</span><span class="o">-&gt;</span><span class="n">kd</span><span class="p">,</span><span class="w"> </span><span class="n">derivative</span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="watchdog-error-handling">Watchdog &amp; Error Handling</h2>
+<h3 id="watchdog-timer">Watchdog Timer</h3>
+<p>Reset MCU if software hangs:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Initialize watchdog (reset if not fed within timeout)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">watchdogInit</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">timeout_ms</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">IWDG</span><span class="o">-&gt;</span><span class="n">KR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x5555</span><span class="p">;</span><span class="w">  </span><span class="c1">// Enable register access</span>
+<span class="w">    </span><span class="n">IWDG</span><span class="o">-&gt;</span><span class="n">PR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">       </span><span class="c1">// Prescaler</span>
+<span class="w">    </span><span class="n">IWDG</span><span class="o">-&gt;</span><span class="n">RLR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timeout_ms</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">40</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">256</span><span class="p">;</span><span class="w">  </span><span class="c1">// Reload value</span>
+<span class="w">    </span><span class="n">IWDG</span><span class="o">-&gt;</span><span class="n">KR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xCCCC</span><span class="p">;</span><span class="w">  </span><span class="c1">// Start watchdog</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">watchdogFeed</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">IWDG</span><span class="o">-&gt;</span><span class="n">KR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xAAAA</span><span class="p">;</span><span class="w">  </span><span class="c1">// Reset counter</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">watchdogInit</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span><span class="w">  </span><span class="c1">// 1 second timeout</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">doWork</span><span class="p">();</span>
+<span class="w">        </span><span class="n">watchdogFeed</span><span class="p">();</span><span class="w">  </span><span class="c1">// Must call regularly</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="defensive-programming">Defensive Programming</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// Assert for development</span>
+<span class="cp">#ifdef DEBUG</span>
+<span class="cp">#define ASSERT(cond) do { \</span>
+<span class="cp">    if (!(cond)) { \</span>
+<span class="cp">        printf(&quot;ASSERT: %s:%d\n&quot;, __FILE__, __LINE__); \</span>
+<span class="cp">        while(1); \</span>
+<span class="cp">    } \</span>
+<span class="cp">} while(0)</span>
+<span class="cp">#else</span>
+<span class="cp">#define ASSERT(cond)</span>
+<span class="cp">#endif</span>
+
+<span class="c1">// Parameter validation</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">readSensor</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ASSERT</span><span class="p">(</span><span class="n">channel</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">NUM_CHANNELS</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">channel</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">channel</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">NUM_CHANNELS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ERROR_INVALID_PARAM</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="c1">// Null pointer checks</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">processData</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="c1">// Timeout on operations</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">waitForReady</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">timeout_ms</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">isReady</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">HAL_GetTick</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">timeout_ms</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w">  </span><span class="c1">// Timeout</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="error-codes">Error Codes</h3>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ERR_OK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ERR_TIMEOUT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ERR_INVALID_PARAM</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ERR_HARDWARE</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ERR_BUSY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ERR_NO_MEMORY</span><span class="p">,</span>
+<span class="p">}</span><span class="w"> </span><span class="n">ErrorCode</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">errorToString</span><span class="p">(</span><span class="n">ErrorCode</span><span class="w"> </span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">names</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s">&quot;OK&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;TIMEOUT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;INVALID_PARAM&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HARDWARE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;BUSY&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;NO_MEMORY&quot;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">names</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">names</span><span class="p">[</span><span class="n">err</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;UNKNOWN&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Global error tracking</span>
+<span class="k">volatile</span><span class="w"> </span><span class="n">ErrorCode</span><span class="w"> </span><span class="n">lastError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ERR_OK</span><span class="p">;</span>
+<span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">errorCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">setError</span><span class="p">(</span><span class="n">ErrorCode</span><span class="w"> </span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">lastError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">    </span><span class="n">errorCount</span><span class="o">++</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Log, blink LED, etc.</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="testing-embedded-code">Testing Embedded Code</h2>
+<h3 id="unit-testing-on-host">Unit Testing (on host)</h3>
+<p>Test logic on PC before deploying:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// sensor_logic.c - platform-independent logic</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">convertRawToTemp</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">330</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">50000</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span><span class="w">  </span><span class="c1">// Example conversion</span>
+<span class="p">}</span>
+
+<span class="c1">// test_sensor.c - run on PC</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">test_convertRawToTemp</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">convertRawToTemp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-50</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">convertRawToTemp</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">280</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">convertRawToTemp</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">115</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;All tests passed!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">test_convertRawToTemp</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="hardware-abstraction">Hardware Abstraction</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// hal.h - abstract interface</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">gpioWrite</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">pin</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">gpioRead</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">pin</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">getTick</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="n">HAL</span><span class="p">;</span>
+
+<span class="c1">// hal_stm32.c - real implementation</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">stm32_gpioWrite</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">pin</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">pin</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">HAL</span><span class="w"> </span><span class="n">hal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">stm32_gpioWrite</span><span class="p">,</span><span class="w"> </span><span class="n">stm32_gpioRead</span><span class="p">,</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// hal_mock.c - for testing</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">mockPinState</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">mock_gpioWrite</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">pin</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mockPinState</span><span class="p">[</span><span class="n">pin</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="n">HAL</span><span class="w"> </span><span class="n">hal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mock_gpioWrite</span><span class="p">,</span><span class="w"> </span><span class="n">mock_gpioRead</span><span class="p">,</span><span class="w"> </span><span class="n">mock_getTick</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// Application code uses HAL</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">blinkLed</span><span class="p">(</span><span class="n">HAL</span><span class="w"> </span><span class="o">*</span><span class="n">hal</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">hal</span><span class="o">-&gt;</span><span class="n">gpioWrite</span><span class="p">(</span><span class="n">LED_PIN</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="freertos-basics">FreeRTOS Basics</h2>
+<h3 id="task-creation">Task Creation</h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;FreeRTOS.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;task.h&quot;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">sensorTask</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readSensor</span><span class="p">();</span>
+<span class="w">        </span><span class="n">processValue</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">        </span><span class="n">vTaskDelay</span><span class="p">(</span><span class="n">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">100</span><span class="p">));</span><span class="w">  </span><span class="c1">// Delay 100ms</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">commTask</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sendData</span><span class="p">();</span>
+<span class="w">        </span><span class="n">vTaskDelay</span><span class="p">(</span><span class="n">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">1000</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">xTaskCreate</span><span class="p">(</span><span class="n">sensorTask</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sensor&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">xTaskCreate</span><span class="p">(</span><span class="n">commTask</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Comm&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">vTaskStartScheduler</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="c1">// Should never reach here</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="queues">Queues</h3>
+<p>Safe data passing between tasks:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;queue.h&quot;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sensor_id</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">SensorReading</span><span class="p">;</span>
+
+<span class="n">QueueHandle_t</span><span class="w"> </span><span class="n">sensorQueue</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">producerTask</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SensorReading</span><span class="w"> </span><span class="n">reading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">readSensor</span><span class="p">()};</span>
+<span class="w">        </span><span class="n">xQueueSend</span><span class="p">(</span><span class="n">sensorQueue</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">reading</span><span class="p">,</span><span class="w"> </span><span class="n">portMAX_DELAY</span><span class="p">);</span>
+<span class="w">        </span><span class="n">vTaskDelay</span><span class="p">(</span><span class="n">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">100</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">consumerTask</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SensorReading</span><span class="w"> </span><span class="n">reading</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">xQueueReceive</span><span class="p">(</span><span class="n">sensorQueue</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">reading</span><span class="p">,</span><span class="w"> </span><span class="n">portMAX_DELAY</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Sensor %d: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="n">sensor_id</span><span class="p">,</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">sensorQueue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xQueueCreate</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">SensorReading</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// Create tasks...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="mutexes">Mutexes</h3>
+<p>Protect shared resources:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;semphr.h&quot;</span>
+
+<span class="n">SemaphoreHandle_t</span><span class="w"> </span><span class="n">uartMutex</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">safePrint</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">xSemaphoreTake</span><span class="p">(</span><span class="n">uartMutex</span><span class="p">,</span><span class="w"> </span><span class="n">portMAX_DELAY</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">);</span>
+<span class="w">    </span><span class="n">xSemaphoreGive</span><span class="p">(</span><span class="n">uartMutex</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">uartMutex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xSemaphoreCreateMutex</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Create tasks...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-gotchas">Common Gotchas</h2>
+<h3 id="1-forgetting-volatile">1. Forgetting volatile</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ Optimizer might cache value</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ISR</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">flag</span><span class="p">);</span><span class="w">  </span><span class="c1">// May infinite loop!</span>
+
+<span class="c1">// ✓ Tells compiler variable can change unexpectedly</span>
+<span class="k">volatile</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="2-integer-overflow">2. Integer Overflow</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ Overflow before cast</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adc_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3300</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4095</span><span class="p">;</span><span class="w">  </span><span class="c1">// Overflow if adc &gt; 1302!</span>
+
+<span class="c1">// ✓ Cast first</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">adc_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3300</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4095</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="3-unaligned-access">3. Unaligned Access</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ May crash on ARM</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="o">*</span><span class="p">)(</span><span class="n">buffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="c1">// Unaligned!</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">;</span>
+
+<span class="c1">// ✓ Use memcpy for unaligned data</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+</code></pre></div>
+
+<h3 id="4-stack-overflow">4. Stack Overflow</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ Large local arrays</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">badFunction</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span><span class="w">  </span><span class="c1">// Stack overflow!</span>
+<span class="p">}</span>
+
+<span class="c1">// ✓ Use static or heap</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">goodFunction</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Use buffer...</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="5-interrupt-priority-inversion">5. Interrupt Priority Inversion</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ Low-priority ISR takes mutex, high-priority can&#39;t get it</span>
+<span class="c1">// Use proper RTOS primitives or disable interrupts briefly</span>
+</code></pre></div>
+
+<h3 id="6-endianness">6. Endianness</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// Network byte order is big-endian, ARM is little-endian</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x1234</span><span class="p">;</span>
+
+<span class="c1">// ❌ Sending raw bytes</span>
+<span class="n">send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="c1">// Sends 0x34, 0x12 on little-endian</span>
+
+<span class="c1">// ✓ Convert to network order</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="n">net_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">htons</span><span class="p">(</span><span class="n">value</span><span class="p">);</span><span class="w">  </span><span class="c1">// Host to network short</span>
+<span class="n">send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">net_value</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="c1">// Sends 0x12, 0x34</span>
+</code></pre></div>
+
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="common-conversions">Common Conversions</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ADC to voltage (12-bit, 3.3V reference)</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">voltage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">adc_raw</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">3.3f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">4095.0f</span><span class="p">;</span>
+
+<span class="c1">// Voltage to temperature (typical sensor)</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">temp_c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">voltage</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0f</span><span class="p">;</span>
+
+<span class="c1">// PWM duty cycle (0-100%)</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">pwm_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">duty_percent</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">period</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+
+<span class="c1">// Timer period for frequency</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timer_clock</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">desired_frequency</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="memory-sizes">Memory Sizes</h3>
+<div class="highlight"><pre><span></span><code><span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="k">sizeof</span><span class="p">(</span><span class="kt">int16_t</span><span class="p">)</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="k">sizeof</span><span class="p">(</span><span class="kt">int32_t</span><span class="p">)</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="k">sizeof</span><span class="p">(</span><span class="kt">int64_t</span><span class="p">)</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span>
+<span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span>
+<span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="mi">32</span><span class="o">-</span><span class="n">bit</span><span class="w"> </span><span class="n">MCU</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="startup-checklist">Startup Checklist</h3>
+<div class="highlight"><pre><span></span><code>1. ✓ System clock configured
+2. ✓ Peripheral clocks enabled
+3. ✓ GPIO initialized
+4. ✓ Interrupts configured and enabled
+5. ✓ Watchdog initialized
+6. ✓ Communication peripherals ready
+7. ✓ Error handlers in place
+</code></pre></div>
+</body>
+</html>

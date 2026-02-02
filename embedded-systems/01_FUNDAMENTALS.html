@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Systems Fundamentals</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="embedded-systems-fundamentals">Embedded Systems Fundamentals</h1>
+<p>Programming for resource-constrained devices with real-time requirements.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#what-makes-embedded-different">What Makes Embedded Different</a></li>
+<li><a href="#microcontroller-architecture">Microcontroller Architecture</a></li>
+<li><a href="#memory">Memory</a></li>
+<li><a href="#interrupts">Interrupts</a></li>
+<li><a href="#peripherals">Peripherals</a></li>
+<li><a href="#communication-protocols">Communication Protocols</a></li>
+<li><a href="#real-time-concepts">Real-Time Concepts</a></li>
+<li><a href="#power-management">Power Management</a></li>
+<li><a href="#common-microcontroller-families">Common Microcontroller Families</a></li>
+</ol>
+<hr />
+<h2 id="what-makes-embedded-different">What Makes Embedded Different</h2>
+<table>
+<thead>
+<tr>
+<th>Desktop/Server</th>
+<th>Embedded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GB/TB of RAM</td>
+<td>KB/MB of RAM</td>
+</tr>
+<tr>
+<td>GHz multi-core CPUs</td>
+<td>MHz single-core</td>
+</tr>
+<tr>
+<td>Unlimited power</td>
+<td>Battery/energy harvesting</td>
+</tr>
+<tr>
+<td>OS handles everything</td>
+<td>Bare metal or RTOS</td>
+</tr>
+<tr>
+<td>Debugging is easy</td>
+<td>Limited visibility</td>
+</tr>
+<tr>
+<td>Failure = restart</td>
+<td>Failure = crash/fire/injury</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key constraints:</strong><br />
+- <strong>Memory</strong>: Every byte counts<br />
+- <strong>Speed</strong>: Real-time deadlines<br />
+- <strong>Power</strong>: Battery life matters<br />
+- <strong>Cost</strong>: $0.10 difference × 1M units = $100K<br />
+- <strong>Reliability</strong>: May run for years without reboot</p>
+<hr />
+<h2 id="microcontroller-architecture">Microcontroller Architecture</h2>
+<h3 id="block-diagram">Block Diagram</h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│                      MICROCONTROLLER                             │
+│                                                                  │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐ │
+│  │    CPU      │    │    Bus      │    │      Memory         │ │
+│  │  (Core)     │◀──▶│  Matrix     │◀──▶│  Flash | SRAM | ROM │ │
+│  └─────────────┘    └──────┬──────┘    └─────────────────────┘ │
+│                            │                                    │
+│         ┌──────────────────┼──────────────────┐                │
+│         ▼                  ▼                  ▼                │
+│  ┌────────────┐    ┌────────────┐    ┌────────────────┐       │
+│  │   Timers   │    │    GPIO    │    │  Communication │       │
+│  │            │    │            │    │  UART/SPI/I2C  │       │
+│  └────────────┘    └────────────┘    └────────────────┘       │
+│         │                  │                  │                │
+│  ┌────────────┐    ┌────────────┐    ┌────────────────┐       │
+│  │    ADC     │    │    DAC     │    │      DMA       │       │
+│  └────────────┘    └────────────┘    └────────────────┘       │
+│         │                  │                  │                │
+└─────────┼──────────────────┼──────────────────┼────────────────┘
+          ▼                  ▼                  ▼
+      Sensors            Actuators         External Memory
+</code></pre></div>
+
+<h3 id="cpu-core">CPU Core</h3>
+<p>Common architectures:</p>
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Examples</th>
+<th>Use Cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ARM Cortex-M</strong></td>
+<td>STM32, nRF52, ESP32-S3</td>
+<td>General purpose, IoT</td>
+</tr>
+<tr>
+<td><strong>ARM Cortex-A</strong></td>
+<td>Raspberry Pi, BeagleBone</td>
+<td>Linux-capable</td>
+</tr>
+<tr>
+<td><strong>AVR</strong></td>
+<td>Arduino Uno/Mega</td>
+<td>Hobbyist, simple apps</td>
+</tr>
+<tr>
+<td><strong>RISC-V</strong></td>
+<td>ESP32-C3, SiFive</td>
+<td>Open architecture</td>
+</tr>
+<tr>
+<td><strong>Xtensa</strong></td>
+<td>ESP32, ESP8266</td>
+<td>WiFi/BT applications</td>
+</tr>
+<tr>
+<td><strong>PIC</strong></td>
+<td>PIC16/18/32</td>
+<td>Industrial, automotive</td>
+</tr>
+</tbody>
+</table>
+<h3 id="registers">Registers</h3>
+<p>Special memory locations that control hardware:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Direct register access (memory-mapped I/O)</span>
+<span class="cp">#define GPIOA_ODR  (*(volatile uint32_t*)0x40020014)</span>
+
+<span class="n">GPIOA_ODR</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w">   </span><span class="c1">// Set bit 5 (turn on LED)</span>
+<span class="n">GPIOA_ODR</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w">  </span><span class="c1">// Clear bit 5 (turn off LED)</span>
+<span class="n">GPIOA_ODR</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w">   </span><span class="c1">// Toggle bit 5</span>
+
+<span class="c1">// Using vendor HAL (Hardware Abstraction Layer)</span>
+<span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_5</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_SET</span><span class="p">);</span>
+</code></pre></div>
+
+<hr />
+<h2 id="memory">Memory</h2>
+<h3 id="memory-types">Memory Types</h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                     Memory Map                               │
+│                                                              │
+│   0xFFFF_FFFF ┌────────────────────┐                        │
+│               │ Peripherals        │  GPIO, Timers, etc.    │
+│               ├────────────────────┤                        │
+│               │ Reserved           │                        │
+│               ├────────────────────┤                        │
+│   0x2000_0000 │ SRAM               │  Variables, stack      │
+│               ├────────────────────┤                        │
+│   0x0800_0000 │ Flash              │  Code, constants       │
+│               ├────────────────────┤                        │
+│   0x0000_0000 │ Boot ROM           │  Bootloader            │
+│               └────────────────────┘                        │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Memory Type</th>
+<th>Persistent?</th>
+<th>Speed</th>
+<th>Use For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Flash</strong></td>
+<td>Yes</td>
+<td>Slow to write</td>
+<td>Code, constants</td>
+</tr>
+<tr>
+<td><strong>SRAM</strong></td>
+<td>No</td>
+<td>Fast</td>
+<td>Variables, stack, heap</td>
+</tr>
+<tr>
+<td><strong>EEPROM</strong></td>
+<td>Yes</td>
+<td>Very slow</td>
+<td>Configuration, calibration</td>
+</tr>
+<tr>
+<td><strong>ROM</strong></td>
+<td>Yes (fixed)</td>
+<td>Fast</td>
+<td>Bootloader</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory-sections">Memory Sections</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// .text - code (in Flash)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">myFunction</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// .rodata - read-only data (in Flash)</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">message</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lookup_table</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span>
+
+<span class="c1">// .data - initialized variables (copied from Flash to RAM at startup)</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+
+<span class="c1">// .bss - uninitialized variables (zero-initialized in RAM)</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+
+<span class="c1">// Stack (in RAM, grows down)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">local_var</span><span class="p">;</span><span class="w">  </span><span class="c1">// on stack</span>
+<span class="p">}</span>
+
+<span class="c1">// Heap (in RAM, grows up) - often avoided in embedded</span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w">  </span><span class="c1">// dangerous in embedded!</span>
+</code></pre></div>
+
+<h3 id="memory-conscious-programming">Memory-Conscious Programming</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ Wasteful</span>
+<span class="kt">char</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span><span class="w">          </span><span class="c1">// uses 1KB RAM always</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">sensor_values</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span><span class="w">   </span><span class="c1">// 400 bytes</span>
+
+<span class="c1">// ✓ Memory efficient</span>
+<span class="kt">char</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w">            </span><span class="c1">// size appropriately</span>
+<span class="kt">int16_t</span><span class="w"> </span><span class="n">sensor_values</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span><span class="w"> </span><span class="c1">// 200 bytes if range allows</span>
+
+<span class="c1">// Use const for data that doesn&#39;t change (stays in Flash)</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">sine_table</span><span class="p">[</span><span class="mi">256</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// Use static for persistent local variables (no stack usage)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">updateFilter</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">history</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w">  </span><span class="c1">// persists between calls</span>
+<span class="p">}</span>
+
+<span class="c1">// Pack structures to save RAM</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">__attribute__</span><span class="p">((</span><span class="n">packed</span><span class="p">))</span><span class="w"> </span><span class="n">SensorData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w">       </span><span class="c1">// 1 byte</span>
+<span class="w">    </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">   </span><span class="c1">// 2 bytes</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w">   </span><span class="c1">// 1 byte</span>
+<span class="p">};</span><span class="w">  </span><span class="c1">// Total: 4 bytes (vs 8 with padding)</span>
+</code></pre></div>
+
+<h3 id="stack-and-heap">Stack and Heap</h3>
+<div class="highlight"><pre><span></span><code>RAM Layout:
+┌─────────────────┐ High address
+│     Stack       │ ← grows DOWN
+│       ↓         │
+│                 │
+│       ↑         │
+│     Heap        │ ← grows UP (if used)
+├─────────────────┤
+│     .bss        │ uninitialized globals
+├─────────────────┤
+│     .data       │ initialized globals
+└─────────────────┘ Low address
+</code></pre></div>
+
+<p><strong>Stack overflow</strong> is a common embedded bug - no MMU to catch it!</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Check stack usage</span>
+<span class="cp">#define STACK_CANARY 0xDEADBEEF</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">checkStackOverflow</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">extern</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">_stack_bottom</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">_stack_bottom</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">STACK_CANARY</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Stack overflow detected!</span>
+<span class="w">        </span><span class="n">handleError</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="interrupts">Interrupts</h2>
+<h3 id="what-is-an-interrupt">What is an Interrupt?</h3>
+<p>Hardware signal that pauses normal execution to handle an event.</p>
+<div class="highlight"><pre><span></span><code>Normal execution:      With interrupt:
+
+   main()                 main()
+     │                      │
+     ▼                      ▼
+   loop                   loop
+     │                      │
+     ▼                      │◀──── Button pressed!
+   process               ┌─────────────────────┐
+     │                   │   Save context      │
+     ▼                   │   Run ISR           │
+   continue              │   Restore context   │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                                  continue
+</code></pre></div>
+
+<h3 id="interrupt-service-routine-isr">Interrupt Service Routine (ISR)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ISR should be:</span>
+<span class="c1">// - Fast (get in, get out)</span>
+<span class="c1">// - No blocking (no delays, no waiting)</span>
+<span class="c1">// - Minimal processing (set flag, let main loop handle)</span>
+
+<span class="k">volatile</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">button_pressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// volatile is critical!</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">EXTI0_IRQHandler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EXTI</span><span class="o">-&gt;</span><span class="n">PR</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">button_pressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">        </span><span class="c1">// Just set a flag</span>
+<span class="w">        </span><span class="n">EXTI</span><span class="o">-&gt;</span><span class="n">PR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">       </span><span class="c1">// Clear interrupt flag</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">button_pressed</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">button_pressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">            </span><span class="n">handleButtonPress</span><span class="p">();</span><span class="w">   </span><span class="c1">// Heavy processing here</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="interrupt-priority">Interrupt Priority</h3>
+<p>Most MCUs support priority levels:</p>
+<div class="highlight"><pre><span></span><code>Higher priority can interrupt lower priority (nesting)
+
+Priority 0: Highest (system critical)
+Priority 1: High (timing critical)
+Priority 2: Medium (communication)
+Priority 3: Low (background tasks)
+</code></pre></div>
+
+<h3 id="common-interrupt-sources">Common Interrupt Sources</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPIO/EXTI</strong></td>
+<td>Button press, sensor signal</td>
+</tr>
+<tr>
+<td><strong>Timer</strong></td>
+<td>Periodic tasks, PWM, timing</td>
+</tr>
+<tr>
+<td><strong>UART RX</strong></td>
+<td>Serial data received</td>
+</tr>
+<tr>
+<td><strong>ADC</strong></td>
+<td>Conversion complete</td>
+</tr>
+<tr>
+<td><strong>DMA</strong></td>
+<td>Transfer complete</td>
+</tr>
+<tr>
+<td><strong>SysTick</strong></td>
+<td>OS tick, delays</td>
+</tr>
+</tbody>
+</table>
+<h3 id="critical-sections">Critical Sections</h3>
+<p>Protect shared data from interrupt corruption:</p>
+<div class="highlight"><pre><span></span><code><span class="k">volatile</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">shared_counter</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">incrementSafely</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">__disable_irq</span><span class="p">();</span><span class="w">         </span><span class="c1">// Disable interrupts</span>
+<span class="w">    </span><span class="n">shared_counter</span><span class="o">++</span><span class="p">;</span><span class="w">        </span><span class="c1">// Critical section</span>
+<span class="w">    </span><span class="n">__enable_irq</span><span class="p">();</span><span class="w">          </span><span class="c1">// Re-enable interrupts</span>
+<span class="p">}</span>
+
+<span class="c1">// Or save/restore interrupt state</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">criticalOperation</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">primask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">__get_PRIMASK</span><span class="p">();</span>
+<span class="w">    </span><span class="n">__disable_irq</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Critical section</span>
+<span class="w">    </span><span class="n">doSomething</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">__set_PRIMASK</span><span class="p">(</span><span class="n">primask</span><span class="p">);</span><span class="w">  </span><span class="c1">// Restore previous state</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="peripherals">Peripherals</h2>
+<h3 id="gpio-general-purpose-io">GPIO (General Purpose I/O)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// Configure pin as output</span>
+<span class="n">GPIO_InitTypeDef</span><span class="w"> </span><span class="n">gpio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">gpio</span><span class="p">.</span><span class="n">Pin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPIO_PIN_5</span><span class="p">;</span>
+<span class="n">gpio</span><span class="p">.</span><span class="n">Mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPIO_MODE_OUTPUT_PP</span><span class="p">;</span><span class="w">  </span><span class="c1">// Push-pull output</span>
+<span class="n">gpio</span><span class="p">.</span><span class="n">Speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPIO_SPEED_LOW</span><span class="p">;</span>
+<span class="n">HAL_GPIO_Init</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">gpio</span><span class="p">);</span>
+
+<span class="c1">// Configure pin as input with pull-up</span>
+<span class="n">gpio</span><span class="p">.</span><span class="n">Pin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPIO_PIN_0</span><span class="p">;</span>
+<span class="n">gpio</span><span class="p">.</span><span class="n">Mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPIO_MODE_INPUT</span><span class="p">;</span>
+<span class="n">gpio</span><span class="p">.</span><span class="n">Pull</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPIO_PULLUP</span><span class="p">;</span>
+<span class="n">HAL_GPIO_Init</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">gpio</span><span class="p">);</span>
+
+<span class="c1">// Read/write</span>
+<span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_5</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_SET</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_GPIO_ReadPin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_0</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="timers">Timers</h3>
+<p>Versatile peripherals for timing, counting, PWM:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Basic timer interrupt (1ms tick)</span>
+<span class="n">TIM_HandleTypeDef</span><span class="w"> </span><span class="n">htim</span><span class="p">;</span>
+<span class="n">htim</span><span class="p">.</span><span class="n">Instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TIM2</span><span class="p">;</span>
+<span class="n">htim</span><span class="p">.</span><span class="n">Init</span><span class="p">.</span><span class="n">Prescaler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">84</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">        </span><span class="c1">// 84MHz / 84 = 1MHz</span>
+<span class="n">htim</span><span class="p">.</span><span class="n">Init</span><span class="p">.</span><span class="n">Period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">         </span><span class="c1">// 1MHz / 1000 = 1kHz = 1ms</span>
+<span class="n">HAL_TIM_Base_Init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim</span><span class="p">);</span>
+<span class="n">HAL_TIM_Base_Start_IT</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">TIM2_IRQHandler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HAL_TIM_IRQHandler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">HAL_TIM_PeriodElapsedCallback</span><span class="p">(</span><span class="n">TIM_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">htim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Called every 1ms</span>
+<span class="w">    </span><span class="n">milliseconds</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="pwm-pulse-width-modulation">PWM (Pulse Width Modulation)</h3>
+<p>Control motors, LEDs, servos:</p>
+<div class="highlight"><pre><span></span><code>PWM Signal:
+     ┌───┐     ┌───┐     ┌───┐
+     │   │     │   │     │   │
+─────┘   └─────┘   └─────┘   └─────
+
+Duty Cycle = ON time / Period
+50% duty = half power/brightness
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Configure PWM on TIM3 Channel 1</span>
+<span class="n">htim</span><span class="p">.</span><span class="n">Init</span><span class="p">.</span><span class="n">Period</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// 1000 steps resolution</span>
+<span class="n">HAL_TIM_PWM_Init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim</span><span class="p">);</span>
+<span class="n">HAL_TIM_PWM_Start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim</span><span class="p">,</span><span class="w"> </span><span class="n">TIM_CHANNEL_1</span><span class="p">);</span>
+
+<span class="c1">// Set duty cycle (0-100%)</span>
+<span class="n">__HAL_TIM_SET_COMPARE</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htim</span><span class="p">,</span><span class="w"> </span><span class="n">TIM_CHANNEL_1</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">);</span><span class="w">  </span><span class="c1">// 50%</span>
+</code></pre></div>
+
+<h3 id="adc-analog-to-digital-converter">ADC (Analog to Digital Converter)</h3>
+<p>Read analog sensors:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Single conversion</span>
+<span class="n">HAL_ADC_Start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hadc</span><span class="p">);</span>
+<span class="n">HAL_ADC_PollForConversion</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hadc</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_ADC_GetValue</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hadc</span><span class="p">);</span>
+
+<span class="c1">// Convert to voltage (for 12-bit ADC, 3.3V reference)</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">voltage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">4095.0f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">3.3f</span><span class="p">;</span>
+
+<span class="c1">// Convert to temperature (example sensor)</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">temp_c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">voltage</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0f</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="dma-direct-memory-access">DMA (Direct Memory Access)</h3>
+<p>Transfer data without CPU intervention:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// DMA transfer from ADC to buffer</span>
+<span class="kt">uint16_t</span><span class="w"> </span><span class="n">adc_buffer</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+<span class="n">HAL_ADC_Start_DMA</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hadc</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="o">*</span><span class="p">)</span><span class="n">adc_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">HAL_ADC_ConvCpltCallback</span><span class="p">(</span><span class="n">ADC_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">hadc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Buffer is full, process data</span>
+<span class="w">    </span><span class="n">processADCData</span><span class="p">(</span><span class="n">adc_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="communication-protocols">Communication Protocols</h2>
+<h3 id="uart-serial">UART (Serial)</h3>
+<p>Asynchronous, point-to-point:</p>
+<div class="highlight"><pre><span></span><code>TX ─────────────────────────────────────────── RX
+RX ─────────────────────────────────────────── TX
+GND ────────────────────────────────────────── GND
+
+Frame: [START][D0][D1][D2][D3][D4][D5][D6][D7][PARITY][STOP]
+
+Common baud rates: 9600, 115200, 921600
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Transmit</span>
+<span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="p">,</span><span class="w"> </span><span class="n">timeout</span><span class="p">);</span>
+
+<span class="c1">// Receive with interrupt</span>
+<span class="n">HAL_UART_Receive_IT</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="n">rx_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">HAL_UART_RxCpltCallback</span><span class="p">(</span><span class="n">UART_HandleTypeDef</span><span class="w"> </span><span class="o">*</span><span class="n">huart</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">processReceivedByte</span><span class="p">(</span><span class="n">rx_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="n">HAL_UART_Receive_IT</span><span class="p">(</span><span class="n">huart</span><span class="p">,</span><span class="w"> </span><span class="n">rx_buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="c1">// Re-arm</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="spi-serial-peripheral-interface">SPI (Serial Peripheral Interface)</h3>
+<p>Synchronous, full-duplex, multi-device:</p>
+<div class="highlight"><pre><span></span><code>        Master              Slave
+        ┌────┐              ┌────┐
+  MOSI  │    │─────────────▶│    │  Master Out, Slave In
+  MISO  │    │◀─────────────│    │  Master In, Slave Out
+  SCK   │    │─────────────▶│    │  Clock (master controls)
+  CS    │    │─────────────▶│    │  Chip Select (active low)
+        └────┘              └────┘
+
+Speed: Up to 100+ MHz
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// SPI transaction</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">tx_data</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x01</span><span class="p">,</span><span class="w"> </span><span class="mh">0x02</span><span class="p">};</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">rx_data</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">CS_PORT</span><span class="p">,</span><span class="w"> </span><span class="n">CS_PIN</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_RESET</span><span class="p">);</span><span class="w">  </span><span class="c1">// Select</span>
+<span class="n">HAL_SPI_TransmitReceive</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hspi</span><span class="p">,</span><span class="w"> </span><span class="n">tx_data</span><span class="p">,</span><span class="w"> </span><span class="n">rx_data</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+<span class="n">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">CS_PORT</span><span class="p">,</span><span class="w"> </span><span class="n">CS_PIN</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_PIN_SET</span><span class="p">);</span><span class="w">    </span><span class="c1">// Deselect</span>
+</code></pre></div>
+
+<h3 id="i2c-inter-integrated-circuit">I2C (Inter-Integrated Circuit)</h3>
+<p>Synchronous, multi-master, multi-slave, 2 wires:</p>
+<div class="highlight"><pre><span></span><code>        Master                Slave 1           Slave 2
+        ┌────┐                ┌────┐            ┌────┐
+  SDA   │    │────────────────│    │────────────│    │  Data
+  SCL   │    │────────────────│    │────────────│    │  Clock
+        └────┘                └────┘            └────┘
+
+Each device has unique 7-bit address
+Speed: 100kHz (standard), 400kHz (fast), 1MHz (fast+)
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Write to device</span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">data</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">REGISTER_ADDR</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">};</span>
+<span class="n">HAL_I2C_Master_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c</span><span class="p">,</span><span class="w"> </span><span class="n">DEVICE_ADDR</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+
+<span class="c1">// Read from device</span>
+<span class="n">HAL_I2C_Master_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c</span><span class="p">,</span><span class="w"> </span><span class="n">DEVICE_ADDR</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">reg</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+<span class="n">HAL_I2C_Master_Receive</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c</span><span class="p">,</span><span class="w"> </span><span class="n">DEVICE_ADDR</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+
+<span class="c1">// Or combined write-then-read</span>
+<span class="n">HAL_I2C_Mem_Read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c</span><span class="p">,</span><span class="w"> </span><span class="n">DEVICE_ADDR</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">reg</span><span class="p">,</span><span class="w"> </span><span class="n">I2C_MEMADD_SIZE_8BIT</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="protocol-comparison">Protocol Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Wires</th>
+<th>Speed</th>
+<th>Distance</th>
+<th>Devices</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UART</strong></td>
+<td>2</td>
+<td>~1 Mbps</td>
+<td>Long</td>
+<td>2</td>
+<td>Debug, GPS, BT modules</td>
+</tr>
+<tr>
+<td><strong>SPI</strong></td>
+<td>4+</td>
+<td>100 MHz</td>
+<td>Short</td>
+<td>Few</td>
+<td>Flash, displays, ADCs</td>
+</tr>
+<tr>
+<td><strong>I2C</strong></td>
+<td>2</td>
+<td>1 MHz</td>
+<td>Short</td>
+<td>Many</td>
+<td>Sensors, EEPROMs</td>
+</tr>
+<tr>
+<td><strong>CAN</strong></td>
+<td>2</td>
+<td>1 Mbps</td>
+<td>Long</td>
+<td>Many</td>
+<td>Automotive, industrial</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="real-time-concepts">Real-Time Concepts</h2>
+<h3 id="what-is-real-time">What is Real-Time?</h3>
+<p><strong>Real-time ≠ fast.</strong> Real-time = <strong>predictable, meeting deadlines.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Definition</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hard real-time</strong></td>
+<td>Missing deadline = failure</td>
+<td>Airbag, pacemaker</td>
+</tr>
+<tr>
+<td><strong>Firm real-time</strong></td>
+<td>Missing deadline = degraded</td>
+<td>Video frame drop</td>
+</tr>
+<tr>
+<td><strong>Soft real-time</strong></td>
+<td>Missing deadline = annoying</td>
+<td>UI responsiveness</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bare-metal-vs-rtos">Bare Metal vs RTOS</h3>
+<p><strong>Bare Metal (Super Loop):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">init</span><span class="p">();</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">readSensors</span><span class="p">();</span>
+<span class="w">        </span><span class="n">processData</span><span class="p">();</span>
+<span class="w">        </span><span class="n">updateOutputs</span><span class="p">();</span>
+<span class="w">        </span><span class="n">communicate</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Simple, but:</span>
+<span class="c1">// - Hard to meet timing requirements</span>
+<span class="c1">// - One slow task blocks everything</span>
+<span class="c1">// - No prioritization</span>
+</code></pre></div>
+
+<p><strong>RTOS (Real-Time Operating System):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">sensorTask</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">readSensors</span><span class="p">();</span>
+<span class="w">        </span><span class="n">vTaskDelay</span><span class="p">(</span><span class="n">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span><span class="w">  </span><span class="c1">// Run every 10ms</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">commTask</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sendData</span><span class="p">();</span>
+<span class="w">        </span><span class="n">vTaskDelay</span><span class="p">(</span><span class="n">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">100</span><span class="p">));</span><span class="w">  </span><span class="c1">// Run every 100ms</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">xTaskCreate</span><span class="p">(</span><span class="n">sensorTask</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sensor&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">HIGH_PRIORITY</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">xTaskCreate</span><span class="p">(</span><span class="n">commTask</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Comm&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">LOW_PRIORITY</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">vTaskStartScheduler</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="common-rtos-concepts">Common RTOS Concepts</h3>
+<p><strong>Tasks/Threads:</strong> Independent execution units<br />
+<strong>Semaphores:</strong> Synchronization, resource counting<br />
+<strong>Mutexes:</strong> Mutual exclusion for shared resources<br />
+<strong>Queues:</strong> Safe data passing between tasks<br />
+<strong>Events/Signals:</strong> Task notification</p>
+<h3 id="timing-analysis">Timing Analysis</h3>
+<div class="highlight"><pre><span></span><code>Worst-Case Execution Time (WCET):
+- Measure maximum time for each task
+- Ensure sum fits within period
+
+Example:
+Task A: 2ms WCET, 10ms period
+Task B: 5ms WCET, 20ms period
+Task C: 1ms WCET, 5ms period
+
+CPU utilization = 2/10 + 5/20 + 1/5 = 0.2 + 0.25 + 0.2 = 65%
+(Should keep below 70-80% for safety margin)
+</code></pre></div>
+
+<hr />
+<h2 id="power-management">Power Management</h2>
+<h3 id="power-modes">Power Modes</h3>
+<div class="highlight"><pre><span></span><code>Run Mode:        CPU active, all peripherals available
+                 Power: 100%
+
+Sleep Mode:      CPU stopped, peripherals running
+                 Wake: Any interrupt
+                 Power: ~50%
+
+Stop Mode:       CPU + most peripherals stopped
+                 Wake: External interrupt, RTC
+                 Power: ~5%
+
+Standby Mode:    Everything off except RTC + backup
+                 Wake: External pin, RTC
+                 Power: ~0.1%
+</code></pre></div>
+
+<h3 id="power-optimization-techniques">Power Optimization Techniques</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// 1. Use lowest clock speed sufficient</span>
+<span class="n">RCC_ClkInitTypeDef</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">clk</span><span class="p">.</span><span class="n">ClockType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RCC_CLOCKTYPE_SYSCLK</span><span class="p">;</span>
+<span class="n">clk</span><span class="p">.</span><span class="n">SYSCLKSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RCC_SYSCLKSOURCE_HSI</span><span class="p">;</span><span class="w">  </span><span class="c1">// 16MHz instead of 168MHz</span>
+<span class="n">HAL_RCC_ClockConfig</span><span class="p">(</span><span class="o">&amp;</span><span class="n">clk</span><span class="p">,</span><span class="w"> </span><span class="n">FLASH_LATENCY_0</span><span class="p">);</span>
+
+<span class="c1">// 2. Disable unused peripherals</span>
+<span class="n">__HAL_RCC_GPIOB_CLK_DISABLE</span><span class="p">();</span>
+<span class="n">__HAL_RCC_SPI1_CLK_DISABLE</span><span class="p">();</span>
+
+<span class="c1">// 3. Use sleep mode when idle</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">work_pending</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">__WFI</span><span class="p">();</span><span class="w">  </span><span class="c1">// Wait For Interrupt (sleep until interrupt)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">processWork</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// 4. Batch operations</span>
+<span class="c1">// Instead of: wake → send 1 byte → sleep (repeated)</span>
+<span class="c1">// Do: wake → send 100 bytes → sleep</span>
+</code></pre></div>
+
+<h3 id="battery-life-estimation">Battery Life Estimation</h3>
+<div class="highlight"><pre><span></span><code>Battery capacity: 1000 mAh
+
+Active mode: 50mA for 10ms every second
+Sleep mode: 0.01mA rest of time
+
+Average current = (50mA × 10ms + 0.01mA × 990ms) / 1000ms
+                = (0.5 + 0.0099) / 1 = 0.51 mA
+
+Battery life = 1000mAh / 0.51mA = ~2000 hours = 83 days
+</code></pre></div>
+
+<hr />
+<h2 id="common-microcontroller-families">Common Microcontroller Families</h2>
+<h3 id="comparison">Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Strengths</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>STM32</strong></td>
+<td>Wide range, great docs, CubeMX</td>
+<td>Professional development</td>
+</tr>
+<tr>
+<td><strong>ESP32</strong></td>
+<td>WiFi/BT built-in, cheap</td>
+<td>IoT projects</td>
+</tr>
+<tr>
+<td><strong>nRF52</strong></td>
+<td>BLE, low power</td>
+<td>Wearables, sensors</td>
+</tr>
+<tr>
+<td><strong>Arduino (AVR)</strong></td>
+<td>Easy to start</td>
+<td>Learning, prototypes</td>
+</tr>
+<tr>
+<td><strong>RP2040</strong></td>
+<td>PIO, cheap, dual-core</td>
+<td>Custom protocols</td>
+</tr>
+<tr>
+<td><strong>Teensy</strong></td>
+<td>Fast, Arduino-compatible</td>
+<td>Audio, high-speed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="development-boards">Development Boards</h3>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>MCU</th>
+<th>Features</th>
+<th>Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>STM32 Nucleo</strong></td>
+<td>STM32</td>
+<td>ST-Link debugger, Arduino headers</td>
+<td>$10-20</td>
+</tr>
+<tr>
+<td><strong>ESP32 DevKit</strong></td>
+<td>ESP32</td>
+<td>WiFi, BT, lots of GPIO</td>
+<td>$5-10</td>
+</tr>
+<tr>
+<td><strong>Arduino Uno</strong></td>
+<td>ATmega328P</td>
+<td>5V, simple</td>
+<td>$10-25</td>
+</tr>
+<tr>
+<td><strong>Raspberry Pi Pico</strong></td>
+<td>RP2040</td>
+<td>Dual-core, PIO</td>
+<td>$4</td>
+</tr>
+<tr>
+<td><strong>nRF52 DK</strong></td>
+<td>nRF52840</td>
+<td>BLE, debugging</td>
+<td>$40</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="bit-manipulation">Bit Manipulation</h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#define BIT(n)          (1U &lt;&lt; (n))</span>
+<span class="cp">#define SET_BIT(x, n)   ((x) |= BIT(n))</span>
+<span class="cp">#define CLR_BIT(x, n)   ((x) &amp;= ~BIT(n))</span>
+<span class="cp">#define TGL_BIT(x, n)   ((x) ^= BIT(n))</span>
+<span class="cp">#define GET_BIT(x, n)   (((x) &gt;&gt; (n)) &amp; 1)</span>
+
+<span class="c1">// Set bits 3-5</span>
+<span class="n">REG</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x7</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// Clear bits 3-5</span>
+<span class="n">REG</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="mh">0x7</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// Read bits 3-5</span>
+<span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">REG</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x7</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="common-macros">Common Macros</h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#define ARRAY_SIZE(arr)     (sizeof(arr) / sizeof((arr)[0]))</span>
+<span class="cp">#define MIN(a, b)           (((a) &lt; (b)) ? (a) : (b))</span>
+<span class="cp">#define MAX(a, b)           (((a) &gt; (b)) ? (a) : (b))</span>
+<span class="cp">#define CLAMP(x, lo, hi)    (MIN(MAX(x, lo), hi))</span>
+
+<span class="c1">// Memory barrier (prevent reordering)</span>
+<span class="cp">#define MEMORY_BARRIER()    __asm__ __volatile__(&quot;&quot; ::: &quot;memory&quot;)</span>
+</code></pre></div>
+
+<h3 id="volatile-keyword">Volatile Keyword</h3>
+<p><strong>Always use <code>volatile</code> for:</strong><br />
+- Hardware registers<br />
+- Variables modified by ISR<br />
+- Variables shared between tasks</p>
+<div class="highlight"><pre><span></span><code><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">REG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">volatile</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="mh">0x40000000</span><span class="p">;</span>
+<span class="k">volatile</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">isr_flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</code></pre></div>
+
+<hr />
+<p>Next: <a href="./02_PRACTICAL.md">Practical Embedded Systems</a> - Debugging, patterns, and real-world tips</p>
+</body>
+</html>

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Networking</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="practical-networking">Practical Networking</h1>
+<p>Network tricks and techniques useful for robotics and app development.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#debugging-network-issues">Debugging Network Issues</a></li>
+<li><a href="#working-with-apis">Working with APIs</a></li>
+<li><a href="#websockets--real-time-communication">WebSockets &amp; Real-Time Communication</a></li>
+<li><a href="#robotics-networking">Robotics Networking</a></li>
+<li><a href="#mobile-app-networking">Mobile App Networking</a></li>
+<li><a href="#network-security-basics">Network Security Basics</a></li>
+<li><a href="#performance-optimization">Performance Optimization</a></li>
+<li><a href="#common-gotchas">Common Gotchas</a></li>
+</ol>
+<hr />
+<h2 id="debugging-network-issues">Debugging Network Issues</h2>
+<h3 id="the-debugging-hierarchy">The Debugging Hierarchy</h3>
+<p>When something doesn't work, check in this order:</p>
+<div class="highlight"><pre><span></span><code>1. Can you reach the internet at all?     → ping 8.8.8.8
+2. Is DNS working?                        → ping google.com
+3. Is the port open/listening?            → nc -zv host port
+4. Is the service responding?             → curl http://host:port
+5. Is it an application issue?            → check logs
+</code></pre></div>
+
+<h3 id="essential-tools">Essential Tools</h3>
+<h4 id="curl-the-swiss-army-knife">curl - The Swiss Army Knife</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Basic GET</span>
+curl<span class="w"> </span>https://api.example.com/users
+
+<span class="c1"># POST with JSON</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/users<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;John&quot;}&#39;</span>
+
+<span class="c1"># With authentication</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer TOKEN&quot;</span><span class="w"> </span>https://api.example.com/me
+
+<span class="c1"># See headers and timing</span>
+curl<span class="w"> </span>-v<span class="w"> </span>https://api.example.com<span class="w">         </span><span class="c1"># verbose</span>
+curl<span class="w"> </span>-I<span class="w"> </span>https://api.example.com<span class="w">         </span><span class="c1"># headers only</span>
+curl<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;@curl-format.txt&quot;</span><span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-s<span class="w"> </span>https://example.com<span class="w">  </span><span class="c1"># timing</span>
+
+<span class="c1"># Follow redirects</span>
+curl<span class="w"> </span>-L<span class="w"> </span>https://short.url/abc
+
+<span class="c1"># Download file</span>
+curl<span class="w"> </span>-O<span class="w"> </span>https://example.com/file.zip
+
+<span class="c1"># Upload file</span>
+curl<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;file=@local.txt&quot;</span><span class="w"> </span>https://api.example.com/upload
+</code></pre></div>
+
+<p><strong>Timing format file (curl-format.txt):</strong></p>
+<div class="highlight"><pre><span></span><code>    time_namelookup:  %{time_namelookup}s\n
+       time_connect:  %{time_connect}s\n
+    time_appconnect:  %{time_appconnect}s\n
+   time_pretransfer:  %{time_pretransfer}s\n
+      time_redirect:  %{time_redirect}s\n
+ time_starttransfer:  %{time_starttransfer}s\n
+                     ----------\n
+         time_total:  %{time_total}s\n
+</code></pre></div>
+
+<h4 id="netcat-nc-tcpudp-swiss-army-knife">netcat (nc) - TCP/UDP Swiss Army Knife</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check if port is open</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>google.com<span class="w"> </span><span class="m">443</span>
+
+<span class="c1"># Listen on a port (simple server)</span>
+nc<span class="w"> </span>-l<span class="w"> </span><span class="m">8080</span>
+
+<span class="c1"># Connect to a port (simple client)</span>
+nc<span class="w"> </span>localhost<span class="w"> </span><span class="m">8080</span>
+
+<span class="c1"># Send UDP packet</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>nc<span class="w"> </span>-u<span class="w"> </span>localhost<span class="w"> </span><span class="m">9999</span>
+
+<span class="c1"># Port scanning</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>host<span class="w"> </span><span class="m">20</span>-100
+</code></pre></div>
+
+<h4 id="tcpdump-packet-capture">tcpdump - Packet Capture</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Capture HTTP traffic</span>
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span><span class="m">80</span>
+
+<span class="c1"># Capture with readable output</span>
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>-A<span class="w"> </span>port<span class="w"> </span><span class="m">80</span>
+
+<span class="c1"># Capture to file for Wireshark</span>
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>-w<span class="w"> </span>capture.pcap
+
+<span class="c1"># Filter by host</span>
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>host<span class="w"> </span><span class="m">192</span>.168.1.100
+
+<span class="c1"># Filter by protocol</span>
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>icmp
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>udp
+</code></pre></div>
+
+<h4 id="ss-netstat-connection-status">ss / netstat - Connection Status</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># See all listening ports</span>
+ss<span class="w"> </span>-tulpn<span class="w">                    </span><span class="c1"># Linux</span>
+netstat<span class="w"> </span>-an<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>LISTEN<span class="w">    </span><span class="c1"># macOS</span>
+
+<span class="c1"># See established connections</span>
+ss<span class="w"> </span>-t<span class="w"> </span>state<span class="w"> </span>established
+
+<span class="c1"># See which process uses a port</span>
+lsof<span class="w"> </span>-i<span class="w"> </span>:8080
+</code></pre></div>
+
+<h3 id="diagnosing-latency">Diagnosing Latency</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check round-trip time</span>
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">10</span><span class="w"> </span>google.com
+
+<span class="c1"># See network path</span>
+traceroute<span class="w"> </span>google.com<span class="w">        </span><span class="c1"># ICMP</span>
+traceroute<span class="w"> </span>-T<span class="w"> </span>google.com<span class="w">     </span><span class="c1"># TCP (better through firewalls)</span>
+
+<span class="c1"># Continuous monitoring</span>
+mtr<span class="w"> </span>google.com<span class="w">               </span><span class="c1"># combines ping + traceroute</span>
+</code></pre></div>
+
+<hr />
+<h2 id="working-with-apis">Working with APIs</h2>
+<h3 id="rest-best-practices">REST Best Practices</h3>
+<p><strong>Request design:</strong></p>
+<div class="highlight"><pre><span></span><code>GET    /users          → List users
+GET    /users/123      → Get user 123
+POST   /users          → Create user
+PUT    /users/123      → Replace user 123
+PATCH  /users/123      → Update user 123
+DELETE /users/123      → Delete user 123
+
+# Nested resources
+GET    /users/123/posts     → User 123&#39;s posts
+POST   /users/123/posts     → Create post for user 123
+</code></pre></div>
+
+<p><strong>Query parameters for filtering/pagination:</strong></p>
+<div class="highlight"><pre><span></span><code>GET /users?status=active&amp;sort=created_at&amp;order=desc
+GET /users?page=2&amp;limit=20
+GET /users?fields=id,name,email    # sparse fieldsets
+</code></pre></div>
+
+<h3 id="handling-api-errors-gracefully">Handling API Errors Gracefully</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests.exceptions</span> <span class="kn">import</span> <span class="n">RequestException</span><span class="p">,</span> <span class="n">Timeout</span><span class="p">,</span> <span class="n">HTTPError</span>
+
+<span class="k">def</span> <span class="nf">fetch_with_retry</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>  <span class="c1"># raises HTTPError for 4xx/5xx</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="n">Timeout</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>  <span class="c1"># exponential backoff</span>
+
+        <span class="k">except</span> <span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>  <span class="c1"># rate limited</span>
+                <span class="n">retry_after</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Retry-After&#39;</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_after</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">500</span><span class="p">:</span>  <span class="c1"># server error, retry</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># client error, don&#39;t retry</span>
+                <span class="k">raise</span>
+
+        <span class="k">except</span> <span class="n">RequestException</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="rate-limiting">Rate Limiting</h3>
+<p>Most APIs have rate limits. Handle them properly:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="k">class</span> <span class="nc">RateLimiter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calls_per_second</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_interval</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">calls_per_second</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span>
+        <span class="k">if</span> <span class="n">elapsed</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_interval</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_interval</span> <span class="o">-</span> <span class="n">elapsed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_call</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="c1"># Usage</span>
+<span class="n">limiter</span> <span class="o">=</span> <span class="n">RateLimiter</span><span class="p">(</span><span class="n">calls_per_second</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+    <span class="n">limiter</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="connection-pooling">Connection Pooling</h3>
+<p>For high-throughput, reuse connections:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="c1"># Session reuses TCP connections</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+<span class="c1"># Much faster than creating new connection each time</span>
+<span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="websockets-real-time-communication">WebSockets &amp; Real-Time Communication</h2>
+<h3 id="when-to-use-what">When to Use What</h3>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Use Case</th>
+<th>Latency</th>
+<th>Complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP Polling</td>
+<td>Simple, low-frequency updates</td>
+<td>High</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Long Polling</td>
+<td>Moderate updates, fallback</td>
+<td>Medium</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Server-Sent Events (SSE)</td>
+<td>One-way server→client</td>
+<td>Low</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>Bidirectional, real-time</td>
+<td>Very Low</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>WebRTC</td>
+<td>Peer-to-peer, video/audio</td>
+<td>Lowest</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<h3 id="websocket-basics">WebSocket Basics</h3>
+<div class="highlight"><pre><span></span><code>HTTP: Request → Response → Done
+      Request → Response → Done
+      (new connection each time)
+
+WebSocket: Handshake (HTTP upgrade) → Persistent connection
+           ←── messages ──→
+           ←── messages ──→
+           (same connection)
+</code></pre></div>
+
+<p><strong>Handshake:</strong></p>
+<div class="highlight"><pre><span></span><code>Client:
+GET /chat HTTP/1.1
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+
+Server:
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+</code></pre></div>
+
+<h3 id="websocket-patterns">WebSocket Patterns</h3>
+<p><strong>Heartbeat/Ping-Pong:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Keep connection alive through firewalls/proxies</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">heartbeat</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">ws</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+</code></pre></div>
+
+<p><strong>Reconnection with exponential backoff:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">connect_with_retry</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">retry_delay</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">max_delay</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ws</span> <span class="o">=</span> <span class="k">await</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">retry_delay</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># reset on success</span>
+            <span class="k">return</span> <span class="n">ws</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+            <span class="n">retry_delay</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">retry_delay</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">max_delay</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="robotics-networking">Robotics Networking</h2>
+<h3 id="key-challenges-in-robotics">Key Challenges in Robotics</h3>
+<ol>
+<li><strong>Low latency required</strong> - control loops need &lt;10ms response</li>
+<li><strong>Unreliable wireless</strong> - WiFi drops, interference</li>
+<li><strong>Multiple devices</strong> - sensors, actuators, compute units</li>
+<li><strong>Real-time constraints</strong> - can't wait for retransmission</li>
+</ol>
+<h3 id="ros-2-networking-dds">ROS 2 Networking (DDS)</h3>
+<p>ROS 2 uses DDS (Data Distribution Service) for communication:</p>
+<div class="highlight"><pre><span></span><code>┌────────────────────────────────────────────────────────┐
+│ ROS 2 Network                                          │
+│                                                        │
+│   Node A              Node B              Node C       │
+│  (sensor)           (planner)          (actuator)      │
+│     │                  │                   │           │
+│     │    /scan         │    /cmd_vel       │           │
+│     └─────Topic────────┴─────Topic─────────┘           │
+│                                                        │
+│   Discovery: Automatic via multicast (no rosmaster!)   │
+│   QoS: Configurable reliability, durability, deadline  │
+└────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<p><strong>QoS (Quality of Service) settings:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">rclpy.qos</span> <span class="kn">import</span> <span class="n">QoSProfile</span><span class="p">,</span> <span class="n">ReliabilityPolicy</span><span class="p">,</span> <span class="n">DurabilityPolicy</span>
+
+<span class="c1"># For sensor data (accept some loss for low latency)</span>
+<span class="n">sensor_qos</span> <span class="o">=</span> <span class="n">QoSProfile</span><span class="p">(</span>
+    <span class="n">reliability</span><span class="o">=</span><span class="n">ReliabilityPolicy</span><span class="o">.</span><span class="n">BEST_EFFORT</span><span class="p">,</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">1</span>  <span class="c1"># only latest value matters</span>
+<span class="p">)</span>
+
+<span class="c1"># For commands (must be reliable)</span>
+<span class="n">command_qos</span> <span class="o">=</span> <span class="n">QoSProfile</span><span class="p">(</span>
+    <span class="n">reliability</span><span class="o">=</span><span class="n">ReliabilityPolicy</span><span class="o">.</span><span class="n">RELIABLE</span><span class="p">,</span>
+    <span class="n">durability</span><span class="o">=</span><span class="n">DurabilityPolicy</span><span class="o">.</span><span class="n">TRANSIENT_LOCAL</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="udp-for-real-time-control">UDP for Real-Time Control</h3>
+<p>When TCP's reliability hurts more than helps:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="c1"># Simple UDP telemetry sender</span>
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">send_telemetry</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">velocity</span><span class="p">):</span>
+    <span class="c1"># Pack data efficiently</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;!ffff&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">9999</span><span class="p">))</span>
+
+<span class="c1"># Receiver</span>
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">9999</span><span class="p">))</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># non-blocking for real-time</span>
+
+<span class="k">def</span> <span class="nf">receive_telemetry</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;!ffff&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">BlockingIOError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># no data available</span>
+</code></pre></div>
+
+<h3 id="mqtt-for-iot-sensors">MQTT for IoT Sensors</h3>
+<p>Lightweight pub/sub protocol, great for sensor networks:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">paho.mqtt.client</span> <span class="k">as</span> <span class="nn">mqtt</span>
+
+<span class="c1"># Publisher (sensor node)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">mqtt</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;mqtt-broker.local&quot;</span><span class="p">,</span> <span class="mi">1883</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s2">&quot;robot/sensor/temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;23.5&quot;</span><span class="p">)</span>
+
+<span class="c1"># Subscriber (central controller)</span>
+<span class="k">def</span> <span class="nf">on_message</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">userdata</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">topic</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">mqtt</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">on_message</span> <span class="o">=</span> <span class="n">on_message</span>
+<span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;mqtt-broker.local&quot;</span><span class="p">,</span> <span class="mi">1883</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s2">&quot;robot/sensor/#&quot;</span><span class="p">)</span>  <span class="c1"># wildcard subscription</span>
+<span class="n">client</span><span class="o">.</span><span class="n">loop_forever</span><span class="p">()</span>
+</code></pre></div>
+
+<p><strong>MQTT QoS levels:</strong><br />
+- QoS 0: At most once (fire and forget)<br />
+- QoS 1: At least once (may duplicate)<br />
+- QoS 2: Exactly once (highest overhead)</p>
+<h3 id="network-time-synchronization">Network Time Synchronization</h3>
+<p>Critical for sensor fusion and coordination:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># NTP - millisecond accuracy</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>ntp
+ntpq<span class="w"> </span>-p<span class="w">  </span><span class="c1"># check sync status</span>
+
+<span class="c1"># PTP (Precision Time Protocol) - microsecond accuracy</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>linuxptp
+sudo<span class="w"> </span>ptp4l<span class="w"> </span>-i<span class="w"> </span>eth0<span class="w"> </span>-m
+
+<span class="c1"># Chrony - modern NTP, handles intermittent connectivity</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>chrony
+chronyc<span class="w"> </span>sources
+</code></pre></div>
+
+<h3 id="multicast-for-discovery">Multicast for Discovery</h3>
+<p>Find devices without knowing their IPs:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="c1"># Multicast sender</span>
+<span class="n">MCAST_GROUP</span> <span class="o">=</span> <span class="s1">&#39;224.1.1.1&#39;</span>
+<span class="n">MCAST_PORT</span> <span class="o">=</span> <span class="mi">5007</span>
+
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IP_MULTICAST_TTL</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;DISCOVER&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">MCAST_GROUP</span><span class="p">,</span> <span class="n">MCAST_PORT</span><span class="p">))</span>
+
+<span class="c1"># Multicast receiver</span>
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">MCAST_PORT</span><span class="p">))</span>
+
+<span class="n">mreq</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;4sl&quot;</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">MCAST_GROUP</span><span class="p">),</span> <span class="n">socket</span><span class="o">.</span><span class="n">INADDR_ANY</span><span class="p">)</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IP_ADD_MEMBERSHIP</span><span class="p">,</span> <span class="n">mreq</span><span class="p">)</span>
+
+<span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received from </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="mobile-app-networking">Mobile App Networking</h2>
+<h3 id="handling-connectivity-changes">Handling Connectivity Changes</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// iOS - Network framework</span>
+<span class="kd">import</span> <span class="nc">Network</span>
+
+<span class="kd">let</span> <span class="nv">monitor</span> <span class="p">=</span> <span class="n">NWPathMonitor</span><span class="p">()</span>
+<span class="n">monitor</span><span class="p">.</span><span class="n">pathUpdateHandler</span> <span class="p">=</span> <span class="p">{</span> <span class="n">path</span> <span class="k">in</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">.</span><span class="n">status</span> <span class="p">==</span> <span class="p">.</span><span class="n">satisfied</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">.</span><span class="n">usesInterfaceType</span><span class="p">(.</span><span class="n">wifi</span><span class="p">)</span> <span class="p">{</span>
+            <span class="bp">print</span><span class="p">(</span><span class="s">&quot;WiFi connected - sync large data&quot;</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">path</span><span class="p">.</span><span class="n">usesInterfaceType</span><span class="p">(.</span><span class="n">cellular</span><span class="p">)</span> <span class="p">{</span>
+            <span class="bp">print</span><span class="p">(</span><span class="s">&quot;Cellular - minimize data usage&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="bp">print</span><span class="p">(</span><span class="s">&quot;Offline - use cached data&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">monitor</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">queue</span><span class="p">:</span> <span class="n">DispatchQueue</span><span class="p">.</span><span class="n">global</span><span class="p">())</span>
+</code></pre></div>
+
+<h3 id="offline-first-architecture">Offline-First Architecture</h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────┐
+│ App                                                 │
+│  ┌───────────────┐    ┌───────────────────────────┐│
+│  │   UI Layer    │◄───│     Local Database        ││
+│  └───────┬───────┘    │   (SQLite/Realm/Core Data)││
+│          │            └───────────┬───────────────┘│
+│          │                        │                │
+│          ▼                        ▼                │
+│  ┌───────────────┐    ┌───────────────────────────┐│
+│  │   Sync Queue  │───▶│     Remote API            ││
+│  │ (retry logic) │◄───│                           ││
+│  └───────────────┘    └───────────────────────────┘│
+└─────────────────────────────────────────────────────┘
+
+1. Write to local DB first (instant UI response)
+2. Queue changes for sync
+3. Sync when online
+4. Handle conflicts (last-write-wins, merge, etc.)
+</code></pre></div>
+
+<h3 id="certificate-pinning">Certificate Pinning</h3>
+<p>Prevent man-in-the-middle attacks:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// iOS - URLSession with pinning</span>
+<span class="kd">class</span> <span class="nc">PinningDelegate</span><span class="p">:</span> <span class="bp">NSObject</span><span class="p">,</span> <span class="n">URLSessionDelegate</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">urlSession</span><span class="p">(</span><span class="kc">_</span> <span class="n">session</span><span class="p">:</span> <span class="n">URLSession</span><span class="p">,</span>
+                    <span class="n">didReceive</span> <span class="n">challenge</span><span class="p">:</span> <span class="n">URLAuthenticationChallenge</span><span class="p">,</span>
+                    <span class="n">completionHandler</span><span class="p">:</span> <span class="p">@</span><span class="n">escaping</span> <span class="p">(</span><span class="n">URLSession</span><span class="p">.</span><span class="n">AuthChallengeDisposition</span><span class="p">,</span> <span class="n">URLCredential</span><span class="p">?)</span> <span class="p">-&gt;</span> <span class="nb">Void</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="k">guard</span> <span class="kd">let</span> <span class="nv">serverTrust</span> <span class="p">=</span> <span class="n">challenge</span><span class="p">.</span><span class="n">protectionSpace</span><span class="p">.</span><span class="n">serverTrust</span><span class="p">,</span>
+              <span class="kd">let</span> <span class="nv">certificate</span> <span class="p">=</span> <span class="n">SecTrustGetCertificateAtIndex</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">completionHandler</span><span class="p">(.</span><span class="n">cancelAuthenticationChallenge</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nv">serverCertData</span> <span class="p">=</span> <span class="n">SecCertificateCopyData</span><span class="p">(</span><span class="n">certificate</span><span class="p">)</span> <span class="k">as</span> <span class="n">Data</span>
+        <span class="kd">let</span> <span class="nv">pinnedCertData</span> <span class="p">=</span> <span class="c1">// load your pinned cert</span>
+
+        <span class="k">if</span> <span class="n">serverCertData</span> <span class="p">==</span> <span class="n">pinnedCertData</span> <span class="p">{</span>
+            <span class="n">completionHandler</span><span class="p">(.</span><span class="n">useCredential</span><span class="p">,</span> <span class="n">URLCredential</span><span class="p">(</span><span class="n">trust</span><span class="p">:</span> <span class="n">serverTrust</span><span class="p">))</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">completionHandler</span><span class="p">(.</span><span class="n">cancelAuthenticationChallenge</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="background-tasks">Background Tasks</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// iOS - Background URL Session</span>
+<span class="kd">let</span> <span class="nv">config</span> <span class="p">=</span> <span class="n">URLSessionConfiguration</span><span class="p">.</span><span class="n">background</span><span class="p">(</span><span class="n">withIdentifier</span><span class="p">:</span> <span class="s">&quot;com.app.sync&quot;</span><span class="p">)</span>
+<span class="n">config</span><span class="p">.</span><span class="n">isDiscretionary</span> <span class="p">=</span> <span class="kc">true</span>  <span class="c1">// iOS chooses optimal time</span>
+<span class="n">config</span><span class="p">.</span><span class="n">sessionSendsLaunchEvents</span> <span class="p">=</span> <span class="kc">true</span>  <span class="c1">// wake app on completion</span>
+
+<span class="kd">let</span> <span class="nv">session</span> <span class="p">=</span> <span class="n">URLSession</span><span class="p">(</span><span class="n">configuration</span><span class="p">:</span> <span class="n">config</span><span class="p">,</span> <span class="n">delegate</span><span class="p">:</span> <span class="kc">self</span><span class="p">,</span> <span class="n">delegateQueue</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nv">task</span> <span class="p">=</span> <span class="n">session</span><span class="p">.</span><span class="n">downloadTask</span><span class="p">(</span><span class="n">with</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span>
+<span class="n">task</span><span class="p">.</span><span class="n">resume</span><span class="p">()</span>  <span class="c1">// continues even if app is killed</span>
+</code></pre></div>
+
+<hr />
+<h2 id="network-security-basics">Network Security Basics</h2>
+<h3 id="authentication-patterns">Authentication Patterns</h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API Key</td>
+<td>Simple server-to-server</td>
+</tr>
+<tr>
+<td>Basic Auth</td>
+<td>Internal tools (always over HTTPS!)</td>
+</tr>
+<tr>
+<td>Bearer Token (JWT)</td>
+<td>User authentication, stateless</td>
+</tr>
+<tr>
+<td>OAuth 2.0</td>
+<td>Third-party integration</td>
+</tr>
+<tr>
+<td>mTLS</td>
+<td>High-security machine-to-machine</td>
+</tr>
+</tbody>
+</table>
+<h3 id="jwt-json-web-tokens">JWT (JSON Web Tokens)</h3>
+<div class="highlight"><pre><span></span><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.  ← Header (base64)
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.  ← Payload (base64)
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c  ← Signature
+
+Decoded payload: {&quot;sub&quot;: &quot;1234567890&quot;, &quot;name&quot;: &quot;John&quot;, &quot;exp&quot;: 1609459200}
+</code></pre></div>
+
+<p><strong>Important:</strong> JWTs are signed, not encrypted! Anyone can read the payload.</p>
+<h3 id="common-vulnerabilities">Common Vulnerabilities</h3>
+<p><strong>SQL Injection:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD - never do this</span>
+<span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM users WHERE id = </span><span class="si">{</span><span class="n">user_input</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># GOOD - parameterized queries</span>
+<span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users WHERE id = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">user_input</span><span class="p">,))</span>
+</code></pre></div>
+
+<p><strong>SSRF (Server-Side Request Forgery):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD - user controls URL</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_provided_url</span><span class="p">)</span>
+
+<span class="c1"># GOOD - validate URL</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">user_provided_url</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_HOSTS</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid host&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="reducing-latency">Reducing Latency</h3>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connection pooling</td>
+<td>Avoid TCP handshake overhead</td>
+</tr>
+<tr>
+<td>HTTP/2</td>
+<td>Multiplexing, header compression</td>
+</tr>
+<tr>
+<td>Compression (gzip)</td>
+<td>Less data to transfer</td>
+</tr>
+<tr>
+<td>CDN</td>
+<td>Content closer to users</td>
+</tr>
+<tr>
+<td>DNS prefetching</td>
+<td>Resolve domains early</td>
+</tr>
+<tr>
+<td>Keep-Alive</td>
+<td>Reuse connections</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reducing-bandwidth">Reducing Bandwidth</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Pagination - don&#39;t fetch everything</span>
+<span class="n">GET</span> <span class="o">/</span><span class="n">items</span><span class="err">?</span><span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">limit</span><span class="o">=</span><span class="mi">20</span>
+
+<span class="c1"># Sparse fieldsets - only fetch needed fields</span>
+<span class="n">GET</span> <span class="o">/</span><span class="n">users</span><span class="err">?</span><span class="n">fields</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span><span class="n">name</span>
+
+<span class="c1"># Conditional requests - skip if unchanged</span>
+<span class="n">GET</span> <span class="o">/</span><span class="n">resource</span>
+<span class="n">If</span><span class="o">-</span><span class="kc">None</span><span class="o">-</span><span class="n">Match</span><span class="p">:</span> <span class="s2">&quot;etag-value&quot;</span>
+<span class="err">→</span> <span class="mi">304</span> <span class="n">Not</span> <span class="n">Modified</span> <span class="p">(</span><span class="n">no</span> <span class="n">body</span><span class="p">)</span>
+
+<span class="c1"># Compression</span>
+<span class="n">Accept</span><span class="o">-</span><span class="n">Encoding</span><span class="p">:</span> <span class="n">gzip</span><span class="p">,</span> <span class="n">deflate</span>
+</code></pre></div>
+
+<h3 id="batching-requests">Batching Requests</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD - N+1 requests</span>
+<span class="k">for</span> <span class="n">user_id</span> <span class="ow">in</span> <span class="n">user_ids</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+
+<span class="c1"># GOOD - batch request</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">get_users</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="n">user_ids</span><span class="p">)</span>  <span class="c1"># single request</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-gotchas">Common Gotchas</h2>
+<h3 id="1-dns-caching">1. DNS Caching</h3>
+<p>DNS results are cached. When you change a server's IP:</p>
+<div class="highlight"><pre><span></span><code>- Browser cache: minutes
+- OS cache: minutes to hours
+- ISP cache: hours
+- Your code&#39;s cache: forever (if not handled)
+</code></pre></div>
+
+<p><strong>Fix:</strong> Set appropriate TTLs, use connection managers that respect TTL.</p>
+<h3 id="2-tcp-time_wait">2. TCP TIME_WAIT</h3>
+<p>After closing a connection, the port stays in TIME_WAIT for ~60s:</p>
+<div class="highlight"><pre><span></span><code>netstat<span class="w"> </span>-an<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>TIME_WAIT
+</code></pre></div>
+
+<p><strong>Fix:</strong> Reuse connections (connection pooling), or set <code>SO_REUSEADDR</code>.</p>
+<h3 id="3-mtu-issues">3. MTU Issues</h3>
+<p>Maximum Transmission Unit - largest packet size (usually 1500 bytes).</p>
+<p><strong>Symptoms:</strong> Large packets fail, small ones work.</p>
+<p><strong>Debug:</strong></p>
+<div class="highlight"><pre><span></span><code>ping<span class="w"> </span>-s<span class="w"> </span><span class="m">1472</span><span class="w"> </span>google.com<span class="w">  </span><span class="c1"># 1472 + 28 header = 1500</span>
+</code></pre></div>
+
+<h3 id="4-half-open-connections">4. Half-Open Connections</h3>
+<p>One side thinks connection is open, other side closed it.</p>
+<p><strong>Fix:</strong> Implement heartbeats/keepalives:</p>
+<div class="highlight"><pre><span></span><code><span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_KEEPALIVE</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="5-blocking-io-in-event-loops">5. Blocking I/O in Event Loops</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># BAD - blocks the entire event loop</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">bad_handler</span><span class="p">():</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>  <span class="c1"># blocking!</span>
+
+<span class="c1"># GOOD - use async HTTP client</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">good_handler</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="6-localhost-vs-0000">6. Localhost vs 0.0.0.0</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Only accessible from same machine</span>
+<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">))</span>
+<span class="c1"># or</span>
+<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">))</span>
+
+<span class="c1"># Accessible from any network interface</span>
+<span class="n">server</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">))</span>
+</code></pre></div>
+
+<h3 id="7-ipv6-surprises">7. IPv6 Surprises</h3>
+<p>Your code might unexpectedly use IPv6:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Force IPv4</span>
+<span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">source_address</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># Handle both</span>
+<span class="n">socket</span><span class="o">.</span><span class="n">setdefaulttimeout</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># prevent hanging on unreachable IPv6</span>
+</code></pre></div>
+
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="must-know-ports">Must-Know Ports</h3>
+<div class="highlight"><pre><span></span><code>22   SSH
+53   DNS
+80   HTTP
+443  HTTPS
+1883 MQTT
+5432 PostgreSQL
+6379 Redis
+8080 HTTP Alt
+9090 Prometheus
+</code></pre></div>
+
+<h3 id="debug-commands">Debug Commands</h3>
+<div class="highlight"><pre><span></span><code>ping<span class="w"> </span>host<span class="w">              </span><span class="c1"># connectivity</span>
+traceroute<span class="w"> </span>host<span class="w">        </span><span class="c1"># path</span>
+dig<span class="w"> </span>domain<span class="w">             </span><span class="c1"># DNS</span>
+curl<span class="w"> </span>-v<span class="w"> </span>url<span class="w">            </span><span class="c1"># HTTP debug</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>host<span class="w"> </span>port<span class="w">       </span><span class="c1"># port check</span>
+ss<span class="w"> </span>-tulpn<span class="w">              </span><span class="c1"># listening ports</span>
+tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span>X<span class="w">  </span><span class="c1"># packet capture</span>
+</code></pre></div>
+
+<h3 id="status-code-quick-check">Status Code Quick Check</h3>
+<div class="highlight"><pre><span></span><code>2xx = Good
+3xx = Redirect
+4xx = Your fault
+5xx = Their fault
+
+200 = OK
+201 = Created
+204 = OK (no body)
+400 = Bad request
+401 = Login required
+403 = Not allowed
+404 = Not found
+429 = Slow down
+500 = Server broke
+503 = Try later
+</code></pre></div>
+</body>
+</html>

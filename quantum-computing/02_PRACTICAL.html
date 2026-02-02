@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Quantum Computing</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="practical-quantum-computing">Practical Quantum Computing</h1>
+<p>Programming quantum computers, simulators, and real-world applications.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#qiskit-ibm">Qiskit (IBM)</a></li>
+<li><a href="#cirq-google">Cirq (Google)</a></li>
+<li><a href="#other-frameworks">Other Frameworks</a></li>
+<li><a href="#running-on-real-hardware">Running on Real Hardware</a></li>
+<li><a href="#common-patterns--recipes">Common Patterns &amp; Recipes</a></li>
+<li><a href="#nisq-algorithms">NISQ Algorithms</a></li>
+<li><a href="#quantum-machine-learning">Quantum Machine Learning</a></li>
+<li><a href="#post-quantum-cryptography">Post-Quantum Cryptography</a></li>
+<li><a href="#resources--next-steps">Resources &amp; Next Steps</a></li>
+</ol>
+<hr />
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="which-framework">Which Framework?</h3>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Provider</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Qiskit</strong></td>
+<td>IBM</td>
+<td>Beginners, large community, real hardware</td>
+</tr>
+<tr>
+<td><strong>Cirq</strong></td>
+<td>Google</td>
+<td>Research, custom circuits</td>
+</tr>
+<tr>
+<td><strong>PennyLane</strong></td>
+<td>Xanadu</td>
+<td>Quantum ML, differentiable</td>
+</tr>
+<tr>
+<td><strong>Amazon Braket</strong></td>
+<td>AWS</td>
+<td>Multi-vendor access</td>
+</tr>
+<tr>
+<td><strong>Q#</strong></td>
+<td>Microsoft</td>
+<td>Quantum algorithms research</td>
+</tr>
+</tbody>
+</table>
+<h3 id="installation">Installation</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Qiskit (recommended for beginners)</span>
+pip<span class="w"> </span>install<span class="w"> </span>qiskit<span class="w"> </span>qiskit-aer<span class="w"> </span>qiskit-ibm-runtime
+
+<span class="c1"># Cirq</span>
+pip<span class="w"> </span>install<span class="w"> </span>cirq
+
+<span class="c1"># PennyLane</span>
+pip<span class="w"> </span>install<span class="w"> </span>pennylane
+
+<span class="c1"># All of them work with Python 3.9+</span>
+</code></pre></div>
+
+<hr />
+<h2 id="qiskit-ibm">Qiskit (IBM)</h2>
+<h3 id="your-first-quantum-circuit">Your First Quantum Circuit</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit_aer</span> <span class="kn">import</span> <span class="n">AerSimulator</span>
+
+<span class="c1"># Create a 2-qubit circuit</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># 2 qubits, 2 classical bits</span>
+
+<span class="c1"># Build the circuit</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>         <span class="c1"># Hadamard on qubit 0: creates superposition</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>     <span class="c1"># CNOT: entangles qubits 0 and 1</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># Measure both qubits</span>
+
+<span class="c1"># Visualize</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">())</span>
+</code></pre></div>
+
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code>     ┌───┐     ┌─┐
+q_0: ┤ H ├──●──┤M├───
+     └───┘┌─┴─┐└╥┘┌─┐
+q_1: ─────┤ X ├─╫─┤M├
+          └───┘ ║ └╥┘
+c: 2/═══════════╩══╩═
+                0  1
+</code></pre></div>
+
+<h3 id="running-a-simulation">Running a Simulation</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit_aer</span> <span class="kn">import</span> <span class="n">AerSimulator</span>
+
+<span class="c1"># Create simulator</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">AerSimulator</span><span class="p">()</span>
+
+<span class="c1"># Run circuit 1000 times</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">counts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
+<span class="c1"># Output: {&#39;00&#39;: 502, &#39;11&#39;: 498}</span>
+<span class="c1"># Bell state: always measure 00 or 11 (never 01 or 10)</span>
+</code></pre></div>
+
+<h3 id="common-gates-in-qiskit">Common Gates in Qiskit</h3>
+<div class="highlight"><pre><span></span><code><span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Single-qubit gates</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># Hadamard</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># Pauli-X (NOT)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># Pauli-Y</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">z</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># Pauli-Z</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># S gate (√Z)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>           <span class="c1"># T gate (√S)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="mf">3.14</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>    <span class="c1"># Rotation around X by π</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="mf">1.57</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>    <span class="c1"># Rotation around Y by π/2</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">rz</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>     <span class="c1"># Rotation around Z</span>
+
+<span class="c1"># Two-qubit gates</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>       <span class="c1"># CNOT (control=0, target=1)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>       <span class="c1"># Controlled-Z</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">swap</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>     <span class="c1"># Swap qubits</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cp</span><span class="p">(</span><span class="mf">3.14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Controlled phase</span>
+
+<span class="c1"># Three-qubit gates</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">ccx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># Toffoli (CCX)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cswap</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># Fredkin (controlled-SWAP)</span>
+</code></pre></div>
+
+<h3 id="statevector-analysis">Statevector Analysis</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit.quantum_info</span> <span class="kn">import</span> <span class="n">Statevector</span>
+
+<span class="c1"># Create circuit without measurement</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Get exact statevector</span>
+<span class="n">statevector</span> <span class="o">=</span> <span class="n">Statevector</span><span class="p">(</span><span class="n">qc</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">statevector</span><span class="p">)</span>
+<span class="c1"># Statevector([0.707+0.j, 0.+0.j, 0.+0.j, 0.707+0.j])</span>
+<span class="c1"># This is (|00⟩ + |11⟩)/√2</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">statevector</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s1">&#39;latex&#39;</span><span class="p">)</span>  <span class="c1"># or &#39;text&#39;, &#39;bloch&#39;</span>
+</code></pre></div>
+
+<h3 id="building-parameterized-circuits">Building Parameterized Circuits</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Create parameter</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;θ&#39;</span><span class="p">)</span>
+
+<span class="c1"># Build parameterized circuit</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Bind parameter to specific value</span>
+<span class="n">bound_circuit</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">assign_parameters</span><span class="p">({</span><span class="n">theta</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">})</span>
+</code></pre></div>
+
+<hr />
+<h2 id="cirq-google">Cirq (Google)</h2>
+<h3 id="basic-circuit">Basic Circuit</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">cirq</span>
+
+<span class="c1"># Create qubits</span>
+<span class="n">q0</span><span class="p">,</span> <span class="n">q1</span> <span class="o">=</span> <span class="n">cirq</span><span class="o">.</span><span class="n">LineQubit</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Build circuit</span>
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">cirq</span><span class="o">.</span><span class="n">Circuit</span><span class="p">([</span>
+    <span class="n">cirq</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">q0</span><span class="p">),</span>           <span class="c1"># Hadamard</span>
+    <span class="n">cirq</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">),</span>    <span class="c1"># Entangle</span>
+    <span class="n">cirq</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;result&#39;</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code>0: ───H───@───M(&#39;result&#39;)───
+          │   │
+1: ───────X───M─────────────
+</code></pre></div>
+
+<h3 id="simulation">Simulation</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Simulate</span>
+<span class="n">simulator</span> <span class="o">=</span> <span class="n">cirq</span><span class="o">.</span><span class="n">Simulator</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">repetitions</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Get histogram</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;result&#39;</span><span class="p">))</span>
+<span class="c1"># Counter({0: 498, 3: 502})</span>
+<span class="c1"># 0 = 00 binary, 3 = 11 binary</span>
+</code></pre></div>
+
+<h3 id="cirq-vs-qiskit">Cirq vs Qiskit</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Qiskit</th>
+<th>Cirq</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qubit naming</td>
+<td>Integer indices</td>
+<td>Named objects</td>
+</tr>
+<tr>
+<td>Circuit style</td>
+<td>Builder pattern</td>
+<td>List of moments</td>
+</tr>
+<tr>
+<td>Gate naming</td>
+<td><code>cx</code>, <code>h</code>, <code>t</code></td>
+<td><code>CNOT</code>, <code>H</code>, <code>T</code></td>
+</tr>
+<tr>
+<td>Measurement</td>
+<td>Separate classical bits</td>
+<td>Key-based</td>
+</tr>
+<tr>
+<td>Visualization</td>
+<td>ASCII &amp; matplotlib</td>
+<td>ASCII &amp; SVG</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="other-frameworks">Other Frameworks</h2>
+<h3 id="pennylane-quantum-ml">PennyLane (Quantum ML)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pennylane</span> <span class="k">as</span> <span class="nn">qml</span>
+<span class="kn">from</span> <span class="nn">pennylane</span> <span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="c1"># Create device</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">qml</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;default.qubit&#39;</span><span class="p">,</span> <span class="n">wires</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nd">@qml</span><span class="o">.</span><span class="n">qnode</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">circuit</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">wires</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qml</span><span class="o">.</span><span class="n">expval</span><span class="p">(</span><span class="n">qml</span><span class="o">.</span><span class="n">PauliZ</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># This is differentiable!</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gradient</span> <span class="o">=</span> <span class="n">qml</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">circuit</span><span class="p">)(</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient: </span><span class="si">{</span><span class="n">gradient</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="amazon-braket">Amazon Braket</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">braket.circuits</span> <span class="kn">import</span> <span class="n">Circuit</span>
+<span class="kn">from</span> <span class="nn">braket.aws</span> <span class="kn">import</span> <span class="n">AwsDevice</span>
+
+<span class="c1"># Build circuit</span>
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">()</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">cnot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Run on simulator</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">AwsDevice</span><span class="p">(</span><span class="s2">&quot;arn:aws:braket:::device/quantum-simulator/amazon/sv1&quot;</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">measurement_counts</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="running-on-real-hardware">Running on Real Hardware</h2>
+<h3 id="ibm-quantum-free-tier">IBM Quantum (Free Tier)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit_ibm_runtime</span> <span class="kn">import</span> <span class="n">QiskitRuntimeService</span><span class="p">,</span> <span class="n">SamplerV2</span>
+
+<span class="c1"># Save credentials (once)</span>
+<span class="c1"># QiskitRuntimeService.save_account(channel=&quot;ibm_quantum&quot;, token=&quot;YOUR_TOKEN&quot;)</span>
+
+<span class="c1"># Connect</span>
+<span class="n">service</span> <span class="o">=</span> <span class="n">QiskitRuntimeService</span><span class="p">()</span>
+
+<span class="c1"># Select backend</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">least_busy</span><span class="p">(</span><span class="n">operational</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simulator</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running on: </span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create circuit</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Transpile for specific hardware</span>
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">transpile</span>
+<span class="n">transpiled</span> <span class="o">=</span> <span class="n">transpile</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">backend</span><span class="p">)</span>
+
+<span class="c1"># Run</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">SamplerV2</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">transpiled</span><span class="p">],</span> <span class="n">shots</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="understanding-hardware-constraints">Understanding Hardware Constraints</h3>
+<div class="highlight"><pre><span></span><code>Real quantum hardware has:
+
+1. LIMITED CONNECTIVITY
+   Not all qubits can directly interact
+
+   Ideal:          Reality (heavy-hex):
+   ●─●─●─●           ●───●───●
+   │ │ │ │           │   │   │
+   ●─●─●─●           ●───●───●
+   │ │ │ │               │
+   ●─●─●─●           ●───●───●
+
+2. NOISY GATES
+   Every gate has error probability
+   1-qubit: ~0.01-0.1% error
+   2-qubit: ~0.5-2% error
+
+3. LIMITED COHERENCE TIME
+   Qubits lose quantum state
+   T1 (relaxation): ~100 μs
+   T2 (dephasing): ~50-100 μs
+
+4. MEASUREMENT ERRORS
+   Reading wrong value: ~1-5%
+</code></pre></div>
+
+<h3 id="transpilation-adapting-to-hardware">Transpilation: Adapting to Hardware</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">transpile</span>
+
+<span class="c1"># Original circuit (ideal)</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">ccx</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Toffoli gate</span>
+
+<span class="c1"># Transpile for real hardware</span>
+<span class="n">transpiled</span> <span class="o">=</span> <span class="n">transpile</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">optimization_level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original gates: </span><span class="si">{</span><span class="n">qc</span><span class="o">.</span><span class="n">depth</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transpiled gates: </span><span class="si">{</span><span class="n">transpiled</span><span class="o">.</span><span class="n">depth</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Toffoli → many 1-qubit and CNOT gates</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-patterns-recipes">Common Patterns &amp; Recipes</h2>
+<h3 id="create-uniform-superposition">Create Uniform Superposition</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">uniform_superposition</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create |+⟩^n = equal superposition of all basis states.&quot;&quot;&quot;</span>
+    <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qc</span>
+
+<span class="c1"># 3 qubits → equal superposition of |000⟩ through |111⟩</span>
+</code></pre></div>
+
+<h3 id="create-bell-pairs">Create Bell Pairs</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">bell_pair</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create Bell state |Φ+⟩ = (|00⟩ + |11⟩)/√2.&quot;&quot;&quot;</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">q0</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qc</span>
+</code></pre></div>
+
+<h3 id="create-ghz-state">Create GHZ State</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">ghz_state</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create (|00...0⟩ + |11...1⟩)/√2 across n qubits.&quot;&quot;&quot;</span>
+    <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_qubits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qc</span>
+</code></pre></div>
+
+<h3 id="quantum-fourier-transform">Quantum Fourier Transform</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">qft</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply QFT to first n qubits.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">qc</span><span class="o">.</span><span class="n">cp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">i</span><span class="p">),</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="c1"># Swap qubits to match conventional ordering</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">swap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">qc</span>
+</code></pre></div>
+
+<h3 id="grovers-oracle-for-specific-target">Grover's Oracle (for specific target)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">grover_oracle</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">target_state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark target state with phase flip.&quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">num_qubits</span>
+
+    <span class="c1"># Flip qubits where target has 0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">target_state</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="c1"># Multi-controlled Z</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">mcx</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Toffoli chain</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Undo flips</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">target_state</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qc</span>
+</code></pre></div>
+
+<h3 id="grover-diffusion-operator">Grover Diffusion Operator</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">diffusion</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Grover diffusion (reflection about mean).&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">mcx</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qc</span>
+</code></pre></div>
+
+<hr />
+<h2 id="nisq-algorithms">NISQ Algorithms</h2>
+<h3 id="variational-quantum-eigensolver-vqe">Variational Quantum Eigensolver (VQE)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">TwoLocal</span>
+<span class="kn">from</span> <span class="nn">qiskit_algorithms</span> <span class="kn">import</span> <span class="n">VQE</span>
+<span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span> <span class="nn">qiskit.quantum_info</span> <span class="kn">import</span> <span class="n">SparsePauliOp</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Estimator</span>
+
+<span class="c1"># Define Hamiltonian (e.g., H2 molecule simplified)</span>
+<span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">&quot;II&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.052373245772859</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;IZ&quot;</span><span class="p">,</span> <span class="mf">0.39793742484318045</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;ZI&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.39793742484318045</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;ZZ&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01128010425623538</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;XX&quot;</span><span class="p">,</span> <span class="mf">0.18093119978423156</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="c1"># Ansatz (parameterized circuit)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">TwoLocal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ry&#39;</span><span class="p">,</span> <span class="s1">&#39;rz&#39;</span><span class="p">],</span> <span class="s1">&#39;cz&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Run VQE</span>
+<span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">vqe</span> <span class="o">=</span> <span class="n">VQE</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">ansatz</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">vqe</span><span class="o">.</span><span class="n">compute_minimum_eigenvalue</span><span class="p">(</span><span class="n">hamiltonian</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ground state energy: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">eigenvalue</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="quantum-approximate-optimization-qaoa">Quantum Approximate Optimization (QAOA)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit_algorithms</span> <span class="kn">import</span> <span class="n">QAOA</span>
+<span class="kn">from</span> <span class="nn">qiskit_algorithms.optimizers</span> <span class="kn">import</span> <span class="n">COBYLA</span>
+<span class="kn">from</span> <span class="nn">qiskit.primitives</span> <span class="kn">import</span> <span class="n">Sampler</span>
+
+<span class="c1"># Define cost Hamiltonian for MaxCut problem</span>
+<span class="c1"># Example: 3-node graph</span>
+<span class="n">cost_op</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">&quot;ZZI&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;ZIZ&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;IZZ&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="c1"># Run QAOA</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
+<span class="n">qaoa</span> <span class="o">=</span> <span class="n">QAOA</span><span class="p">(</span><span class="n">sampler</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">qaoa</span><span class="o">.</span><span class="n">compute_minimum_eigenvalue</span><span class="p">(</span><span class="n">cost_op</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best solution: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">best_measurement</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="quantum-machine-learning">Quantum Machine Learning</h2>
+<h3 id="quantum-kernel-methods">Quantum Kernel Methods</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pennylane</span> <span class="k">as</span> <span class="nn">qml</span>
+<span class="kn">from</span> <span class="nn">pennylane</span> <span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="n">dev</span> <span class="o">=</span> <span class="n">qml</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;default.qubit&#39;</span><span class="p">,</span> <span class="n">wires</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nd">@qml</span><span class="o">.</span><span class="n">qnode</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">quantum_kernel</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute kernel between two data points.&quot;&quot;&quot;</span>
+    <span class="c1"># Encode first data point</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">x1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">x1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Encode second data point (adjoint)</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">adjoint</span><span class="p">(</span><span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">)(</span><span class="n">x2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">adjoint</span><span class="p">(</span><span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">)(</span><span class="n">x2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qml</span><span class="o">.</span><span class="n">probs</span><span class="p">(</span><span class="n">wires</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Kernel value = probability of measuring |00⟩</span>
+<span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">quantum_kernel</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Get |00⟩ probability</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Kernel value: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="variational-quantum-classifier">Variational Quantum Classifier</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pennylane</span> <span class="k">as</span> <span class="nn">qml</span>
+<span class="kn">from</span> <span class="nn">pennylane</span> <span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">pennylane.optimize</span> <span class="kn">import</span> <span class="n">AdamOptimizer</span>
+
+<span class="n">dev</span> <span class="o">=</span> <span class="n">qml</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;default.qubit&#39;</span><span class="p">,</span> <span class="n">wires</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nd">@qml</span><span class="o">.</span><span class="n">qnode</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">quantum_classifier</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="c1"># Data encoding</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Variational layers</span>
+    <span class="k">for</span> <span class="n">layer_weights</span> <span class="ow">in</span> <span class="n">weights</span><span class="p">:</span>
+        <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">layer_weights</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">layer_weights</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">qml</span><span class="o">.</span><span class="n">CNOT</span><span class="p">(</span><span class="n">wires</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">qml</span><span class="o">.</span><span class="n">expval</span><span class="p">(</span><span class="n">qml</span><span class="o">.</span><span class="n">PauliZ</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">cost</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="p">[</span><span class="n">quantum_classifier</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Training</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">AdamOptimizer</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">cost</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="n">weights</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="quantum-neural-network-architectures">Quantum Neural Network Architectures</h3>
+<div class="highlight"><pre><span></span><code>Common QML Ansätze:
+
+1. HARDWARE-EFFICIENT ANSATZ
+   ┌────┐┌────┐     ┌────┐┌────┐
+   ┤ Ry ├┤ Rz ├──●──┤ Ry ├┤ Rz ├──●──
+   └────┘└────┘  │  └────┘└────┘  │
+   ┌────┐┌────┐┌─┴─┐┌────┐┌────┐┌─┴─┐
+   ┤ Ry ├┤ Rz ├┤ X ├┤ Ry ├┤ Rz ├┤ X ├
+   └────┘└────┘└───┘└────┘└────┘└───┘
+
+2. STRONGLY ENTANGLING
+   More connectivity, deeper entanglement
+
+3. TREE TENSOR NETWORK
+   Hierarchical structure, good for correlations
+</code></pre></div>
+
+<hr />
+<h2 id="post-quantum-cryptography">Post-Quantum Cryptography</h2>
+<h3 id="the-threat">The Threat</h3>
+<div class="highlight"><pre><span></span><code>Current encryption:          Quantum threat:
+
+RSA-2048                     Shor&#39;s algorithm
+• Factor n = p × q           • O((log n)³) on quantum
+• Takes classical ~10^14 yr  • Could break in hours
+                             with ~4000 logical qubits
+
+Timeline estimate:
+2030-2035: &quot;Q-Day&quot; - RSA/ECC broken by quantum
+</code></pre></div>
+
+<h3 id="nist-post-quantum-standards-2024">NIST Post-Quantum Standards (2024)</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Type</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ML-KEM (Kyber)</strong></td>
+<td>Lattice</td>
+<td>Key encapsulation</td>
+</tr>
+<tr>
+<td><strong>ML-DSA (Dilithium)</strong></td>
+<td>Lattice</td>
+<td>Digital signatures</td>
+</tr>
+<tr>
+<td><strong>SLH-DSA (SPHINCS+)</strong></td>
+<td>Hash-based</td>
+<td>Signatures (conservative)</td>
+</tr>
+<tr>
+<td><strong>FN-DSA (FALCON)</strong></td>
+<td>Lattice</td>
+<td>Compact signatures</td>
+</tr>
+</tbody>
+</table>
+<h3 id="using-post-quantum-crypto-python">Using Post-Quantum Crypto (Python)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Using liboqs (Open Quantum Safe)</span>
+<span class="c1"># pip install liboqs-python</span>
+
+<span class="kn">import</span> <span class="nn">oqs</span>
+
+<span class="c1"># Key encapsulation (Kyber)</span>
+<span class="n">kem</span> <span class="o">=</span> <span class="n">oqs</span><span class="o">.</span><span class="n">KeyEncapsulation</span><span class="p">(</span><span class="s2">&quot;Kyber512&quot;</span><span class="p">)</span>
+<span class="n">public_key</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">generate_keypair</span><span class="p">()</span>
+<span class="n">ciphertext</span><span class="p">,</span> <span class="n">shared_secret</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">encap_secret</span><span class="p">(</span><span class="n">public_key</span><span class="p">)</span>
+<span class="n">decrypted_secret</span> <span class="o">=</span> <span class="n">kem</span><span class="o">.</span><span class="n">decap_secret</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
+
+<span class="c1"># Digital signature (Dilithium)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">oqs</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="s2">&quot;Dilithium2&quot;</span><span class="p">)</span>
+<span class="n">public_key</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">generate_keypair</span><span class="p">()</span>
+<span class="n">signature</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Message to sign&quot;</span><span class="p">)</span>
+<span class="n">is_valid</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Message to sign&quot;</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">public_key</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="hybrid-approach-transition-period">Hybrid Approach (Transition Period)</h3>
+<div class="highlight"><pre><span></span><code>Current best practice: Combine classical + post-quantum
+
+TLS Handshake:
+┌─────────────────────────────────────────────────────┐
+│ ECDH (classical) + Kyber (post-quantum)             │
+│                                                     │
+│ Shared Secret = ECDH_secret || Kyber_secret         │
+│                                                     │
+│ Benefits:                                           │
+│ • Secure if EITHER algorithm is unbroken            │
+│ • Backward compatible                               │
+│ • Already deployed in Chrome, Cloudflare            │
+└─────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h2 id="resources-next-steps">Resources &amp; Next Steps</h2>
+<h3 id="learning-path">Learning Path</h3>
+<div class="highlight"><pre><span></span><code>Beginner:
+1. IBM Quantum Learning: learning.quantum-computing.ibm.com
+2. Qiskit Textbook: qiskit.org/textbook
+3. Quantum Country (Andy Matuschak): quantum.country
+
+Intermediate:
+4. &quot;Quantum Computing: An Applied Approach&quot; - Hidary
+5. Cirq tutorials: quantumai.google/cirq
+6. PennyLane demos: pennylane.ai/qml
+
+Advanced:
+7. &quot;Quantum Computation and Quantum Information&quot; - Nielsen &amp; Chuang
+8. arXiv.org quant-ph (research papers)
+9. Contribute to open source (Qiskit, Cirq, PennyLane)
+</code></pre></div>
+
+<h3 id="practice-platforms">Practice Platforms</h3>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IBM Quantum</strong></td>
+<td>Real hardware, learning</td>
+</tr>
+<tr>
+<td><strong>Quirk</strong></td>
+<td>Visualizing circuits (browser)</td>
+</tr>
+<tr>
+<td><strong>Amazon Braket</strong></td>
+<td>Multi-vendor</td>
+</tr>
+<tr>
+<td><strong>Azure Quantum</strong></td>
+<td>Optimization, Q#</td>
+</tr>
+<tr>
+<td><strong>Quantum Katas</strong></td>
+<td>Q# exercises</td>
+</tr>
+</tbody>
+</table>
+<h3 id="online-simulators">Online Simulators</h3>
+<div class="highlight"><pre><span></span><code>Free browser-based:
+
+1. IBM Quantum Composer
+   quantum-computing.ibm.com/composer
+   • Drag-and-drop circuit building
+   • Real hardware access
+
+2. Quirk
+   algassert.com/quirk
+   • Real-time statevector display
+   • Great for intuition
+
+3. Quantum Playground
+   quantumplayground.net
+   • GPU-accelerated simulation
+</code></pre></div>
+
+<h3 id="keeping-up">Keeping Up</h3>
+<div class="highlight"><pre><span></span><code>Stay current:
+
+• @IBM_Quantum, @GoogleAI on Twitter/X
+• r/QuantumComputing on Reddit
+• Qiskit Slack community
+• Unitary Fund newsletter
+• The Quantum Insider (news)
+</code></pre></div>
+
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="qiskit-cheat-sheet">Qiskit Cheat Sheet</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">transpile</span>
+<span class="kn">from</span> <span class="nn">qiskit_aer</span> <span class="kn">import</span> <span class="n">AerSimulator</span>
+<span class="kn">from</span> <span class="nn">qiskit.quantum_info</span> <span class="kn">import</span> <span class="n">Statevector</span>
+
+<span class="c1"># Create circuit</span>
+<span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">,</span> <span class="n">n_classical_bits</span><span class="p">)</span>
+
+<span class="c1"># Gates</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>           <span class="c1"># Hadamard</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>           <span class="c1"># NOT</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="n">ctrl</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>      <span class="c1"># CNOT</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>      <span class="c1"># Measure qubit q → classical bit c</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">measure_all</span><span class="p">()</span>      <span class="c1"># Measure all qubits</span>
+
+<span class="c1"># Simulate</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">AerSimulator</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">counts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
+
+<span class="c1"># Statevector</span>
+<span class="n">sv</span> <span class="o">=</span> <span class="n">Statevector</span><span class="p">(</span><span class="n">qc</span><span class="p">)</span>
+<span class="n">probs</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s1">&#39;mpl&#39;</span><span class="p">)</span>        <span class="c1"># Matplotlib</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>       <span class="c1"># ASCII</span>
+</code></pre></div>
+
+<h3 id="common-errors-fixes">Common Errors &amp; Fixes</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CircuitError: not enough classical bits</code></td>
+<td>Missing measurement targets</td>
+<td>Add classical bits: <code>QuantumCircuit(2, 2)</code></td>
+</tr>
+<tr>
+<td><code>TranspilerError</code></td>
+<td>Circuit incompatible with backend</td>
+<td>Use <code>transpile(qc, backend)</code></td>
+</tr>
+<tr>
+<td><code>IBMQAccountError</code></td>
+<td>Token issue</td>
+<td>Re-save account credentials</td>
+</tr>
+<tr>
+<td>Gate on non-existent qubit</td>
+<td>Index out of range</td>
+<td>Check <code>qc.num_qubits</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-tips">Performance Tips</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Minimize circuit depth</span>
+<span class="c1"># Shallow circuits = less decoherence</span>
+
+<span class="c1"># 2. Use native gates</span>
+<span class="c1"># Transpiler converts gates; start with hardware-native</span>
+
+<span class="c1"># 3. Optimize measurement</span>
+<span class="c1"># Measure only what you need</span>
+
+<span class="c1"># 4. Use efficient simulation</span>
+<span class="kn">from</span> <span class="nn">qiskit_aer</span> <span class="kn">import</span> <span class="n">AerSimulator</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">AerSimulator</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;statevector&#39;</span><span class="p">)</span>  <span class="c1"># For small circuits</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">AerSimulator</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;matrix_product_state&#39;</span><span class="p">)</span>  <span class="c1"># For sparse</span>
+
+<span class="c1"># 5. Batch jobs</span>
+<span class="c1"># Submit multiple circuits in one job</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">qc1</span><span class="p">,</span> <span class="n">qc2</span><span class="p">,</span> <span class="n">qc3</span><span class="p">])</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</code></pre></div>
+
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ol>
+<li><strong>Start with Qiskit</strong> — best documentation and community</li>
+<li><strong>Simulate first</strong> — real hardware is noisy and limited</li>
+<li><strong>Understand transpilation</strong> — circuits must match hardware</li>
+<li><strong>NISQ algorithms</strong> — VQE, QAOA work on today's hardware</li>
+<li><strong>Quantum ML is hybrid</strong> — classical optimizer + quantum circuit</li>
+<li><strong>Post-quantum crypto is now</strong> — migration should start today</li>
+<li><strong>Noise is the enemy</strong> — error mitigation is essential</li>
+<li><strong>Real applications are emerging</strong> — chemistry, optimization, ML</li>
+</ol>
+<hr />
+<h2 id="example-complete-grovers-search">Example: Complete Grover's Search</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit_aer</span> <span class="kn">import</span> <span class="n">AerSimulator</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">grovers_algorithm</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for target bit string.&quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="c1"># Initialize superposition</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="c1"># Number of iterations</span>
+    <span class="n">iterations</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="c1"># Oracle: mark target</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">target</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">mcx</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">target</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">bit</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># Diffusion</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">mcx</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+    <span class="c1"># Run</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">AerSimulator</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
+
+    <span class="c1"># Find most common result</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">counts</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">counts</span>
+
+<span class="c1"># Search for &quot;101&quot;</span>
+<span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;101&quot;</span>
+<span class="n">found</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">grovers_algorithm</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Searching for: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found: </span><span class="si">{</span><span class="n">found</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Counts: </span><span class="si">{</span><span class="n">counts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Should find &quot;101&quot; with high probability (~900+ out of 1000)</span>
+</code></pre></div>
+</body>
+</html>

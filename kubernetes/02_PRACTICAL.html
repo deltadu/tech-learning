@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Kubernetes</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="practical-kubernetes">Practical Kubernetes</h1>
+<p>Essential commands, debugging techniques, and real-world patterns.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#essential-kubectl-commands">Essential kubectl Commands</a></li>
+<li><a href="#debugging-pods">Debugging Pods</a></li>
+<li><a href="#resource-management">Resource Management</a></li>
+<li><a href="#deployment-strategies">Deployment Strategies</a></li>
+<li><a href="#health-checks">Health Checks</a></li>
+<li><a href="#scaling">Scaling</a></li>
+<li><a href="#networking-debugging">Networking Debugging</a></li>
+<li><a href="#security-basics">Security Basics</a></li>
+<li><a href="#helm-basics">Helm Basics</a></li>
+<li><a href="#common-patterns">Common Patterns</a></li>
+<li><a href="#gotchas--tips">Gotchas &amp; Tips</a></li>
+</ol>
+<hr />
+<h2 id="essential-kubectl-commands">Essential kubectl Commands</h2>
+<h3 id="getting-information">Getting Information</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Cluster info</span>
+kubectl<span class="w"> </span>cluster-info
+kubectl<span class="w"> </span>get<span class="w"> </span>nodes
+kubectl<span class="w"> </span>top<span class="w"> </span>nodes<span class="w">                    </span><span class="c1"># Node resource usage</span>
+
+<span class="c1"># List resources</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w">                     </span><span class="c1"># Current namespace</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-A<span class="w">                  </span><span class="c1"># All namespaces</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>wide<span class="w">             </span><span class="c1"># More columns (node, IP)</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-w<span class="w">                  </span><span class="c1"># Watch for changes</span>
+
+<span class="c1"># Multiple resource types</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>all<span class="w">                      </span><span class="c1"># Common resources</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods,services,deployments
+
+<span class="c1"># Filter by label</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span>nginx
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-l<span class="w"> </span><span class="s1">&#39;app in (nginx,apache)&#39;</span>
+
+<span class="c1"># Output formats</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w">             </span><span class="c1"># Full YAML</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>json<span class="w">             </span><span class="c1"># Full JSON</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>name<span class="w">             </span><span class="c1"># Just names</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>custom-columns<span class="o">=</span>NAME:.metadata.name,STATUS:.status.phase
+</code></pre></div>
+
+<h3 id="describing-resources">Describing Resources</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Detailed info (events, conditions, etc.)</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>&lt;pod-name&gt;
+kubectl<span class="w"> </span>describe<span class="w"> </span>deployment<span class="w"> </span>&lt;name&gt;
+kubectl<span class="w"> </span>describe<span class="w"> </span>node<span class="w"> </span>&lt;node-name&gt;
+
+<span class="c1"># Events (great for debugging)</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>--sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>--field-selector<span class="w"> </span><span class="nv">type</span><span class="o">=</span>Warning
+</code></pre></div>
+
+<h3 id="creating-and-modifying">Creating and Modifying</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Apply manifest</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>manifest.yaml
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>./manifests/<span class="w">        </span><span class="c1"># Entire directory</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>https://url/manifest.yaml
+
+<span class="c1"># Create imperatively (for quick tests)</span>
+kubectl<span class="w"> </span>run<span class="w"> </span>nginx<span class="w"> </span>--image<span class="o">=</span>nginx
+kubectl<span class="w"> </span>create<span class="w"> </span>deployment<span class="w"> </span>nginx<span class="w"> </span>--image<span class="o">=</span>nginx
+kubectl<span class="w"> </span>expose<span class="w"> </span>deployment<span class="w"> </span>nginx<span class="w"> </span>--port<span class="o">=</span><span class="m">80</span><span class="w"> </span>--type<span class="o">=</span>LoadBalancer
+
+<span class="c1"># Edit running resource</span>
+kubectl<span class="w"> </span>edit<span class="w"> </span>deployment<span class="w"> </span>nginx
+kubectl<span class="w"> </span><span class="nb">set</span><span class="w"> </span>image<span class="w"> </span>deployment/nginx<span class="w"> </span><span class="nv">nginx</span><span class="o">=</span>nginx:1.22
+
+<span class="c1"># Delete</span>
+kubectl<span class="w"> </span>delete<span class="w"> </span>pod<span class="w"> </span>&lt;pod-name&gt;
+kubectl<span class="w"> </span>delete<span class="w"> </span>-f<span class="w"> </span>manifest.yaml
+kubectl<span class="w"> </span>delete<span class="w"> </span>pods<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span><span class="nb">test</span><span class="w">      </span><span class="c1"># By label</span>
+kubectl<span class="w"> </span>delete<span class="w"> </span>pods<span class="w"> </span>--all<span class="w">            </span><span class="c1"># All pods in namespace (!)</span>
+</code></pre></div>
+
+<h3 id="interacting-with-pods">Interacting with Pods</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Logs</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>&lt;pod-name&gt;
+kubectl<span class="w"> </span>logs<span class="w"> </span>&lt;pod-name&gt;<span class="w"> </span>-c<span class="w"> </span>&lt;container&gt;<span class="w">  </span><span class="c1"># Specific container</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>&lt;pod-name&gt;<span class="w"> </span>--previous<span class="w">      </span><span class="c1"># Previous instance (after crash)</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>&lt;pod-name&gt;<span class="w">              </span><span class="c1"># Follow/tail</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span>nginx<span class="w">               </span><span class="c1"># By label</span>
+
+<span class="c1"># Execute commands</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;pod-name&gt;<span class="w"> </span>--<span class="w"> </span>ls<span class="w"> </span>/
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;pod-name&gt;<span class="w"> </span>--<span class="w"> </span>/bin/sh<span class="w">  </span><span class="c1"># Interactive shell</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;pod-name&gt;<span class="w"> </span>-c<span class="w"> </span>&lt;container&gt;<span class="w"> </span>--<span class="w"> </span>/bin/sh
+
+<span class="c1"># Copy files</span>
+kubectl<span class="w"> </span>cp<span class="w"> </span>&lt;pod-name&gt;:/path/file<span class="w"> </span>./local-file
+kubectl<span class="w"> </span>cp<span class="w"> </span>./local-file<span class="w"> </span>&lt;pod-name&gt;:/path/file
+
+<span class="c1"># Port forward</span>
+kubectl<span class="w"> </span>port-forward<span class="w"> </span>pod/&lt;pod-name&gt;<span class="w"> </span><span class="m">8080</span>:80
+kubectl<span class="w"> </span>port-forward<span class="w"> </span>svc/&lt;service-name&gt;<span class="w"> </span><span class="m">8080</span>:80
+kubectl<span class="w"> </span>port-forward<span class="w"> </span>deployment/&lt;name&gt;<span class="w"> </span><span class="m">8080</span>:80
+</code></pre></div>
+
+<h3 id="context-and-config">Context and Config</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># View config</span>
+kubectl<span class="w"> </span>config<span class="w"> </span>view
+kubectl<span class="w"> </span>config<span class="w"> </span>current-context
+
+<span class="c1"># Switch context (cluster/user)</span>
+kubectl<span class="w"> </span>config<span class="w"> </span>use-context<span class="w"> </span>my-cluster
+
+<span class="c1"># Switch namespace</span>
+kubectl<span class="w"> </span>config<span class="w"> </span>set-context<span class="w"> </span>--current<span class="w"> </span>--namespace<span class="o">=</span>production
+
+<span class="c1"># Create alias for namespace</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kprod</span><span class="o">=</span><span class="s1">&#39;kubectl -n production&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="debugging-pods">Debugging Pods</h2>
+<h3 id="pod-not-starting">Pod Not Starting?</h3>
+<p><strong>Check status:</strong></p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>pods
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>&lt;pod-name&gt;
+</code></pre></div>
+
+<p><strong>Common states:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Pending</code></td>
+<td>Can't be scheduled</td>
+<td>Resources? Node selector?</td>
+</tr>
+<tr>
+<td><code>ContainerCreating</code></td>
+<td>Image pulling or volume mounting</td>
+<td>Image exists? Pull secret?</td>
+</tr>
+<tr>
+<td><code>ImagePullBackOff</code></td>
+<td>Can't pull image</td>
+<td>Image name? Registry auth?</td>
+</tr>
+<tr>
+<td><code>CrashLoopBackOff</code></td>
+<td>Container keeps crashing</td>
+<td>Logs! App error?</td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td>Container exited with error</td>
+<td>Logs!</td>
+</tr>
+<tr>
+<td><code>OOMKilled</code></td>
+<td>Out of memory</td>
+<td>Increase memory limit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="debug-flow">Debug Flow</h3>
+<div class="highlight"><pre><span></span><code>┌──────────────────────────────────────────────────────────────┐
+│ Pod Not Running - Debug Flow                                 │
+│                                                              │
+│ 1. kubectl get pods                                          │
+│    └─▶ Check STATUS column                                   │
+│                                                              │
+│ 2. kubectl describe pod &lt;name&gt;                               │
+│    └─▶ Look at:                                              │
+│        • Events (bottom of output)                           │
+│        • Conditions                                          │
+│        • State/Last State                                    │
+│                                                              │
+│ 3. kubectl logs &lt;pod&gt; [--previous]                           │
+│    └─▶ Application errors?                                   │
+│                                                              │
+│ 4. kubectl get events --sort-by=&#39;.lastTimestamp&#39;             │
+│    └─▶ Cluster-level issues?                                 │
+│                                                              │
+│ 5. kubectl exec -it &lt;pod&gt; -- /bin/sh                         │
+│    └─▶ Check filesystem, env vars, connectivity              │
+└──────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="common-fixes">Common Fixes</h3>
+<p><strong>ImagePullBackOff:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check image name</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>&lt;name&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Image
+
+<span class="c1"># Check pull secret</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>secrets
+kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>docker-registry<span class="w"> </span>regcred<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--docker-server<span class="o">=</span>&lt;registry&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--docker-username<span class="o">=</span>&lt;user&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--docker-password<span class="o">=</span>&lt;pass&gt;
+</code></pre></div>
+
+<p><strong>CrashLoopBackOff:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check logs from crashed container</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>&lt;pod&gt;<span class="w"> </span>--previous
+
+<span class="c1"># Common causes:</span>
+<span class="c1"># - App crashes immediately (check CMD/ENTRYPOINT)</span>
+<span class="c1"># - Missing config/env vars</span>
+<span class="c1"># - Can&#39;t connect to dependency</span>
+<span class="c1"># - OOM (check memory limits)</span>
+</code></pre></div>
+
+<p><strong>Pending (Insufficient resources):</strong></p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>&lt;name&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span>Events
+<span class="c1"># Look for &quot;Insufficient cpu&quot; or &quot;Insufficient memory&quot;</span>
+
+<span class="c1"># Check node capacity</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>nodes<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s2">&quot;Allocated resources&quot;</span>
+</code></pre></div>
+
+<h3 id="debug-container">Debug Container</h3>
+<p>Run a debug container in the same namespace:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run a debug pod</span>
+kubectl<span class="w"> </span>run<span class="w"> </span>debug<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--image<span class="o">=</span>busybox<span class="w"> </span>--<span class="w"> </span>/bin/sh
+
+<span class="c1"># Or with more tools</span>
+kubectl<span class="w"> </span>run<span class="w"> </span>debug<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--image<span class="o">=</span>nicolaka/netshoot<span class="w"> </span>--<span class="w"> </span>/bin/bash
+
+<span class="c1"># Debug inside (curl, nslookup, ping, etc.)</span>
+nslookup<span class="w"> </span>my-service
+curl<span class="w"> </span>http://my-service:80
+</code></pre></div>
+
+<hr />
+<h2 id="resource-management">Resource Management</h2>
+<h3 id="resource-requests-and-limits">Resource Requests and Limits</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">requests</span><span class="p">:</span><span class="w">           </span><span class="c1"># Guaranteed minimum</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span><span class="w">       </span><span class="c1"># 0.1 CPU cores</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span><span class="w">   </span><span class="c1"># 128 megabytes</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w">             </span><span class="c1"># Maximum allowed</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;256Mi&quot;</span>
+</code></pre></div>
+
+<p><strong>CPU units:</strong><br />
+- <code>1</code> = 1 vCPU/core<br />
+- <code>100m</code> = 0.1 CPU (100 millicores)<br />
+- <code>500m</code> = 0.5 CPU</p>
+<p><strong>Memory units:</strong><br />
+- <code>128Mi</code> = 128 mebibytes (134MB)<br />
+- <code>1Gi</code> = 1 gibibyte</p>
+<p><strong>What happens when limits are hit:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>When exceeded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td>Throttled (slowed down)</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>Container killed (OOMKilled)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="limitrange">LimitRange</h3>
+<p>Default limits for a namespace:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LimitRange</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default-limits</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">default</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;256Mi&quot;</span>
+<span class="w">    </span><span class="nt">defaultRequest</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Container</span>
+</code></pre></div>
+
+<h3 id="resourcequota">ResourceQuota</h3>
+<p>Limit total resources in namespace:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceQuota</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">namespace-quota</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">development</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hard</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests.cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10&quot;</span>
+<span class="w">    </span><span class="nt">requests.memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;20Gi&quot;</span>
+<span class="w">    </span><span class="nt">limits.cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;20&quot;</span>
+<span class="w">    </span><span class="nt">limits.memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;40Gi&quot;</span>
+<span class="w">    </span><span class="nt">pods</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;50&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="deployment-strategies">Deployment Strategies</h2>
+<h3 id="rolling-update-default">Rolling Update (Default)</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RollingUpdate</span>
+<span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">maxSurge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25%</span><span class="w">        </span><span class="c1"># Extra pods during update</span>
+<span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25%</span><span class="w">  </span><span class="c1"># Pods that can be down</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>Old pods:  [v1] [v1] [v1] [v1]
+           ─────────────────────▶
+Update:    [v1] [v1] [v1] [v2]   Start v2
+           [v1] [v1] [v2] [v2]   More v2
+           [v1] [v2] [v2] [v2]   Almost done
+           [v2] [v2] [v2] [v2]   Complete
+</code></pre></div>
+
+<h3 id="recreate">Recreate</h3>
+<p>Kill all old pods, then create new:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recreate</span>
+</code></pre></div>
+
+<p><strong>Use when:</strong> App can't run multiple versions simultaneously.</p>
+<h3 id="blue-green">Blue-Green</h3>
+<p>Two deployments, switch service:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Blue deployment (current)</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-blue</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">blue</span>
+
+<span class="c1"># Green deployment (new)</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-green</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">green</span>
+
+<span class="c1"># Service - switch selector to change traffic</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">blue</span><span class="w">   </span><span class="c1"># Change to &#39;green&#39; to switch</span>
+</code></pre></div>
+
+<h3 id="canary">Canary</h3>
+<p>Gradually shift traffic:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Stable deployment (90%)</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<span class="w">        </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stable</span>
+
+<span class="c1"># Canary deployment (10%)</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<span class="w">        </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">canary</span>
+
+<span class="c1"># Service selects both (by app label only)</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span><span class="w">  </span><span class="c1"># Matches both versions</span>
+</code></pre></div>
+
+<h3 id="rollback">Rollback</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># View history</span>
+kubectl<span class="w"> </span>rollout<span class="w"> </span><span class="nb">history</span><span class="w"> </span>deployment/myapp
+
+<span class="c1"># Rollback to previous</span>
+kubectl<span class="w"> </span>rollout<span class="w"> </span>undo<span class="w"> </span>deployment/myapp
+
+<span class="c1"># Rollback to specific revision</span>
+kubectl<span class="w"> </span>rollout<span class="w"> </span>undo<span class="w"> </span>deployment/myapp<span class="w"> </span>--to-revision<span class="o">=</span><span class="m">2</span>
+
+<span class="c1"># Check status</span>
+kubectl<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/myapp
+</code></pre></div>
+
+<hr />
+<h2 id="health-checks">Health Checks</h2>
+<h3 id="liveness-probe">Liveness Probe</h3>
+<p>"Is the container alive?" If fails, container is restarted.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">livenessProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">httpGet</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/healthz</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">  </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">    </span><span class="c1"># Wait before first check</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w">          </span><span class="c1"># Check every 10s</span>
+<span class="w">  </span><span class="nt">timeoutSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">          </span><span class="c1"># Timeout per check</span>
+<span class="w">  </span><span class="nt">failureThreshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">        </span><span class="c1"># Restart after 3 failures</span>
+</code></pre></div>
+
+<h3 id="readiness-probe">Readiness Probe</h3>
+<p>"Is the container ready for traffic?" If fails, removed from service endpoints.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">readinessProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">httpGet</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/ready</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">  </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">failureThreshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</code></pre></div>
+
+<h3 id="startup-probe">Startup Probe</h3>
+<p>For slow-starting containers. Disables liveness/readiness until passes.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">startupProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">httpGet</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/healthz</span>
+<span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">  </span><span class="nt">failureThreshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">       </span><span class="c1"># 30 * 10s = 5 min to start</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</code></pre></div>
+
+<h3 id="probe-types">Probe Types</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># HTTP GET</span>
+<span class="nt">httpGet</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/health</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+
+<span class="c1"># TCP Socket (just checks port is open)</span>
+<span class="nt">tcpSocket</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3306</span>
+
+<span class="c1"># Exec command (success = exit code 0)</span>
+<span class="nt">exec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">command</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/healthy</span>
+</code></pre></div>
+
+<hr />
+<h2 id="scaling">Scaling</h2>
+<h3 id="manual-scaling">Manual Scaling</h3>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>scale<span class="w"> </span>deployment<span class="w"> </span>myapp<span class="w"> </span>--replicas<span class="o">=</span><span class="m">5</span>
+</code></pre></div>
+
+<h3 id="horizontal-pod-autoscaler-hpa">Horizontal Pod Autoscaler (HPA)</h3>
+<p>Scale based on metrics:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autoscaling/v2</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HorizontalPodAutoscaler</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-hpa</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">scaleTargetRef</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<span class="w">  </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">metrics</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Resource</span>
+<span class="w">    </span><span class="nt">resource</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cpu</span>
+<span class="w">      </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Utilization</span>
+<span class="w">        </span><span class="nt">averageUtilization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span><span class="w">   </span><span class="c1"># Scale when CPU &gt; 70%</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1"># Create HPA quickly</span>
+kubectl<span class="w"> </span>autoscale<span class="w"> </span>deployment<span class="w"> </span>myapp<span class="w"> </span>--min<span class="o">=</span><span class="m">2</span><span class="w"> </span>--max<span class="o">=</span><span class="m">10</span><span class="w"> </span>--cpu-percent<span class="o">=</span><span class="m">70</span>
+
+<span class="c1"># Check HPA status</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>hpa
+</code></pre></div>
+
+<h3 id="vertical-pod-autoscaler-vpa">Vertical Pod Autoscaler (VPA)</h3>
+<p>Adjust resource requests/limits (requires VPA installed):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">autoscaling.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VerticalPodAutoscaler</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-vpa</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">targetRef</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<span class="w">  </span><span class="nt">updatePolicy</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">updateMode</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Auto&quot;</span><span class="w">  </span><span class="c1"># or &quot;Off&quot; for recommendations only</span>
+</code></pre></div>
+
+<hr />
+<h2 id="networking-debugging">Networking Debugging</h2>
+<h3 id="dns-issues">DNS Issues</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run debug pod</span>
+kubectl<span class="w"> </span>run<span class="w"> </span>debug<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--image<span class="o">=</span>busybox<span class="w"> </span>--<span class="w"> </span>/bin/sh
+
+<span class="c1"># Test DNS</span>
+nslookup<span class="w"> </span>kubernetes.default
+nslookup<span class="w"> </span>my-service.my-namespace.svc.cluster.local
+
+<span class="c1"># Check DNS pods</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>-l<span class="w"> </span>k8s-app<span class="o">=</span>kube-dns
+</code></pre></div>
+
+<h3 id="service-not-reachable">Service Not Reachable</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check service exists and has endpoints</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>my-service
+kubectl<span class="w"> </span>get<span class="w"> </span>endpoints<span class="w"> </span>my-service
+
+<span class="c1"># No endpoints? Check selector matches pod labels</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>--show-labels
+kubectl<span class="w"> </span>describe<span class="w"> </span>svc<span class="w"> </span>my-service<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Selector
+
+<span class="c1"># Test from within cluster</span>
+kubectl<span class="w"> </span>run<span class="w"> </span>curl<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--image<span class="o">=</span>curlimages/curl<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>curl<span class="w"> </span>http://my-service:80
+</code></pre></div>
+
+<h3 id="network-policies">Network Policies</h3>
+<p>Check if network policies are blocking traffic:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># List network policies</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>networkpolicies<span class="w"> </span>-A
+
+<span class="c1"># Describe policy</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>networkpolicy<span class="w"> </span>&lt;name&gt;
+</code></pre></div>
+
+<hr />
+<h2 id="security-basics">Security Basics</h2>
+<h3 id="rbac-role-based-access-control">RBAC (Role-Based Access Control)</h3>
+<p><strong>Role</strong> (namespaced) or <strong>ClusterRole</strong> (cluster-wide):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pod-reader</span>
+<span class="nt">rules</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;pods&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">verbs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;get&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;list&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;watch&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<p><strong>RoleBinding</strong> or <strong>ClusterRoleBinding</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RoleBinding</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read-pods</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<span class="nt">subjects</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jane</span>
+<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+<span class="nt">roleRef</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Role</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pod-reader</span>
+<span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+</code></pre></div>
+
+<h3 id="security-context">Security Context</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runAsNonRoot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">    </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">allowPrivilegeEscalation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">capabilities</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">drop</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;ALL&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<h3 id="pod-security-standards">Pod Security Standards</h3>
+<p>Labels on namespace to enforce security:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Namespace</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pod-security.kubernetes.io/enforce</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restricted</span>
+<span class="w">    </span><span class="nt">pod-security.kubernetes.io/audit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restricted</span>
+<span class="w">    </span><span class="nt">pod-security.kubernetes.io/warn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restricted</span>
+</code></pre></div>
+
+<hr />
+<h2 id="helm-basics">Helm Basics</h2>
+<h3 id="what-is-helm">What is Helm?</h3>
+<p>Package manager for Kubernetes. Charts = packages of K8s manifests.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Install Helm</span>
+brew<span class="w"> </span>install<span class="w"> </span>helm
+
+<span class="c1"># Add repository</span>
+helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>bitnami<span class="w"> </span>https://charts.bitnami.com/bitnami
+helm<span class="w"> </span>repo<span class="w"> </span>update
+
+<span class="c1"># Search charts</span>
+helm<span class="w"> </span>search<span class="w"> </span>repo<span class="w"> </span>nginx
+helm<span class="w"> </span>search<span class="w"> </span>hub<span class="w"> </span>nginx<span class="w">  </span><span class="c1"># Search Artifact Hub</span>
+
+<span class="c1"># Install chart</span>
+helm<span class="w"> </span>install<span class="w"> </span>my-release<span class="w"> </span>bitnami/nginx
+
+<span class="c1"># Install with values</span>
+helm<span class="w"> </span>install<span class="w"> </span>my-release<span class="w"> </span>bitnami/nginx<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="w"> </span><span class="nv">replicaCount</span><span class="o">=</span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="w"> </span>service.type<span class="o">=</span>LoadBalancer
+
+<span class="c1"># Or with values file</span>
+helm<span class="w"> </span>install<span class="w"> </span>my-release<span class="w"> </span>bitnami/nginx<span class="w"> </span>-f<span class="w"> </span>values.yaml
+</code></pre></div>
+
+<h3 id="managing-releases">Managing Releases</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># List releases</span>
+helm<span class="w"> </span>list
+helm<span class="w"> </span>list<span class="w"> </span>-A<span class="w">               </span><span class="c1"># All namespaces</span>
+
+<span class="c1"># Upgrade</span>
+helm<span class="w"> </span>upgrade<span class="w"> </span>my-release<span class="w"> </span>bitnami/nginx<span class="w"> </span>--set<span class="w"> </span><span class="nv">replicaCount</span><span class="o">=</span><span class="m">5</span>
+
+<span class="c1"># Rollback</span>
+helm<span class="w"> </span>rollback<span class="w"> </span>my-release<span class="w"> </span><span class="m">1</span>
+
+<span class="c1"># Uninstall</span>
+helm<span class="w"> </span>uninstall<span class="w"> </span>my-release
+
+<span class="c1"># See what would be installed (dry run)</span>
+helm<span class="w"> </span>install<span class="w"> </span>my-release<span class="w"> </span>bitnami/nginx<span class="w"> </span>--dry-run
+
+<span class="c1"># Get values</span>
+helm<span class="w"> </span>get<span class="w"> </span>values<span class="w"> </span>my-release
+helm<span class="w"> </span>show<span class="w"> </span>values<span class="w"> </span>bitnami/nginx<span class="w">   </span><span class="c1"># Default values</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="sidecar-container">Sidecar Container</h3>
+<p>Multiple containers in one pod:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp:v1</span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs</span>
+<span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/app</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">log-shipper</span><span class="w">           </span><span class="c1"># Sidecar</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fluentd</span>
+<span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs</span>
+<span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/app</span>
+<span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs</span>
+<span class="w">    </span><span class="nt">emptyDir</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+</code></pre></div>
+
+<h3 id="init-container">Init Container</h3>
+<p>Run before main containers:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">initContainers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wait-for-db</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;sh&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;-c&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span>
+<span class="w">      </span><span class="s">&#39;until</span><span class="nv"> </span><span class="s">nc</span><span class="nv"> </span><span class="s">-z</span><span class="nv"> </span><span class="s">database</span><span class="nv"> </span><span class="s">5432;</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">2;</span><span class="nv"> </span><span class="s">done&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp:v1</span>
+</code></pre></div>
+
+<h3 id="jobs-for-database-migrations">Jobs for Database Migrations</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-migrate</span>
+<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">    </span><span class="s">&quot;helm.sh/hook&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pre-upgrade</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">migrate</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp:v1</span>
+<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;./migrate.sh&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">restartPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Never</span>
+<span class="w">  </span><span class="nt">backoffLimit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</code></pre></div>
+
+<h3 id="external-secrets">External Secrets</h3>
+<p>Don't store secrets in Git. Use external secrets operators:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># With External Secrets Operator</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">external-secrets.io/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExternalSecret</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-credentials</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">secretStoreRef</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-secrets-manager</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SecretStore</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-credentials</span>
+<span class="w">  </span><span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretKey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">password</span>
+<span class="w">    </span><span class="nt">remoteRef</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production/database</span>
+<span class="w">      </span><span class="nt">property</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">password</span>
+</code></pre></div>
+
+<hr />
+<h2 id="gotchas-tips">Gotchas &amp; Tips</h2>
+<h3 id="1-resources-are-required-in-production">1. Resources Are Required in Production</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Always set requests and limits</span>
+<span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;100m&quot;</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;128Mi&quot;</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;256Mi&quot;</span>
+</code></pre></div>
+
+<p>Without them:<br />
+- Pods can be evicted unpredictably<br />
+- One pod can starve others<br />
+- Autoscaling won't work</p>
+<h3 id="2-use-specific-image-tags">2. Use Specific Image Tags</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ Bad</span>
+<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp:latest</span>
+
+<span class="c1"># ✓ Good</span>
+<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp:v1.2.3</span>
+<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp@sha256:abc123...</span><span class="w">  </span><span class="c1"># Even better</span>
+</code></pre></div>
+
+<p><code>latest</code> is unpredictable and breaks rollbacks.</p>
+<h3 id="3-configure-probes-properly">3. Configure Probes Properly</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ No probes = K8s can&#39;t know if app is healthy</span>
+
+<span class="c1"># ❌ Too aggressive</span>
+<span class="nt">livenessProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">    </span><span class="c1"># App hasn&#39;t started!</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">          </span><span class="c1"># Too frequent</span>
+
+<span class="c1"># ✓ Good</span>
+<span class="nt">livenessProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">   </span><span class="c1"># Give app time to start</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">timeoutSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">failureThreshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w">       </span><span class="c1"># Don&#39;t kill on first failure</span>
+</code></pre></div>
+
+<h3 id="4-graceful-shutdown">4. Graceful Shutdown</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w">  </span><span class="c1"># Default is 30</span>
+<span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">lifecycle</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">preStop</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">exec</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/sh&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;sleep</span><span class="nv"> </span><span class="s">10&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<p>Handle SIGTERM in your app to finish current requests.</p>
+<h3 id="5-dont-use-default-namespace">5. Don't Use Default Namespace</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create namespace for your app</span>
+kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>myapp
+
+<span class="c1"># Always specify namespace</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>manifest.yaml<span class="w"> </span>-n<span class="w"> </span>myapp
+</code></pre></div>
+
+<h3 id="6-pod-disruption-budget">6. Pod Disruption Budget</h3>
+<p>Prevent too many pods going down during node maintenance:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PodDisruptionBudget</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp-pdb</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">        </span><span class="c1"># Or maxUnavailable: 1</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+</code></pre></div>
+
+<h3 id="7-anti-affinity-for-high-availability">7. Anti-Affinity for High Availability</h3>
+<p>Spread pods across nodes:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">affinity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">podAntiAffinity</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">preferredDuringSchedulingIgnoredDuringExecution</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">        </span><span class="nt">podAffinityTerm</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">labelSelector</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myapp</span>
+<span class="w">          </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes.io/hostname</span>
+</code></pre></div>
+
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="pod-status-meanings">Pod Status Meanings</h3>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pending</td>
+<td>Waiting to be scheduled</td>
+</tr>
+<tr>
+<td>ContainerCreating</td>
+<td>Pulling image, setting up</td>
+</tr>
+<tr>
+<td>Running</td>
+<td>At least one container running</td>
+</tr>
+<tr>
+<td>Succeeded</td>
+<td>All containers completed successfully</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>All containers terminated, at least one failed</td>
+</tr>
+<tr>
+<td>Unknown</td>
+<td>Node communication lost</td>
+</tr>
+</tbody>
+</table>
+<h3 id="useful-aliases">Useful Aliases</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">alias</span><span class="w"> </span><span class="nv">k</span><span class="o">=</span><span class="s1">&#39;kubectl&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kgp</span><span class="o">=</span><span class="s1">&#39;kubectl get pods&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kgs</span><span class="o">=</span><span class="s1">&#39;kubectl get svc&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kgd</span><span class="o">=</span><span class="s1">&#39;kubectl get deployments&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kga</span><span class="o">=</span><span class="s1">&#39;kubectl get all&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kd</span><span class="o">=</span><span class="s1">&#39;kubectl describe&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kl</span><span class="o">=</span><span class="s1">&#39;kubectl logs&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">ke</span><span class="o">=</span><span class="s1">&#39;kubectl exec -it&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kaf</span><span class="o">=</span><span class="s1">&#39;kubectl apply -f&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kdf</span><span class="o">=</span><span class="s1">&#39;kubectl delete -f&#39;</span>
+</code></pre></div>
+
+<h3 id="debug-commands-cheat-sheet">Debug Commands Cheat Sheet</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Is it running?</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods
+
+<span class="c1"># Why isn&#39;t it running?</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>&lt;name&gt;
+kubectl<span class="w"> </span>get<span class="w"> </span>events<span class="w"> </span>--sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span>
+
+<span class="c1"># What&#39;s it outputting?</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>&lt;pod&gt;<span class="w"> </span><span class="o">[</span>-f<span class="o">]</span><span class="w"> </span><span class="o">[</span>--previous<span class="o">]</span>
+
+<span class="c1"># What&#39;s inside?</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;pod&gt;<span class="w"> </span>--<span class="w"> </span>/bin/sh
+
+<span class="c1"># Can I reach it?</span>
+kubectl<span class="w"> </span>port-forward<span class="w"> </span>pod/&lt;pod&gt;<span class="w"> </span><span class="m">8080</span>:80
+kubectl<span class="w"> </span>run<span class="w"> </span>curl<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--image<span class="o">=</span>curlimages/curl<span class="w"> </span>--<span class="w"> </span>curl<span class="w"> </span>&lt;url&gt;
+
+<span class="c1"># What&#39;s the resource usage?</span>
+kubectl<span class="w"> </span>top<span class="w"> </span>pods
+kubectl<span class="w"> </span>top<span class="w"> </span>nodes
+</code></pre></div>
+</body>
+</html>

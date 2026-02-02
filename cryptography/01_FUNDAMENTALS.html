@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography Fundamentals</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="cryptography-fundamentals">Cryptography Fundamentals</h1>
+<p>The essential concepts behind securing data, without the math-heavy proofs.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#the-big-picture">The Big Picture</a></li>
+<li><a href="#symmetric-encryption">Symmetric Encryption</a></li>
+<li><a href="#asymmetric-encryption">Asymmetric Encryption</a></li>
+<li><a href="#hash-functions">Hash Functions</a></li>
+<li><a href="#digital-signatures">Digital Signatures</a></li>
+<li><a href="#key-exchange">Key Exchange</a></li>
+<li><a href="#certificates--pki">Certificates &amp; PKI</a></li>
+<li><a href="#how-tlshttps-actually-works">How TLS/HTTPS Actually Works</a></li>
+<li><a href="#random-numbers">Random Numbers</a></li>
+<li><a href="#algorithm-cheat-sheet">Algorithm Cheat Sheet</a></li>
+</ol>
+<hr />
+<h2 id="the-big-picture">The Big Picture</h2>
+<p>Cryptography solves four fundamental problems:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Confidentiality</strong></td>
+<td>Encryption</td>
+<td>Only intended recipient can read</td>
+</tr>
+<tr>
+<td><strong>Integrity</strong></td>
+<td>Hashing/MAC</td>
+<td>Data hasn't been tampered with</td>
+</tr>
+<tr>
+<td><strong>Authentication</strong></td>
+<td>Signatures/Certificates</td>
+<td>Sender is who they claim to be</td>
+</tr>
+<tr>
+<td><strong>Non-repudiation</strong></td>
+<td>Digital Signatures</td>
+<td>Sender can't deny sending</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│                    CRYPTOGRAPHY LANDSCAPE                        │
+│                                                                  │
+│  Symmetric Crypto              Asymmetric Crypto                │
+│  ────────────────              ─────────────────                │
+│  Same key to encrypt           Different keys:                  │
+│  and decrypt                   Public (share) + Private (keep)  │
+│                                                                  │
+│  ✓ Very fast                   ✓ Solves key distribution        │
+│  ✗ Key distribution problem    ✗ Much slower (100-1000x)        │
+│                                                                  │
+│  Uses: Bulk data encryption    Uses: Key exchange, signatures   │
+│                                                                  │
+│  ─────────────────────────────────────────────────────────────  │
+│                                                                  │
+│  Hash Functions                Digital Signatures               │
+│  ──────────────                ──────────────────               │
+│  One-way: can&#39;t reverse        Prove authenticity               │
+│  Fixed output size             Only owner of private key        │
+│                                can create                        │
+│                                                                  │
+│  Uses: Integrity, passwords    Uses: Auth, non-repudiation      │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h2 id="symmetric-encryption">Symmetric Encryption</h2>
+<p><strong>Same key</strong> for encryption and decryption.</p>
+<div class="highlight"><pre><span></span><code>Plaintext: &quot;Hello World&quot;
+    │
+    ▼
+┌─────────────────────┐
+│   Encrypt with      │ ◀── Key: &quot;mysecretkey123&quot;
+│   AES-256           │
+└─────────┬───────────┘
+          │
+          ▼
+Ciphertext: &quot;3J8fK2mNpQ...&quot;
+          │
+          ▼
+┌─────────────────────┐
+│   Decrypt with      │ ◀── Same Key: &quot;mysecretkey123&quot;
+│   AES-256           │
+└─────────┬───────────┘
+          │
+          ▼
+Plaintext: &quot;Hello World&quot;
+</code></pre></div>
+
+<h3 id="block-ciphers-vs-stream-ciphers">Block Ciphers vs Stream Ciphers</h3>
+<p><strong>Block Cipher:</strong> Encrypts fixed-size blocks (e.g., 128 bits)<br />
+- AES, DES, Blowfish<br />
+- Need a "mode of operation" for data larger than one block</p>
+<p><strong>Stream Cipher:</strong> Encrypts one bit/byte at a time<br />
+- ChaCha20, RC4 (deprecated)<br />
+- Good for streaming data</p>
+<h3 id="block-cipher-modes">Block Cipher Modes</h3>
+<p>How to handle data larger than one block:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ECB</strong></td>
+<td>Each block encrypted independently</td>
+<td>❌ Never use (patterns leak)</td>
+</tr>
+<tr>
+<td><strong>CBC</strong></td>
+<td>Each block XORed with previous</td>
+<td>⚠️ Legacy, needs padding</td>
+</tr>
+<tr>
+<td><strong>CTR</strong></td>
+<td>Block cipher → stream cipher</td>
+<td>✓ Parallelizable</td>
+</tr>
+<tr>
+<td><strong>GCM</strong></td>
+<td>CTR + authentication</td>
+<td>✓ <strong>Recommended</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why ECB is dangerous:</strong></p>
+<div class="highlight"><pre><span></span><code>Original image          ECB encrypted          CBC/GCM encrypted
+┌────────────┐         ┌────────────┐         ┌────────────┐
+│ ██████████ │         │ ████  ████ │         │ ░▒▓█░▒▓█░▒ │
+│ ██      ██ │   →     │ ████  ████ │         │ ▓█░▒▓█░▒▓█ │
+│ ██████████ │         │ ██████████ │         │ ░▒▓█░▒▓█░▒ │
+└────────────┘         └────────────┘         └────────────┘
+                       Pattern preserved!     Looks random
+</code></pre></div>
+
+<h3 id="aes-advanced-encryption-standard">AES (Advanced Encryption Standard)</h3>
+<p>The gold standard for symmetric encryption:</p>
+<ul>
+<li><strong>AES-128</strong>: 128-bit key, very secure</li>
+<li><strong>AES-192</strong>: 192-bit key</li>
+<li><strong>AES-256</strong>: 256-bit key, used for top secret</li>
+</ul>
+<p><strong>Always use AES-GCM</strong> (Galois/Counter Mode):<br />
+- Provides encryption + authentication<br />
+- Detects if ciphertext was tampered<br />
+- Fast (hardware acceleration on most CPUs)</p>
+<h3 id="the-ivnonce">The IV/Nonce</h3>
+<p><strong>Never encrypt twice with the same key + IV combination!</strong></p>
+<div class="highlight"><pre><span></span><code>Plaintext + Key + IV → Ciphertext
+
+The IV (Initialization Vector) or Nonce:
+- Makes same plaintext produce different ciphertext
+- Must be unique for each encryption with same key
+- Usually 12-16 bytes of random data
+- Can be sent alongside ciphertext (not secret)
+</code></pre></div>
+
+<hr />
+<h2 id="asymmetric-encryption">Asymmetric Encryption</h2>
+<p><strong>Two keys</strong>: Public key (share freely) and Private key (keep secret).</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ Key Pair Generation                                         │
+│                                                             │
+│     ┌───────────────┐                                       │
+│     │   Generate    │                                       │
+│     │   Key Pair    │                                       │
+│     └───────┬───────┘                                       │
+│             │                                               │
+│     ┌───────┴───────┐                                       │
+│     ▼               ▼                                       │
+│ ┌─────────┐   ┌─────────────┐                               │
+│ │ Public  │   │   Private   │                               │
+│ │  Key    │   │    Key      │                               │
+│ └────┬────┘   └──────┬──────┘                               │
+│      │               │                                      │
+│      ▼               ▼                                      │
+│  Share with      Keep secret!                               │
+│   everyone       Never share                                │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="two-uses-of-asymmetric-crypto">Two Uses of Asymmetric Crypto</h3>
+<p><strong>1. Encryption (Confidentiality):</strong></p>
+<div class="highlight"><pre><span></span><code>Encrypt with PUBLIC key  → Only PRIVATE key can decrypt
+
+Alice wants to send secret to Bob:
+1. Alice encrypts with Bob&#39;s PUBLIC key
+2. Only Bob can decrypt with his PRIVATE key
+</code></pre></div>
+
+<p><strong>2. Signing (Authentication):</strong></p>
+<div class="highlight"><pre><span></span><code>Sign with PRIVATE key → Anyone can verify with PUBLIC key
+
+Bob wants to prove he sent a message:
+1. Bob signs with his PRIVATE key
+2. Anyone can verify with Bob&#39;s PUBLIC key
+</code></pre></div>
+
+<h3 id="rsa">RSA</h3>
+<p>The classic asymmetric algorithm (1977):</p>
+<ul>
+<li>Based on difficulty of factoring large primes</li>
+<li>Key sizes: 2048-bit minimum, 4096-bit recommended</li>
+<li><strong>Slow</strong> - only used for small data or key exchange</li>
+<li>Being phased out in favor of elliptic curves</li>
+</ul>
+<h3 id="elliptic-curve-cryptography-ecc">Elliptic Curve Cryptography (ECC)</h3>
+<p>Modern asymmetric crypto:</p>
+<ul>
+<li>Much smaller keys for same security</li>
+<li>Faster than RSA</li>
+<li>Used in TLS, Bitcoin, Signal, etc.</li>
+</ul>
+<p><strong>Key size comparison (equivalent security):</strong></p>
+<table>
+<thead>
+<tr>
+<th>RSA</th>
+<th>ECC</th>
+<th>Security Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2048-bit</td>
+<td>256-bit</td>
+<td>112-bit</td>
+</tr>
+<tr>
+<td>3072-bit</td>
+<td>384-bit</td>
+<td>128-bit</td>
+</tr>
+<tr>
+<td>4096-bit</td>
+<td>512-bit</td>
+<td>140-bit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Common curves:</strong><br />
+- <strong>P-256 (secp256r1)</strong>: NIST standard, widely used<br />
+- <strong>P-384 (secp384r1)</strong>: Higher security<br />
+- <strong>Curve25519</strong>: Modern, designed for security (used in Signal)<br />
+- <strong>secp256k1</strong>: Used in Bitcoin</p>
+<hr />
+<h2 id="hash-functions">Hash Functions</h2>
+<p><strong>One-way function</strong>: Easy to compute, impossible to reverse.</p>
+<div class="highlight"><pre><span></span><code>Input (any size)              Output (fixed size)
+─────────────────             ───────────────────
+
+&quot;Hello&quot;           ──SHA-256──▶ 185f8db32271fe25f561...
+&quot;Hello &quot;          ──SHA-256──▶ 7f83b1657ff1fc53b92d...  (completely different!)
+&lt;1GB file&gt;        ──SHA-256──▶ 9f86d081884c7d659a2f...  (still 256 bits)
+</code></pre></div>
+
+<h3 id="properties-of-cryptographic-hashes">Properties of Cryptographic Hashes</h3>
+<ol>
+<li><strong>Deterministic</strong>: Same input → same output, always</li>
+<li><strong>Fast</strong>: Quick to compute</li>
+<li><strong>One-way</strong>: Can't get input from output</li>
+<li><strong>Collision-resistant</strong>: Hard to find two inputs with same output</li>
+<li><strong>Avalanche effect</strong>: Small input change → completely different output</li>
+</ol>
+<h3 id="common-hash-functions">Common Hash Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Output Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MD5</td>
+<td>128-bit</td>
+<td>❌ Broken (collisions found)</td>
+</tr>
+<tr>
+<td>SHA-1</td>
+<td>160-bit</td>
+<td>❌ Broken (don't use for security)</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>256-bit</td>
+<td>✓ Secure</td>
+</tr>
+<tr>
+<td>SHA-384</td>
+<td>384-bit</td>
+<td>✓ Secure</td>
+</tr>
+<tr>
+<td>SHA-512</td>
+<td>512-bit</td>
+<td>✓ Secure</td>
+</tr>
+<tr>
+<td>SHA-3</td>
+<td>Variable</td>
+<td>✓ Newest standard</td>
+</tr>
+<tr>
+<td>BLAKE2</td>
+<td>Variable</td>
+<td>✓ Fast and secure</td>
+</tr>
+<tr>
+<td>BLAKE3</td>
+<td>256-bit</td>
+<td>✓ Very fast</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hash-use-cases">Hash Use Cases</h3>
+<p><strong>1. Data Integrity:</strong></p>
+<div class="highlight"><pre><span></span><code>Download file + published hash
+Compute hash of downloaded file
+Compare → if match, file wasn&#39;t corrupted/tampered
+</code></pre></div>
+
+<p><strong>2. Password Storage</strong> (with special password hashes):</p>
+<div class="highlight"><pre><span></span><code>Store: hash(password + salt)
+Verify: hash(input + salt) == stored_hash
+</code></pre></div>
+
+<p><strong>3. Commit IDs:</strong></p>
+<div class="highlight"><pre><span></span><code>Git commit: SHA-1 hash of content + metadata
+</code></pre></div>
+
+<p><strong>4. Deduplication:</strong></p>
+<div class="highlight"><pre><span></span><code>Same hash = same content (with high probability)
+</code></pre></div>
+
+<h3 id="hmac-hash-based-message-authentication-code">HMAC (Hash-based Message Authentication Code)</h3>
+<p>Hash + secret key = proof of authenticity + integrity</p>
+<div class="highlight"><pre><span></span><code>HMAC(key, message) → authentication tag
+
+Only someone with the key can:
+1. Create a valid tag
+2. Verify a tag
+
+Used in: API authentication, cookie signing, JWT
+</code></pre></div>
+
+<hr />
+<h2 id="digital-signatures">Digital Signatures</h2>
+<p><strong>Prove a message came from you</strong> and wasn't modified.</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ Signing (by sender)                                         │
+│                                                             │
+│   Message: &quot;Transfer $100 to Alice&quot;                         │
+│                │                                            │
+│                ▼                                            │
+│   ┌───────────────────────┐                                 │
+│   │   Hash the message    │                                 │
+│   └───────────┬───────────┘                                 │
+│               │                                             │
+│               ▼                                             │
+│   ┌───────────────────────┐                                 │
+│   │  Encrypt hash with    │ ◀── Private Key                 │
+│   │  PRIVATE key          │                                 │
+│   └───────────┬───────────┘                                 │
+│               │                                             │
+│               ▼                                             │
+│         Signature                                           │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ Verification (by anyone)                                    │
+│                                                             │
+│   Received: Message + Signature                             │
+│                │          │                                 │
+│                ▼          ▼                                 │
+│   ┌──────────────┐  ┌──────────────────┐                   │
+│   │ Hash message │  │ Decrypt sig with │◀── Public Key     │
+│   └──────┬───────┘  │ PUBLIC key       │                   │
+│          │          └────────┬─────────┘                    │
+│          │                   │                              │
+│          ▼                   ▼                              │
+│       Hash A              Hash B                            │
+│          │                   │                              │
+│          └─────────┬─────────┘                              │
+│                    ▼                                        │
+│             Compare hashes                                  │
+│         Match? → Valid signature!                           │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="signature-algorithms">Signature Algorithms</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RSA-PSS</strong></td>
+<td>RSA-based, widely supported</td>
+</tr>
+<tr>
+<td><strong>ECDSA</strong></td>
+<td>Elliptic curve based, smaller signatures</td>
+</tr>
+<tr>
+<td><strong>EdDSA (Ed25519)</strong></td>
+<td>Modern, fast, recommended</td>
+</tr>
+</tbody>
+</table>
+<h3 id="why-hash-then-sign">Why Hash Then Sign?</h3>
+<ol>
+<li><strong>Speed</strong>: Signing is slow; hash is fast + fixed size</li>
+<li><strong>Signature size</strong>: Signature of hash = signature of any size message</li>
+<li><strong>Security</strong>: Some signature schemes need fixed-size input</li>
+</ol>
+<hr />
+<h2 id="key-exchange">Key Exchange</h2>
+<p><strong>Problem</strong>: How do two parties agree on a secret key over an insecure channel?</p>
+<h3 id="diffie-hellman-key-exchange">Diffie-Hellman Key Exchange</h3>
+<div class="highlight"><pre><span></span><code>Alice                                              Bob
+──────                                            ─────
+Has: private value &#39;a&#39;                    Has: private value &#39;b&#39;
+     public params (g, p)                      public params (g, p)
+
+Computes: A = g^a mod p    ──────────▶    Receives A
+          (public value)
+
+Receives B                 ◀──────────    Computes: B = g^b mod p
+                                                    (public value)
+
+Computes: s = B^a mod p                   Computes: s = A^b mod p
+             = g^(ab) mod p                          = g^(ab) mod p
+
+     Shared Secret: s                          Shared Secret: s
+        (identical!)                              (identical!)
+</code></pre></div>
+
+<p><strong>The magic</strong>: <br />
+- Anyone can see A, B, g, p<br />
+- But computing 'ab' from just A, B is computationally infeasible</p>
+<h3 id="ecdh-elliptic-curve-diffie-hellman">ECDH (Elliptic Curve Diffie-Hellman)</h3>
+<p>Same concept, but using elliptic curves:<br />
+- Smaller values, same security<br />
+- Faster computation<br />
+- Standard in modern TLS</p>
+<hr />
+<h2 id="certificates-pki">Certificates &amp; PKI</h2>
+<p><strong>Problem</strong>: How do you know a public key really belongs to who they claim?</p>
+<h3 id="the-certificate">The Certificate</h3>
+<p>A certificate binds an identity to a public key, signed by a trusted authority.</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ X.509 Certificate                                           │
+│                                                             │
+│   Subject: CN=www.google.com                                │
+│   Issuer: CN=GTS CA 1C3 (Certificate Authority)             │
+│   Valid: Jan 2024 - Apr 2024                                │
+│   Public Key: [Google&#39;s public key]                         │
+│   ...                                                       │
+│                                                             │
+│   ─────────────────────────────────────────────────────     │
+│   Signature: [Signed by GTS CA 1C3&#39;s private key]           │
+│   (Anyone can verify using CA&#39;s public key)                 │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="chain-of-trust">Chain of Trust</h3>
+<div class="highlight"><pre><span></span><code>Root CA (self-signed, pre-installed in OS/browser)
+    │
+    │ signs
+    ▼
+Intermediate CA
+    │
+    │ signs
+    ▼
+End-Entity Certificate (website&#39;s cert)
+    │
+    │ contains
+    ▼
+Website&#39;s Public Key
+</code></pre></div>
+
+<p><strong>Your browser/OS ships with ~100-150 trusted root CAs.</strong></p>
+<h3 id="certificate-validation">Certificate Validation</h3>
+<p>When you visit https://example.com:</p>
+<ol>
+<li>Server sends its certificate (+ intermediate certs)</li>
+<li>Browser checks:</li>
+<li>Is cert signed by trusted CA (or chain to trusted CA)?</li>
+<li>Is cert not expired?</li>
+<li>Does cert match the domain (example.com)?</li>
+<li>Is cert not revoked (CRL/OCSP check)?</li>
+<li>If all pass → connection is secure</li>
+</ol>
+<h3 id="certificate-transparency">Certificate Transparency</h3>
+<p>Public logs of all issued certificates:<br />
+- Anyone can monitor for suspicious certs<br />
+- Browsers require certificates to be logged<br />
+- You can check: https://crt.sh</p>
+<hr />
+<h2 id="how-tlshttps-actually-works">How TLS/HTTPS Actually Works</h2>
+<p>TLS combines everything we've learned:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ TLS 1.3 Handshake (simplified)                              │
+│                                                             │
+│ Client                                      Server          │
+│ ──────                                      ──────          │
+│                                                             │
+│ ClientHello ─────────────────────────────────▶              │
+│   • Supported cipher suites                                 │
+│   • Random value                                            │
+│   • Key share (ECDH public value)                           │
+│                                                             │
+│            ◀───────────────────────────── ServerHello       │
+│                                  • Chosen cipher suite      │
+│                                  • Random value             │
+│                                  • Key share (ECDH public)  │
+│                                  • Certificate              │
+│                                  • Certificate Verify (sig) │
+│                                  • Finished                 │
+│                                                             │
+│   [Both compute shared secret from ECDH]                    │
+│   [Derive encryption keys from shared secret]               │
+│                                                             │
+│ Finished ─────────────────────────────────▶                 │
+│   (encrypted with derived keys)                             │
+│                                                             │
+│ ═══════════════════════════════════════════════════════════ │
+│       All further communication encrypted with AES-GCM      │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="what-tls-provides">What TLS Provides</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Confidentiality</strong></td>
+<td>AES-GCM encryption</td>
+</tr>
+<tr>
+<td><strong>Integrity</strong></td>
+<td>GCM authentication tag</td>
+</tr>
+<tr>
+<td><strong>Server Authentication</strong></td>
+<td>Certificate + signature</td>
+</tr>
+<tr>
+<td><strong>Forward Secrecy</strong></td>
+<td>Ephemeral ECDH keys</td>
+</tr>
+</tbody>
+</table>
+<h3 id="forward-secrecy">Forward Secrecy</h3>
+<p>Even if server's private key is stolen later, past conversations remain secure.</p>
+<div class="highlight"><pre><span></span><code>Old TLS (RSA key exchange):
+- Client encrypts premaster secret with server&#39;s RSA public key
+- If attacker records traffic AND later gets private key → can decrypt all
+
+TLS 1.3 (ECDHE):
+- Fresh ECDH keys generated for each session
+- Session key never touches long-term private key
+- Attacker with private key can&#39;t decrypt past sessions
+</code></pre></div>
+
+<hr />
+<h2 id="random-numbers">Random Numbers</h2>
+<p><strong>Randomness is critical.</strong> Bad randomness has broken real-world crypto.</p>
+<h3 id="csprng-cryptographically-secure-prng">CSPRNG (Cryptographically Secure PRNG)</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/dev/urandom</code></td>
+<td>Linux/Mac - always available, secure</td>
+</tr>
+<tr>
+<td><code>/dev/random</code></td>
+<td>Linux - blocks if low entropy (rarely needed)</td>
+</tr>
+<tr>
+<td><code>CryptGenRandom</code></td>
+<td>Windows</td>
+</tr>
+<tr>
+<td>Hardware RNG</td>
+<td>Available on modern CPUs (RDRAND)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Never use:</strong><br />
+- <code>rand()</code> in C<br />
+- <code>Math.random()</code> in JavaScript<br />
+- <code>random.random()</code> in Python (use <code>secrets</code> module instead)</p>
+<h3 id="common-mistakes">Common Mistakes</h3>
+<div class="highlight"><pre><span></span><code>❌ Using predictable seed (time, PID)
+❌ Using non-crypto random for keys/IVs
+❌ Reusing nonces
+❌ Weak entropy at boot time (VMs, embedded)
+</code></pre></div>
+
+<hr />
+<h2 id="algorithm-cheat-sheet">Algorithm Cheat Sheet</h2>
+<h3 id="what-to-use-in-2024">What to Use in 2024+</h3>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Recommended</th>
+<th>Avoid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Symmetric Encryption</strong></td>
+<td>AES-256-GCM, ChaCha20-Poly1305</td>
+<td>DES, 3DES, AES-ECB, RC4</td>
+</tr>
+<tr>
+<td><strong>Hashing</strong></td>
+<td>SHA-256, SHA-3, BLAKE2/3</td>
+<td>MD5, SHA-1</td>
+</tr>
+<tr>
+<td><strong>Password Hashing</strong></td>
+<td>Argon2id, bcrypt, scrypt</td>
+<td>MD5, SHA-*, plain hash</td>
+</tr>
+<tr>
+<td><strong>Key Exchange</strong></td>
+<td>ECDH (Curve25519, P-256)</td>
+<td>RSA &lt; 2048, DH &lt; 2048</td>
+</tr>
+<tr>
+<td><strong>Signatures</strong></td>
+<td>Ed25519, ECDSA (P-256), RSA-PSS</td>
+<td>RSA-PKCS1v1.5 for new code</td>
+</tr>
+<tr>
+<td><strong>MAC</strong></td>
+<td>HMAC-SHA256, Poly1305</td>
+<td>HMAC-MD5, HMAC-SHA1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-sizes">Key Sizes</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Minimum</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AES</td>
+<td>128-bit</td>
+<td>256-bit</td>
+</tr>
+<tr>
+<td>RSA</td>
+<td>2048-bit</td>
+<td>3072+ bit</td>
+</tr>
+<tr>
+<td>ECDSA/ECDH</td>
+<td>256-bit (P-256)</td>
+<td>256-bit</td>
+</tr>
+<tr>
+<td>Ed25519</td>
+<td>256-bit</td>
+<td>256-bit (fixed)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-levels">Security Levels</h3>
+<div class="highlight"><pre><span></span><code>80-bit   → Breakable with resources (deprecated)
+112-bit  → Minimum acceptable
+128-bit  → Standard security
+192-bit  → High security
+256-bit  → Post-quantum resistant (symmetric)
+</code></pre></div>
+
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="symmetric-vs-asymmetric">Symmetric vs Asymmetric</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Symmetric</th>
+<th>Asymmetric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keys</td>
+<td>One shared key</td>
+<td>Public + Private pair</td>
+</tr>
+<tr>
+<td>Speed</td>
+<td>Fast (100-1000x)</td>
+<td>Slow</td>
+</tr>
+<tr>
+<td>Key length</td>
+<td>128-256 bits</td>
+<td>2048-4096 bits (RSA)</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>Bulk encryption</td>
+<td>Key exchange, signatures</td>
+</tr>
+<tr>
+<td>Examples</td>
+<td>AES, ChaCha20</td>
+<td>RSA, ECC, Ed25519</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-hybrid-approach-how-tls-works">The Hybrid Approach (How TLS Works)</h3>
+<div class="highlight"><pre><span></span><code>1. Use asymmetric crypto to exchange a symmetric key
+2. Use symmetric crypto for actual data (fast!)
+
+Best of both worlds:
+- Asymmetric solves key distribution
+- Symmetric provides speed
+</code></pre></div>
+
+<h3 id="common-file-extensions">Common File Extensions</h3>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.pem</code></td>
+<td>Base64-encoded, "-----BEGIN...-----"</td>
+</tr>
+<tr>
+<td><code>.der</code></td>
+<td>Binary encoded</td>
+</tr>
+<tr>
+<td><code>.crt</code>, <code>.cer</code></td>
+<td>Certificate</td>
+</tr>
+<tr>
+<td><code>.key</code></td>
+<td>Private key</td>
+</tr>
+<tr>
+<td><code>.p12</code>, <code>.pfx</code></td>
+<td>Bundle (cert + key, password protected)</td>
+</tr>
+<tr>
+<td><code>.csr</code></td>
+<td>Certificate signing request</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Next: <a href="./02_PRACTICAL.md">Practical Cryptography</a> - Real-world applications for robotics and apps</p>
+</body>
+</html>

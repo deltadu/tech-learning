@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Networking Fundamentals</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="networking-fundamentals">Networking Fundamentals</h1>
+<p>Everything you need to know about how the internet works, without the textbook fluff.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#the-big-picture">The Big Picture</a></li>
+<li><a href="#the-layer-model">The Layer Model</a></li>
+<li><a href="#ip-addresses--subnets">IP Addresses &amp; Subnets</a></li>
+<li><a href="#dns---the-internets-phone-book">DNS - The Internet's Phone Book</a></li>
+<li><a href="#tcp-vs-udp">TCP vs UDP</a></li>
+<li><a href="#ports--sockets">Ports &amp; Sockets</a></li>
+<li><a href="#http--https">HTTP &amp; HTTPS</a></li>
+<li><a href="#how-data-actually-travels">How Data Actually Travels</a></li>
+<li><a href="#nat--firewalls">NAT &amp; Firewalls</a></li>
+<li><a href="#common-protocols-cheat-sheet">Common Protocols Cheat Sheet</a></li>
+</ol>
+<hr />
+<h2 id="the-big-picture">The Big Picture</h2>
+<p>The internet is just <strong>computers talking to each other</strong> using agreed-upon rules (protocols).</p>
+<div class="highlight"><pre><span></span><code>Your Computer ←→ Router ←→ ISP ←→ Internet Backbone ←→ ISP ←→ Server
+     │                              │
+     └── Your local network         └── Global network of networks
+</code></pre></div>
+
+<p><strong>Key insight</strong>: The internet is decentralized. There's no single "internet computer" - it's millions of interconnected networks.</p>
+<hr />
+<h2 id="the-layer-model">The Layer Model</h2>
+<p>Networks are organized in <strong>layers</strong>. Each layer only talks to the layer above/below it.</p>
+<h3 id="the-practical-model-tcpip-4-layers">The Practical Model (TCP/IP - 4 Layers)</h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│  APPLICATION LAYER                                          │
+│  What you interact with: HTTP, HTTPS, DNS, SSH, FTP, SMTP   │
+│  &quot;I want to load google.com&quot;                                │
+├─────────────────────────────────────────────────────────────┤
+│  TRANSPORT LAYER                                            │
+│  How data is delivered: TCP (reliable) or UDP (fast)        │
+│  &quot;Break into packets, ensure delivery, reassemble&quot;          │
+├─────────────────────────────────────────────────────────────┤
+│  NETWORK/INTERNET LAYER                                     │
+│  Addressing &amp; routing: IP (IPv4, IPv6)                      │
+│  &quot;Route this to IP address 142.250.80.46&quot;                   │
+├─────────────────────────────────────────────────────────────┤
+│  LINK/NETWORK ACCESS LAYER                                  │
+│  Physical transmission: Ethernet, WiFi, 5G                  │
+│  &quot;Send these electrical signals over the wire&quot;              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="why-layers-matter">Why layers matter</h3>
+<ul>
+<li><strong>Abstraction</strong>: Your app doesn't care if you're on WiFi or Ethernet</li>
+<li><strong>Modularity</strong>: Can upgrade one layer without touching others</li>
+<li><strong>Debugging</strong>: Problems can be isolated to specific layers</li>
+</ul>
+<hr />
+<h2 id="ip-addresses-subnets">IP Addresses &amp; Subnets</h2>
+<h3 id="ipv4-addresses">IPv4 Addresses</h3>
+<p>An IP address is like a phone number for your device.</p>
+<div class="highlight"><pre><span></span><code>192.168.1.100
+ │   │   │  │
+ └───┴───┴──┴── Four numbers (0-255), called &quot;octets&quot;
+
+Total: 4 bytes = 32 bits = ~4.3 billion possible addresses
+</code></pre></div>
+
+<h3 id="special-ip-ranges">Special IP Ranges</h3>
+<table>
+<thead>
+<tr>
+<th>Range</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>127.0.0.1</code></td>
+<td>Localhost (yourself)</td>
+</tr>
+<tr>
+<td><code>10.0.0.0/8</code></td>
+<td>Private network (large orgs)</td>
+</tr>
+<tr>
+<td><code>172.16.0.0/12</code></td>
+<td>Private network (medium)</td>
+</tr>
+<tr>
+<td><code>192.168.0.0/16</code></td>
+<td>Private network (home/small office)</td>
+</tr>
+<tr>
+<td><code>0.0.0.0</code></td>
+<td>"Any" address (listen on all interfaces)</td>
+</tr>
+<tr>
+<td><code>255.255.255.255</code></td>
+<td>Broadcast address</td>
+</tr>
+</tbody>
+</table>
+<h3 id="subnets-cidr-notation">Subnets &amp; CIDR Notation</h3>
+<p>A subnet divides a network into smaller chunks.</p>
+<div class="highlight"><pre><span></span><code>192.168.1.0/24
+           └── &quot;24 bits are the network part&quot;
+
+Means: 
+- Network: 192.168.1.x
+- Usable hosts: 192.168.1.1 - 192.168.1.254 (254 devices)
+- Broadcast: 192.168.1.255
+</code></pre></div>
+
+<p><strong>Common subnet masks:</strong><br />
+- <code>/8</code> = 255.0.0.0 → 16 million hosts<br />
+- <code>/16</code> = 255.255.0.0 → 65,534 hosts<br />
+- <code>/24</code> = 255.255.255.0 → 254 hosts<br />
+- <code>/32</code> = single host</p>
+<h3 id="ipv6">IPv6</h3>
+<p>IPv4 addresses ran out. IPv6 fixes this with 128-bit addresses:</p>
+<div class="highlight"><pre><span></span><code>2001:0db8:85a3:0000:0000:8a2e:0370:7334
+
+Shorthand: 2001:db8:85a3::8a2e:370:7334
+           (leading zeros and consecutive zeros can be omitted)
+</code></pre></div>
+
+<hr />
+<h2 id="dns-the-internets-phone-book">DNS - The Internet's Phone Book</h2>
+<p>DNS translates human-readable names to IP addresses.</p>
+<div class="highlight"><pre><span></span><code>google.com → 142.250.80.46
+</code></pre></div>
+
+<h3 id="how-dns-resolution-works">How DNS Resolution Works</h3>
+<div class="highlight"><pre><span></span><code>1. You type &quot;google.com&quot; in browser
+
+2. Browser checks cache → not found
+
+3. OS checks /etc/hosts → not found
+
+4. Query local DNS resolver (usually your router or ISP)
+   └→ Resolver checks its cache → not found
+
+5. Resolver queries Root DNS server
+   └→ &quot;I don&#39;t know google.com, but .com is handled by these servers&quot;
+
+6. Resolver queries .com TLD server
+   └→ &quot;google.com is handled by ns1.google.com&quot;
+
+7. Resolver queries Google&#39;s nameserver
+   └→ &quot;google.com is 142.250.80.46&quot;
+
+8. Answer cached at each level, returned to browser
+</code></pre></div>
+
+<h3 id="dns-record-types">DNS Record Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td>Domain → IPv4</td>
+<td><code>google.com → 142.250.80.46</code></td>
+</tr>
+<tr>
+<td><strong>AAAA</strong></td>
+<td>Domain → IPv6</td>
+<td><code>google.com → 2607:f8b0:4004:800::200e</code></td>
+</tr>
+<tr>
+<td><strong>CNAME</strong></td>
+<td>Alias to another domain</td>
+<td><code>www.example.com → example.com</code></td>
+</tr>
+<tr>
+<td><strong>MX</strong></td>
+<td>Mail server</td>
+<td><code>gmail.com → alt1.gmail-smtp-in.l.google.com</code></td>
+</tr>
+<tr>
+<td><strong>TXT</strong></td>
+<td>Arbitrary text</td>
+<td>Used for verification, SPF, DKIM</td>
+</tr>
+<tr>
+<td><strong>NS</strong></td>
+<td>Nameserver</td>
+<td><code>google.com → ns1.google.com</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="useful-dns-commands">Useful DNS Commands</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Look up IP address</span>
+nslookup<span class="w"> </span>google.com
+dig<span class="w"> </span>google.com
+
+<span class="c1"># See full DNS resolution path</span>
+dig<span class="w"> </span>+trace<span class="w"> </span>google.com
+
+<span class="c1"># Query specific record type</span>
+dig<span class="w"> </span>google.com<span class="w"> </span>MX
+dig<span class="w"> </span>google.com<span class="w"> </span>TXT
+</code></pre></div>
+
+<hr />
+<h2 id="tcp-vs-udp">TCP vs UDP</h2>
+<p>The two main transport protocols. <strong>This is important!</strong></p>
+<h3 id="tcp-transmission-control-protocol">TCP (Transmission Control Protocol)</h3>
+<p><strong>Reliable, ordered, connection-based</strong></p>
+<div class="highlight"><pre><span></span><code>┌──────────────────────────────────────────────────────────┐
+│ TCP Three-Way Handshake (Connection Setup)               │
+│                                                          │
+│ Client                              Server               │
+│   │                                   │                  │
+│   │─────── SYN (seq=100) ────────────▶│                  │
+│   │                                   │                  │
+│   │◀────── SYN-ACK (seq=300,ack=101)──│                  │
+│   │                                   │                  │
+│   │─────── ACK (ack=301) ────────────▶│                  │
+│   │                                   │                  │
+│   │         Connection established!   │                  │
+└──────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<p><strong>Features:</strong><br />
+- ✅ Guaranteed delivery (retransmits lost packets)<br />
+- ✅ Ordered (packets reassembled in correct order)<br />
+- ✅ Flow control (doesn't overwhelm receiver)<br />
+- ✅ Congestion control (adapts to network conditions)<br />
+- ❌ More overhead (headers, handshakes, ACKs)<br />
+- ❌ Higher latency</p>
+<p><strong>Use for:</strong> Web, email, file transfer, APIs - anything where data must be correct</p>
+<h3 id="udp-user-datagram-protocol">UDP (User Datagram Protocol)</h3>
+<p><strong>Fast, no guarantees, connectionless</strong></p>
+<div class="highlight"><pre><span></span><code>Client                              Server
+  │                                   │
+  │─────── Data packet ──────────────▶│   (no handshake)
+  │─────── Data packet ──────────────▶│   (no confirmation)
+  │─────── Data packet ────────X      │   (packet lost? oh well)
+  │                                   │
+</code></pre></div>
+
+<p><strong>Features:</strong><br />
+- ✅ Very fast (no handshake, no waiting for ACKs)<br />
+- ✅ Low overhead (small header)<br />
+- ✅ Supports broadcast/multicast<br />
+- ❌ No delivery guarantee<br />
+- ❌ No ordering<br />
+- ❌ Packets can be duplicated</p>
+<p><strong>Use for:</strong> Video streaming, gaming, VoIP, DNS, IoT sensors - when speed matters more than perfection</p>
+<h3 id="quick-comparison">Quick Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>TCP</th>
+<th>UDP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connection</td>
+<td>Required (handshake)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Reliability</td>
+<td>Guaranteed</td>
+<td>Best-effort</td>
+</tr>
+<tr>
+<td>Ordering</td>
+<td>Guaranteed</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Speed</td>
+<td>Slower</td>
+<td>Faster</td>
+</tr>
+<tr>
+<td>Header size</td>
+<td>20+ bytes</td>
+<td>8 bytes</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>Web, files, APIs</td>
+<td>Streaming, gaming, IoT</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ports-sockets">Ports &amp; Sockets</h2>
+<h3 id="ports">Ports</h3>
+<p>An IP address gets you to a computer. A <strong>port</strong> gets you to a specific application.</p>
+<div class="highlight"><pre><span></span><code>IP Address = Street address of a building
+Port       = Apartment number
+
+192.168.1.100:8080
+     │          │
+     IP      Port
+</code></pre></div>
+
+<p><strong>Port ranges:</strong><br />
+- <code>0-1023</code>: Well-known ports (require root/admin)<br />
+- <code>1024-49151</code>: Registered ports<br />
+- <code>49152-65535</code>: Dynamic/private ports</p>
+<p><strong>Common ports:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20, 21</td>
+<td>FTP</td>
+</tr>
+<tr>
+<td>22</td>
+<td>SSH</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Telnet (insecure!)</td>
+</tr>
+<tr>
+<td>25</td>
+<td>SMTP (email)</td>
+</tr>
+<tr>
+<td>53</td>
+<td>DNS</td>
+</tr>
+<tr>
+<td>80</td>
+<td>HTTP</td>
+</tr>
+<tr>
+<td>443</td>
+<td>HTTPS</td>
+</tr>
+<tr>
+<td>3306</td>
+<td>MySQL</td>
+</tr>
+<tr>
+<td>5432</td>
+<td>PostgreSQL</td>
+</tr>
+<tr>
+<td>6379</td>
+<td>Redis</td>
+</tr>
+<tr>
+<td>8080</td>
+<td>HTTP alternate</td>
+</tr>
+<tr>
+<td>27017</td>
+<td>MongoDB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sockets">Sockets</h3>
+<p>A <strong>socket</strong> is an endpoint for communication: <code>IP:Port</code></p>
+<div class="highlight"><pre><span></span><code>Socket = (IP Address, Port, Protocol)
+
+Example: (192.168.1.100, 8080, TCP)
+</code></pre></div>
+
+<p>When you open a connection, you create a socket pair:</p>
+<div class="highlight"><pre><span></span><code>Your socket:   192.168.1.100:54321  (random high port)
+Server socket: 142.250.80.46:443   (HTTPS)
+</code></pre></div>
+
+<hr />
+<h2 id="http-https">HTTP &amp; HTTPS</h2>
+<h3 id="http-request-structure">HTTP Request Structure</h3>
+<div class="highlight"><pre><span></span><code>GET /api/users HTTP/1.1          ← Request line (method, path, version)
+Host: api.example.com            ← Headers start
+Authorization: Bearer xyz123
+Content-Type: application/json
+Accept: application/json
+                                 ← Empty line separates headers from body
+{&quot;name&quot;: &quot;John&quot;}                 ← Body (optional)
+</code></pre></div>
+
+<h3 id="http-methods">HTTP Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+<th>Idempotent?</th>
+<th>Has Body?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>Retrieve data</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>Create resource</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>Replace resource</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>Partial update</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>Remove resource</td>
+<td>Yes</td>
+<td>Usually no</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>GET without body</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>OPTIONS</td>
+<td>Get allowed methods</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="http-status-codes">HTTP Status Codes</h3>
+<div class="highlight"><pre><span></span><code>1xx - Informational (rarely seen)
+2xx - Success
+3xx - Redirection
+4xx - Client error (your fault)
+5xx - Server error (their fault)
+</code></pre></div>
+
+<p><strong>Must-know codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>201</td>
+<td>Created</td>
+</tr>
+<tr>
+<td>204</td>
+<td>No Content (success, empty response)</td>
+</tr>
+<tr>
+<td>301</td>
+<td>Moved Permanently</td>
+</tr>
+<tr>
+<td>302</td>
+<td>Found (temporary redirect)</td>
+</tr>
+<tr>
+<td>304</td>
+<td>Not Modified (use cache)</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Bad Request</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized (need to login)</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden (logged in but not allowed)</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found</td>
+</tr>
+<tr>
+<td>405</td>
+<td>Method Not Allowed</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Too Many Requests (rate limited)</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error</td>
+</tr>
+<tr>
+<td>502</td>
+<td>Bad Gateway</td>
+</tr>
+<tr>
+<td>503</td>
+<td>Service Unavailable</td>
+</tr>
+<tr>
+<td>504</td>
+<td>Gateway Timeout</td>
+</tr>
+</tbody>
+</table>
+<h3 id="https">HTTPS</h3>
+<p>HTTPS = HTTP + TLS (Transport Layer Security)</p>
+<div class="highlight"><pre><span></span><code>1. TCP handshake (SYN, SYN-ACK, ACK)
+
+2. TLS handshake:
+   - Client: &quot;Hello, I support these encryption methods&quot;
+   - Server: &quot;Let&#39;s use this one, here&#39;s my certificate&quot;
+   - Client: Verifies certificate against trusted CAs
+   - Both: Exchange keys using asymmetric crypto
+   - Both: Switch to symmetric encryption (faster)
+
+3. Encrypted HTTP communication
+</code></pre></div>
+
+<p><strong>What TLS provides:</strong><br />
+- 🔒 <strong>Encryption</strong>: Data can't be read in transit<br />
+- 🔐 <strong>Authentication</strong>: Server proves its identity<br />
+- ✅ <strong>Integrity</strong>: Data can't be modified in transit</p>
+<hr />
+<h2 id="how-data-actually-travels">How Data Actually Travels</h2>
+<p>Let's trace a request from your browser to Google:</p>
+<div class="highlight"><pre><span></span><code>1. APPLICATION: Browser creates HTTP request
+   GET / HTTP/1.1
+   Host: google.com
+
+2. TRANSPORT: TCP wraps it in a segment
+   ┌─────────────────────────────────────┐
+   │ TCP Header │ HTTP Request           │
+   │ (src port, dst port, seq#, flags)   │
+   └─────────────────────────────────────┘
+
+3. NETWORK: IP wraps it in a packet
+   ┌─────────────────────────────────────┐
+   │ IP Header │ TCP Segment             │
+   │ (src IP, dst IP, TTL)               │
+   └─────────────────────────────────────┘
+
+4. LINK: Ethernet wraps it in a frame
+   ┌─────────────────────────────────────┐
+   │ Eth Header │ IP Packet │ Eth Footer │
+   │ (MAC addrs)│           │ (checksum) │
+   └─────────────────────────────────────┘
+
+5. Physical: Converted to electrical/optical signals
+</code></pre></div>
+
+<h3 id="packet-journey-through-the-network">Packet Journey Through the Network</h3>
+<div class="highlight"><pre><span></span><code>Your Computer
+     │
+     ▼ (check: is destination on local network?)
+     │
+     │ No → send to default gateway (router)
+     ▼
+Your Router (NAT)
+     │
+     │ Replaces your private IP with public IP
+     ▼
+ISP Router
+     │
+     ▼
+Internet Backbone (multiple hops)
+     │
+     │ Each router looks at destination IP
+     │ and forwards to next hop
+     ▼
+Google&#39;s Network
+     │
+     ▼
+Google&#39;s Load Balancer
+     │
+     ▼
+Google&#39;s Server
+</code></pre></div>
+
+<p>You can see this with <code>traceroute</code>:</p>
+<div class="highlight"><pre><span></span><code>traceroute<span class="w"> </span>google.com
+</code></pre></div>
+
+<hr />
+<h2 id="nat-firewalls">NAT &amp; Firewalls</h2>
+<h3 id="nat-network-address-translation">NAT (Network Address Translation)</h3>
+<p>Your home network uses private IPs (192.168.x.x), but the internet needs public IPs. NAT translates between them.</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────┐
+│ Your Home Network                                       │
+│                                                         │
+│  Phone        Laptop       Desktop                      │
+│  192.168.1.10 192.168.1.11 192.168.1.12                │
+│       │            │            │                       │
+│       └────────────┼────────────┘                       │
+│                    ▼                                    │
+│              ┌──────────┐                               │
+│              │  Router  │ ← NAT happens here            │
+│              │ (NAT)    │                               │
+│              └────┬─────┘                               │
+│                   │                                     │
+└───────────────────┼─────────────────────────────────────┘
+                    │ Public IP: 73.45.123.99
+                    ▼
+               Internet
+</code></pre></div>
+
+<p><strong>NAT table example:</strong></p>
+<div class="highlight"><pre><span></span><code>Internal          External (what the internet sees)
+192.168.1.10:54321 → 73.45.123.99:30001
+192.168.1.11:54322 → 73.45.123.99:30002
+</code></pre></div>
+
+<p><strong>NAT implications:</strong><br />
+- Devices behind NAT can't be directly reached from internet<br />
+- Need port forwarding or NAT traversal for incoming connections<br />
+- This is why peer-to-peer is tricky (both sides behind NAT)</p>
+<h3 id="firewalls">Firewalls</h3>
+<p>Firewalls filter traffic based on rules.</p>
+<div class="highlight"><pre><span></span><code>Common rules:
+- Allow outgoing connections (you can browse the web)
+- Block incoming connections (others can&#39;t connect to you)
+- Allow established connections (responses to your requests)
+- Allow specific ports (SSH on 22, HTTP on 80)
+</code></pre></div>
+
+<p><strong>Firewall commands (Linux):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># View rules</span>
+sudo<span class="w"> </span>iptables<span class="w"> </span>-L
+
+<span class="c1"># Allow SSH</span>
+sudo<span class="w"> </span>iptables<span class="w"> </span>-A<span class="w"> </span>INPUT<span class="w"> </span>-p<span class="w"> </span>tcp<span class="w"> </span>--dport<span class="w"> </span><span class="m">22</span><span class="w"> </span>-j<span class="w"> </span>ACCEPT
+
+<span class="c1"># Modern Linux uses ufw (simpler)</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">22</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span><span class="nb">enable</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-protocols-cheat-sheet">Common Protocols Cheat Sheet</h2>
+<h3 id="application-layer">Application Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Port</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP</td>
+<td>80</td>
+<td>Web (unencrypted)</td>
+</tr>
+<tr>
+<td>HTTPS</td>
+<td>443</td>
+<td>Web (encrypted)</td>
+</tr>
+<tr>
+<td>DNS</td>
+<td>53</td>
+<td>Domain name resolution</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td>22</td>
+<td>Secure shell/tunneling</td>
+</tr>
+<tr>
+<td>FTP</td>
+<td>21</td>
+<td>File transfer</td>
+</tr>
+<tr>
+<td>SMTP</td>
+<td>25</td>
+<td>Send email</td>
+</tr>
+<tr>
+<td>IMAP</td>
+<td>143/993</td>
+<td>Receive email</td>
+</tr>
+<tr>
+<td>MQTT</td>
+<td>1883/8883</td>
+<td>IoT messaging</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>80/443</td>
+<td>Full-duplex communication</td>
+</tr>
+<tr>
+<td>gRPC</td>
+<td>varies</td>
+<td>RPC framework</td>
+</tr>
+</tbody>
+</table>
+<h3 id="network-layer">Network Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IP</td>
+<td>Addressing and routing</td>
+</tr>
+<tr>
+<td>ICMP</td>
+<td>Error messages, ping</td>
+</tr>
+<tr>
+<td>ARP</td>
+<td>IP → MAC address resolution</td>
+</tr>
+</tbody>
+</table>
+<h3 id="useful-commands">Useful Commands</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check connectivity</span>
+ping<span class="w"> </span>google.com
+
+<span class="c1"># See your IP</span>
+ip<span class="w"> </span>addr<span class="w">                    </span><span class="c1"># Linux</span>
+ifconfig<span class="w">                   </span><span class="c1"># macOS</span>
+
+<span class="c1"># See open ports</span>
+netstat<span class="w"> </span>-tulpn<span class="w">             </span><span class="c1"># Linux</span>
+lsof<span class="w"> </span>-i<span class="w"> </span>-P<span class="w">                 </span><span class="c1"># macOS</span>
+
+<span class="c1"># See routing table</span>
+ip<span class="w"> </span>route<span class="w">                   </span><span class="c1"># Linux</span>
+netstat<span class="w"> </span>-rn<span class="w">                </span><span class="c1"># macOS</span>
+
+<span class="c1"># Capture packets</span>
+sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span><span class="m">80</span>
+
+<span class="c1"># Test if port is open</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>google.com<span class="w"> </span><span class="m">443</span>
+telnet<span class="w"> </span>google.com<span class="w"> </span><span class="m">443</span>
+
+<span class="c1"># See active connections</span>
+ss<span class="w"> </span>-tuln<span class="w">                   </span><span class="c1"># Linux</span>
+netstat<span class="w"> </span>-an<span class="w">                </span><span class="c1"># All platforms</span>
+</code></pre></div>
+
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ol>
+<li><strong>Layers abstract complexity</strong> - your app talks HTTP, doesn't care about Ethernet frames</li>
+<li><strong>TCP = reliable + slow, UDP = fast + unreliable</strong> - choose based on your needs</li>
+<li><strong>NAT lets many devices share one public IP</strong> - but makes incoming connections hard</li>
+<li><strong>DNS translates names to IPs</strong> - and is often the source of "it's not working" issues</li>
+<li><strong>Ports let multiple services run on one IP</strong> - memorize the common ones</li>
+<li><strong>HTTPS encrypts everything</strong> - always use it in production</li>
+</ol>
+<hr />
+<p>Next: <a href="./02_PRACTICAL.md">Practical Networking</a> - Tools and techniques for robotics and app development</p>
+</body>
+</html>

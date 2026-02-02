@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Cryptography</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="practical-cryptography">Practical Cryptography</h1>
+<p>Real-world crypto applications for robotics and app development.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#password-storage">Password Storage</a></li>
+<li><a href="#api-authentication">API Authentication</a></li>
+<li><a href="#encrypting-data-at-rest">Encrypting Data at Rest</a></li>
+<li><a href="#secure-communication">Secure Communication</a></li>
+<li><a href="#robotics-security">Robotics Security</a></li>
+<li><a href="#mobile-app-security">Mobile App Security</a></li>
+<li><a href="#crypto-libraries">Crypto Libraries</a></li>
+<li><a href="#common-mistakes">Common Mistakes</a></li>
+<li><a href="#quick-recipes">Quick Recipes</a></li>
+</ol>
+<hr />
+<h2 id="password-storage">Password Storage</h2>
+<p><strong>Never store passwords in plain text. Never.</strong></p>
+<h3 id="the-right-way">The Right Way</h3>
+<div class="highlight"><pre><span></span><code>1. User creates password: &quot;hunter2&quot;
+
+2. Generate random salt: &quot;x7Kj9mNp...&quot;
+
+3. Hash with slow algorithm:
+   hash = argon2id(password=&quot;hunter2&quot;, salt=&quot;x7Kj9mNp...&quot;, 
+                   time=3, memory=64MB, parallelism=4)
+
+4. Store: &quot;x7Kj9mNp...$argon2id$v=19$m=65536,t=3,p=4$...&quot;
+          ─────────── ──────────────────────────────────
+             salt              hash output
+</code></pre></div>
+
+<h3 id="password-hashing-algorithms">Password Hashing Algorithms</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Use?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Argon2id</strong></td>
+<td>✓ Best</td>
+<td>Winner of Password Hashing Competition (2015)</td>
+</tr>
+<tr>
+<td><strong>bcrypt</strong></td>
+<td>✓ Good</td>
+<td>Proven, widely available</td>
+</tr>
+<tr>
+<td><strong>scrypt</strong></td>
+<td>✓ Good</td>
+<td>Memory-hard</td>
+</tr>
+<tr>
+<td>PBKDF2</td>
+<td>⚠️</td>
+<td>Only if others unavailable</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>❌</td>
+<td>Too fast! Attackers can try billions/sec</td>
+</tr>
+<tr>
+<td>MD5</td>
+<td>❌❌</td>
+<td>Never</td>
+</tr>
+</tbody>
+</table>
+<h3 id="why-slow-is-good">Why Slow is Good</h3>
+<div class="highlight"><pre><span></span><code>Fast hash (SHA-256):
+  Attacker can try: 10 billion passwords/second
+  8-char password cracked in: minutes
+
+Slow hash (bcrypt, cost=12):
+  Attacker can try: ~100 passwords/second
+  8-char password cracked in: centuries
+</code></pre></div>
+
+<h3 id="password-verification">Password Verification</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Python with argon2-cffi</span>
+<span class="kn">from</span> <span class="nn">argon2</span> <span class="kn">import</span> <span class="n">PasswordHasher</span>
+
+<span class="n">ph</span> <span class="o">=</span> <span class="n">PasswordHasher</span><span class="p">()</span>
+
+<span class="c1"># Registration</span>
+<span class="nb">hash</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="s2">&quot;user_password&quot;</span><span class="p">)</span>
+<span class="c1"># Store &#39;hash&#39; in database</span>
+
+<span class="c1"># Login</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ph</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">stored_hash</span><span class="p">,</span> <span class="s2">&quot;user_input&quot;</span><span class="p">)</span>
+    <span class="c1"># Password correct</span>
+<span class="k">except</span> <span class="n">argon2</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">VerifyMismatchError</span><span class="p">:</span>
+    <span class="c1"># Password wrong</span>
+</code></pre></div>
+
+<hr />
+<h2 id="api-authentication">API Authentication</h2>
+<h3 id="api-keys">API Keys</h3>
+<p>Simple but limited:</p>
+<div class="highlight"><pre><span></span><code>Header: X-API-Key: sk_live_abc123xyz789...
+
+Pros:
+✓ Simple to implement
+✓ Easy to rotate
+
+Cons:
+✗ No expiration (unless you build it)
+✗ Can be leaked in logs, URLs
+✗ Hard to scope permissions
+</code></pre></div>
+
+<h3 id="hmac-authentication">HMAC Authentication</h3>
+<p>Prove you have the secret without sending it:</p>
+<div class="highlight"><pre><span></span><code>Request to sign:
+  POST /api/orders
+  Content-Type: application/json
+  X-Timestamp: 1699123456
+  Body: {&quot;item&quot;: &quot;widget&quot;, &quot;qty&quot;: 5}
+
+Create signature string:
+  POST\n/api/orders\n1699123456\n{&quot;item&quot;:&quot;widget&quot;,&quot;qty&quot;:5}
+
+Sign with HMAC:
+  signature = HMAC-SHA256(secret_key, signature_string)
+
+Send:
+  Authorization: HMAC-SHA256 signature=&quot;abc123...&quot;, timestamp=&quot;1699123456&quot;
+
+Server:
+  1. Rebuild signature string from request
+  2. Compute HMAC with stored secret
+  3. Compare signatures (timing-safe!)
+  4. Check timestamp isn&#39;t too old (prevent replay)
+</code></pre></div>
+
+<h3 id="jwt-json-web-tokens">JWT (JSON Web Tokens)</h3>
+<p>Self-contained tokens for stateless authentication:</p>
+<div class="highlight"><pre><span></span><code>eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMjM0LCJleHAiOjE2OTkxMjM0NTZ9.signature
+──────────────────────┬─────────────────────────────────────────────┬──────────
+       Header                         Payload                       Signature
+  {&quot;alg&quot;:&quot;HS256&quot;}           {&quot;user_id&quot;:1234,&quot;exp&quot;:1699123456}
+
+Header + Payload are just Base64 (NOT encrypted!)
+Signature proves token wasn&#39;t tampered with
+</code></pre></div>
+
+<p><strong>JWT Best Practices:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Don't</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>✓ Short expiration (15min - 1hr)</td>
+<td>✗ Put secrets in payload</td>
+</tr>
+<tr>
+<td>✓ Use RS256 for distributed systems</td>
+<td>✗ Use "none" algorithm</td>
+</tr>
+<tr>
+<td>✓ Validate all claims (exp, iss, aud)</td>
+<td>✗ Store sensitive data</td>
+</tr>
+<tr>
+<td>✓ Use refresh tokens for long sessions</td>
+<td>✗ Make tokens too long-lived</td>
+</tr>
+</tbody>
+</table>
+<p><strong>HS256 vs RS256:</strong></p>
+<div class="highlight"><pre><span></span><code>HS256 (Symmetric):
+  - Same secret signs and verifies
+  - Simpler, faster
+  - Good for: Single service
+
+RS256 (Asymmetric):  
+  - Private key signs, public key verifies
+  - Anyone can verify without secret
+  - Good for: Microservices, third-party verification
+</code></pre></div>
+
+<h3 id="oauth-20-openid-connect">OAuth 2.0 / OpenID Connect</h3>
+<p>For delegated authorization (e.g., "Login with Google"):</p>
+<div class="highlight"><pre><span></span><code>┌──────────────────────────────────────────────────────────────┐
+│ OAuth 2.0 Authorization Code Flow                            │
+│                                                              │
+│  User          Your App         Auth Server      Resource    │
+│   │               │                  │              │        │
+│   │──Login────────▶                  │              │        │
+│   │               │                  │              │        │
+│   │◀─────────Redirect to auth────────│              │        │
+│   │                                  │              │        │
+│   │──────────Login at auth server────▶              │        │
+│   │                                  │              │        │
+│   │◀────Redirect with auth code──────│              │        │
+│   │                                  │              │        │
+│   │               │──Exchange code───▶              │        │
+│   │               │  for tokens      │              │        │
+│   │               │◀─Access token────│              │        │
+│   │               │                  │              │        │
+│   │               │──────────────────Access API─────▶        │
+│   │               │◀─────────────────Data───────────│        │
+└──────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h2 id="encrypting-data-at-rest">Encrypting Data at Rest</h2>
+<h3 id="file-encryption">File Encryption</h3>
+<p><strong>Symmetric (for your own files):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Using age (modern, simple)</span>
+age<span class="w"> </span>-p<span class="w"> </span>-o<span class="w"> </span>secret.txt.age<span class="w"> </span>secret.txt
+
+<span class="c1"># Using GPG</span>
+gpg<span class="w"> </span>-c<span class="w"> </span>secret.txt<span class="w">  </span><span class="c1"># symmetric</span>
+gpg<span class="w"> </span>-e<span class="w"> </span>-r<span class="w"> </span>recipient@email.com<span class="w"> </span>secret.txt<span class="w">  </span><span class="c1"># asymmetric</span>
+</code></pre></div>
+
+<p><strong>For programmatic encryption:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Python with cryptography library</span>
+<span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+
+<span class="c1"># Generate key (store securely!)</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="c1"># Encrypt</span>
+<span class="n">encrypted</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;secret data&quot;</span><span class="p">)</span>
+
+<span class="c1"># Decrypt</span>
+<span class="n">decrypted</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="database-field-encryption">Database Field Encryption</h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ Application-Level Encryption                                │
+│                                                             │
+│   App encrypts sensitive fields before storing:             │
+│                                                             │
+│   users table:                                              │
+│   ┌────────────┬───────────────────────────────────────┐   │
+│   │ id         │ 12345                                 │   │
+│   │ email      │ user@example.com (plain)              │   │
+│   │ ssn        │ AES-GCM(iv + ciphertext + tag)       │   │
+│   │ credit_card│ AES-GCM(iv + ciphertext + tag)       │   │
+│   └────────────┴───────────────────────────────────────┘   │
+│                                                             │
+│   Benefits:                                                 │
+│   ✓ Data protected even if database stolen                  │
+│   ✓ Fine-grained control over what&#39;s encrypted              │
+│                                                             │
+│   Challenges:                                               │
+│   ✗ Can&#39;t query encrypted fields efficiently                │
+│   ✗ Key management complexity                               │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="key-management">Key Management</h3>
+<p><strong>The hardest problem in crypto: where do you store the key?</strong></p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Security</th>
+<th>Complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment variable</td>
+<td>Low</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Config file (encrypted)</td>
+<td>Medium</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Cloud KMS (AWS/GCP/Azure)</td>
+<td>High</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Hardware Security Module (HSM)</td>
+<td>Very High</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key hierarchy pattern:</strong></p>
+<div class="highlight"><pre><span></span><code>Master Key (in HSM/KMS, never leaves)
+     │
+     └─▶ Data Encryption Key (DEK)
+            │
+            └─▶ Encrypted DEK stored with data
+                (re-encrypt DEK when rotating master)
+</code></pre></div>
+
+<hr />
+<h2 id="secure-communication">Secure Communication</h2>
+<h3 id="when-tls-isnt-enough">When TLS Isn't Enough</h3>
+<p>TLS protects data in transit, but consider:</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>TLS Alone</th>
+<th>Additional Measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MITM on network</td>
+<td>✓ Protected</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Compromised CA</td>
+<td>✗ Vulnerable</td>
+<td>Certificate pinning</td>
+</tr>
+<tr>
+<td>Server compromise</td>
+<td>✗ Vulnerable</td>
+<td>End-to-end encryption</td>
+</tr>
+<tr>
+<td>Insider at recipient</td>
+<td>✗ Vulnerable</td>
+<td>Client-side encryption</td>
+</tr>
+</tbody>
+</table>
+<h3 id="certificate-pinning">Certificate Pinning</h3>
+<p>Don't trust any CA - only trust YOUR certificate:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// iOS example</span>
+<span class="kd">let</span> <span class="nv">pinnedCertificates</span><span class="p">:</span> <span class="p">[</span><span class="n">SecCertificate</span><span class="p">]</span> <span class="p">=</span> <span class="c1">// load your cert</span>
+
+<span class="kd">func</span> <span class="nf">urlSession</span><span class="p">(</span><span class="kc">_</span> <span class="n">session</span><span class="p">:</span> <span class="n">URLSession</span><span class="p">,</span> 
+                <span class="n">didReceive</span> <span class="n">challenge</span><span class="p">:</span> <span class="n">URLAuthenticationChallenge</span><span class="p">,</span>
+                <span class="n">completionHandler</span><span class="p">:</span> <span class="p">@</span><span class="n">escaping</span> <span class="p">(</span><span class="n">URLSession</span><span class="p">.</span><span class="n">AuthChallengeDisposition</span><span class="p">,</span> <span class="n">URLCredential</span><span class="p">?)</span> <span class="p">-&gt;</span> <span class="nb">Void</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">guard</span> <span class="kd">let</span> <span class="nv">serverCert</span> <span class="p">=</span> <span class="n">challenge</span><span class="p">.</span><span class="n">protectionSpace</span><span class="p">.</span><span class="n">serverTrust</span><span class="p">.</span><span class="n">flatMap</span><span class="p">({</span> 
+        <span class="n">SecTrustGetCertificateAtIndex</span><span class="p">(</span><span class="nv">$0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> 
+    <span class="p">})</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">completionHandler</span><span class="p">(.</span><span class="n">cancelAuthenticationChallenge</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Compare server cert to pinned cert</span>
+    <span class="k">if</span> <span class="n">pinnedCertificates</span><span class="p">.</span><span class="bp">contains</span><span class="p">(</span><span class="n">serverCert</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">completionHandler</span><span class="p">(.</span><span class="n">useCredential</span><span class="p">,</span> <span class="n">URLCredential</span><span class="p">(</span><span class="n">trust</span><span class="p">:</span> <span class="n">challenge</span><span class="p">.</span><span class="n">protectionSpace</span><span class="p">.</span><span class="n">serverTrust</span><span class="p">!))</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">completionHandler</span><span class="p">(.</span><span class="n">cancelAuthenticationChallenge</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Pinning strategies:</strong><br />
+- <strong>Pin certificate</strong>: Most secure, but must update app when cert rotates<br />
+- <strong>Pin public key</strong>: Survives cert renewal if key stays same<br />
+- <strong>Pin CA</strong>: Less secure but more flexible</p>
+<h3 id="end-to-end-encryption">End-to-End Encryption</h3>
+<p>Data encrypted on sender, decrypted only by recipient:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ E2E Encryption (Signal Protocol style)                      │
+│                                                             │
+│  Alice                 Server               Bob              │
+│    │                     │                   │              │
+│    │                     │   ◀──Bob&#39;s public │              │
+│    │  Get Bob&#39;s key────▶ │      key          │              │
+│    │  ◀──Bob&#39;s public────│                   │              │
+│    │                     │                   │              │
+│    │  Encrypt message    │                   │              │
+│    │  with Bob&#39;s key     │                   │              │
+│    │                     │                   │              │
+│    │  ──Encrypted msg───▶│───Encrypted msg──▶│              │
+│    │                     │                   │              │
+│    │                     │      Decrypt with │              │
+│    │                     │      Bob&#39;s private│              │
+│    │                     │                   │              │
+│                                                             │
+│  Server can store/forward but CANNOT read message           │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h2 id="robotics-security">Robotics Security</h2>
+<h3 id="challenges-in-robotics">Challenges in Robotics</h3>
+<table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Consideration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-time constraints</td>
+<td>Crypto can't add too much latency</td>
+</tr>
+<tr>
+<td>Limited compute</td>
+<td>Embedded systems may lack hardware crypto</td>
+</tr>
+<tr>
+<td>Physical access</td>
+<td>Attacker may have device in hand</td>
+</tr>
+<tr>
+<td>Long deployment</td>
+<td>Keys may need to last years</td>
+</tr>
+<tr>
+<td>OTA updates</td>
+<td>Need secure update mechanism</td>
+</tr>
+</tbody>
+</table>
+<h3 id="securing-robot-communication">Securing Robot Communication</h3>
+<p><strong>ROS 2 SROS2 (Secure ROS 2):</strong></p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ SROS2 Security                                              │
+│                                                             │
+│   ┌─────────┐      DDS Security       ┌─────────┐          │
+│   │ Node A  │◀═══════════════════════▶│ Node B  │          │
+│   └─────────┘   (TLS-like in DDS)     └─────────┘          │
+│                                                             │
+│   Each node has:                                            │
+│   • Certificate (identity)                                  │
+│   • Private key                                             │
+│   • Permissions file (access control)                       │
+│                                                             │
+│   Provides:                                                 │
+│   ✓ Authentication (nodes prove identity)                   │
+│   ✓ Encryption (topic data encrypted)                       │
+│   ✓ Access control (who can pub/sub to what)                │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<p><strong>Setting up SROS2:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Generate keystore</span>
+ros2<span class="w"> </span>security<span class="w"> </span>create_keystore<span class="w"> </span>~/sros2_keystore
+
+<span class="c1"># Create keys for a node</span>
+ros2<span class="w"> </span>security<span class="w"> </span>create_key<span class="w"> </span>~/sros2_keystore<span class="w"> </span>/my_robot/camera_node
+
+<span class="c1"># Run with security</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ROS_SECURITY_KEYSTORE</span><span class="o">=</span>~/sros2_keystore
+<span class="nb">export</span><span class="w"> </span><span class="nv">ROS_SECURITY_ENABLE</span><span class="o">=</span><span class="nb">true</span>
+ros2<span class="w"> </span>run<span class="w"> </span>my_package<span class="w"> </span>my_node
+</code></pre></div>
+
+<h3 id="lightweight-crypto-for-embedded">Lightweight Crypto for Embedded</h3>
+<p>When AES is too heavy:</p>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChaCha20-Poly1305</td>
+<td>Software-only (no AES hardware)</td>
+</tr>
+<tr>
+<td>PRESENT</td>
+<td>Ultra-lightweight block cipher</td>
+</tr>
+<tr>
+<td>ASCON</td>
+<td>Lightweight AEAD (NIST selection)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="secure-boot">Secure Boot</h3>
+<p>Ensure only authorized firmware runs:</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ Secure Boot Chain                                           │
+│                                                             │
+│   ROM Bootloader (immutable, in silicon)                    │
+│        │                                                    │
+│        │ verifies signature                                 │
+│        ▼                                                    │
+│   First Stage Bootloader                                    │
+│        │                                                    │
+│        │ verifies signature                                 │
+│        ▼                                                    │
+│   Second Stage / OS Kernel                                  │
+│        │                                                    │
+│        │ verifies signature                                 │
+│        ▼                                                    │
+│   Application                                               │
+│                                                             │
+│   Each stage verifies the next before executing             │
+│   Root of trust: public key burned into hardware            │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="firmware-updates">Firmware Updates</h3>
+<p>Secure OTA (Over-The-Air) updates:</p>
+<div class="highlight"><pre><span></span><code>1. Sign firmware image with private key (kept offline!)
+
+2. Device downloads update:
+   ┌─────────────────────────────────────────────┐
+   │ Firmware Image                              │
+   │ ┌─────────────────────────────────────────┐ │
+   │ │ Header: version, size, hash             │ │
+   │ ├─────────────────────────────────────────┤ │
+   │ │ Firmware binary                         │ │
+   │ ├─────────────────────────────────────────┤ │
+   │ │ Signature (of header + binary)          │ │
+   │ └─────────────────────────────────────────┘ │
+   └─────────────────────────────────────────────┘
+
+3. Device verifies:
+   - Signature valid? (using embedded public key)
+   - Version &gt; current? (prevent downgrade)
+   - Hash matches?
+
+4. Install only if all checks pass
+</code></pre></div>
+
+<hr />
+<h2 id="mobile-app-security">Mobile App Security</h2>
+<h3 id="keychain-keystore">Keychain / Keystore</h3>
+<p><strong>Never store secrets in code or UserDefaults/SharedPreferences!</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// iOS Keychain</span>
+<span class="kd">import</span> <span class="nc">Security</span>
+
+<span class="kd">func</span> <span class="nf">saveToKeychain</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="kr">throws</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">query</span><span class="p">:</span> <span class="p">[</span><span class="nb">String</span><span class="p">:</span> <span class="nb">Any</span><span class="p">]</span> <span class="p">=</span> <span class="p">[</span>
+        <span class="n">kSecClass</span> <span class="k">as</span> <span class="nb">String</span><span class="p">:</span> <span class="n">kSecClassGenericPassword</span><span class="p">,</span>
+        <span class="n">kSecAttrAccount</span> <span class="k">as</span> <span class="nb">String</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+        <span class="n">kSecValueData</span> <span class="k">as</span> <span class="nb">String</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+        <span class="n">kSecAttrAccessible</span> <span class="k">as</span> <span class="nb">String</span><span class="p">:</span> <span class="n">kSecAttrAccessibleWhenUnlockedThisDeviceOnly</span>
+    <span class="p">]</span>
+
+    <span class="kd">let</span> <span class="nv">status</span> <span class="p">=</span> <span class="n">SecItemAdd</span><span class="p">(</span><span class="n">query</span> <span class="k">as</span> <span class="n">CFDictionary</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">guard</span> <span class="n">status</span> <span class="p">==</span> <span class="n">errSecSuccess</span> <span class="k">else</span> <span class="p">{</span> <span class="k">throw</span> <span class="n">KeychainError</span><span class="p">.</span><span class="n">saveFailed</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Android Keystore</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">keyStore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KeyStore</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">&quot;AndroidKeyStore&quot;</span><span class="p">)</span>
+<span class="n">keyStore</span><span class="p">.</span><span class="na">load</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">keyGenerator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KeyGenerator</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span>
+<span class="w">    </span><span class="n">KeyProperties</span><span class="p">.</span><span class="na">KEY_ALGORITHM_AES</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;AndroidKeyStore&quot;</span>
+<span class="p">)</span>
+
+<span class="n">keyGenerator</span><span class="p">.</span><span class="na">init</span><span class="p">(</span>
+<span class="w">    </span><span class="n">KeyGenParameterSpec</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="s">&quot;my_key&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">KeyProperties</span><span class="p">.</span><span class="na">PURPOSE_ENCRYPT</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">KeyProperties</span><span class="p">.</span><span class="na">PURPOSE_DECRYPT</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">setBlockModes</span><span class="p">(</span><span class="n">KeyProperties</span><span class="p">.</span><span class="na">BLOCK_MODE_GCM</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">setEncryptionPaddings</span><span class="p">(</span><span class="n">KeyProperties</span><span class="p">.</span><span class="na">ENCRYPTION_PADDING_NONE</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">setUserAuthenticationRequired</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w">  </span><span class="c1">// Require biometric/PIN</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="secure-storage-hierarchy">Secure Storage Hierarchy</h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│ What to store where                                         │
+│                                                             │
+│   Most Secure                                               │
+│   ────────────                                              │
+│   │ Hardware-backed Keystore                                │
+│   │   - Cryptographic keys                                  │
+│   │   - Never leave secure enclave                          │
+│   │                                                         │
+│   │ Keychain/Keystore (software)                            │
+│   │   - Auth tokens                                         │
+│   │   - API keys                                            │
+│   │   - User credentials                                    │
+│   │                                                         │
+│   │ Encrypted local storage                                 │
+│   │   - Sensitive user data                                 │
+│   │   - Cached private content                              │
+│   │                                                         │
+│   │ Regular storage (UserDefaults, SharedPrefs)             │
+│   │   - Non-sensitive preferences                           │
+│   │   - UI state                                            │
+│   ▼                                                         │
+│   Least Secure                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="app-attestation">App Attestation</h3>
+<p>Prove your app is genuine (not tampered/emulated):</p>
+<div class="highlight"><pre><span></span><code>iOS: DeviceCheck / App Attest
+Android: SafetyNet / Play Integrity API
+
+Server can verify:
+- Request comes from genuine app
+- App wasn&#39;t modified
+- Device isn&#39;t rooted/jailbroken (optional)
+</code></pre></div>
+
+<h3 id="obfuscation-defense-in-depth">Obfuscation (Defense in Depth)</h3>
+<p>Not crypto, but slows down reverse engineering:</p>
+<div class="highlight"><pre><span></span><code>Code obfuscation:
+- Rename functions: authenticate() → a1b2c3()
+- Control flow flattening
+- String encryption
+
+Runtime protection:
+- Jailbreak/root detection
+- Debugger detection
+- Tampering detection
+
+Remember: Obfuscation is NOT security. 
+          Determined attacker will eventually succeed.
+          It just raises the bar.
+</code></pre></div>
+
+<hr />
+<h2 id="crypto-libraries">Crypto Libraries</h2>
+<h3 id="choose-wisely">Choose Wisely</h3>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Recommended</th>
+<th>Avoid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td><code>cryptography</code>, <code>PyNaCl</code></td>
+<td><code>pycrypto</code> (abandoned)</td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td><code>libsodium.js</code>, Web Crypto API</td>
+<td><code>crypto-js</code></td>
+</tr>
+<tr>
+<td>Go</td>
+<td><code>crypto/*</code> (stdlib), <code>x/crypto</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td>Rust</td>
+<td><code>ring</code>, <code>rustcrypto/*</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td>C/C++</td>
+<td>libsodium, OpenSSL</td>
+<td>Rolling your own</td>
+</tr>
+<tr>
+<td>iOS</td>
+<td>CryptoKit, Security.framework</td>
+<td>CommonCrypto (low-level)</td>
+</tr>
+<tr>
+<td>Android</td>
+<td>javax.crypto + Keystore</td>
+<td>Spongy Castle (outdated)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="libsodium">libsodium</h3>
+<p>Easy-to-use, hard to misuse:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># pip install pynacl</span>
+<span class="kn">from</span> <span class="nn">nacl.secret</span> <span class="kn">import</span> <span class="n">SecretBox</span>
+<span class="kn">from</span> <span class="nn">nacl.utils</span> <span class="kn">import</span> <span class="n">random</span>
+
+<span class="c1"># Symmetric encryption</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">random</span><span class="p">(</span><span class="n">SecretBox</span><span class="o">.</span><span class="n">KEY_SIZE</span><span class="p">)</span>  <span class="c1"># 32 bytes</span>
+<span class="n">box</span> <span class="o">=</span> <span class="n">SecretBox</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="n">encrypted</span> <span class="o">=</span> <span class="n">box</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;secret message&quot;</span><span class="p">)</span>
+<span class="n">decrypted</span> <span class="o">=</span> <span class="n">box</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="python-cryptography-library">Python <code>cryptography</code> Library</h3>
+<p>More control, more rope to hang yourself:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.ciphers.aead</span> <span class="kn">import</span> <span class="n">AESGCM</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># AES-GCM</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">AESGCM</span><span class="o">.</span><span class="n">generate_key</span><span class="p">(</span><span class="n">bit_length</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+<span class="n">aesgcm</span> <span class="o">=</span> <span class="n">AESGCM</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="n">nonce</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="c1"># MUST be unique per encryption</span>
+<span class="n">ciphertext</span> <span class="o">=</span> <span class="n">aesgcm</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">nonce</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;associated data&quot;</span><span class="p">)</span>
+<span class="n">plaintext</span> <span class="o">=</span> <span class="n">aesgcm</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">nonce</span><span class="p">,</span> <span class="n">ciphertext</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;associated data&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-mistakes">Common Mistakes</h2>
+<h3 id="1-using-encryption-without-authentication">1. Using Encryption Without Authentication</h3>
+<div class="highlight"><pre><span></span><code>❌ AES-CBC without HMAC
+   Attacker can flip bits in ciphertext
+
+✓ AES-GCM (authenticated encryption)
+   Detects any tampering
+</code></pre></div>
+
+<h3 id="2-reusing-ivnonce">2. Reusing IV/Nonce</h3>
+<div class="highlight"><pre><span></span><code>❌ Always using IV = 0
+   OR using same IV twice with same key
+
+   With CTR/GCM mode: XOR of plaintexts leaked!
+
+✓ Random IV for each encryption
+   OR counter-based IV (carefully managed)
+</code></pre></div>
+
+<h3 id="3-timing-attacks">3. Timing Attacks</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ Vulnerable comparison</span>
+<span class="k">if</span> <span class="n">user_signature</span> <span class="o">==</span> <span class="n">computed_signature</span><span class="p">:</span>
+    <span class="c1"># Attacker can time how many bytes matched</span>
+
+<span class="c1"># ✓ Constant-time comparison</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+<span class="k">if</span> <span class="n">hmac</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">user_signature</span><span class="p">,</span> <span class="n">computed_signature</span><span class="p">):</span>
+    <span class="c1"># Same time regardless of how many bytes match</span>
+</code></pre></div>
+
+<h3 id="4-weak-key-derivation">4. Weak Key Derivation</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ Direct use of password as key</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">()[:</span><span class="mi">32</span><span class="p">]</span>  <span class="c1"># Weak!</span>
+
+<span class="c1"># ✓ Proper key derivation</span>
+<span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.kdf.pbkdf2</span> <span class="kn">import</span> <span class="n">PBKDF2HMAC</span>
+<span class="n">kdf</span> <span class="o">=</span> <span class="n">PBKDF2HMAC</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">SHA256</span><span class="p">(),</span> <span class="n">length</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">salt</span><span class="o">=</span><span class="n">salt</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">600000</span><span class="p">)</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">kdf</span><span class="o">.</span><span class="n">derive</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+</code></pre></div>
+
+<h3 id="5-rolling-your-own-crypto">5. Rolling Your Own Crypto</h3>
+<div class="highlight"><pre><span></span><code>❌ &quot;I&#39;ll just XOR with a key&quot;
+❌ &quot;I invented a new algorithm&quot;
+❌ &quot;I&#39;ll make it more secure by encrypting twice with different algorithms&quot;
+
+✓ Use well-vetted libraries
+✓ Use standard algorithms
+✓ Follow established patterns
+</code></pre></div>
+
+<h3 id="6-hardcoded-secrets">6. Hardcoded Secrets</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ❌ In source code</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;sk_live_abc123...&quot;</span>
+
+<span class="c1">// ❌ In config file committed to git</span>
+<span class="n">config</span><span class="p">.</span><span class="na">json</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sk_live_abc123...&quot;</span><span class="p">}</span>
+
+<span class="c1">// ✓ Environment variable (not in code)</span>
+<span class="c1">// ✓ Secret manager (AWS Secrets Manager, Vault)</span>
+<span class="c1">// ✓ Keychain/Keystore (mobile)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="quick-recipes">Quick Recipes</h2>
+<h3 id="generate-a-random-key">Generate a Random Key</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>  <span class="c1"># 256-bit key</span>
+</code></pre></div>
+
+<h3 id="hash-a-password-for-storage">Hash a Password (for storage)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">argon2</span> <span class="kn">import</span> <span class="n">PasswordHasher</span>
+<span class="n">ph</span> <span class="o">=</span> <span class="n">PasswordHasher</span><span class="p">()</span>
+<span class="nb">hash</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="create-an-hmac">Create an HMAC</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="n">signature</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+    <span class="n">key</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;secret&quot;</span><span class="p">,</span>
+    <span class="n">msg</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;message&quot;</span><span class="p">,</span>
+    <span class="n">digestmod</span><span class="o">=</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span>
+<span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="encrypt-data-symmetric">Encrypt Data (symmetric)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>  <span class="c1"># Save this!</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="n">encrypted</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;secret&quot;</span><span class="p">)</span>
+<span class="n">decrypted</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="sign-data-asymmetric">Sign Data (asymmetric)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">cryptography.hazmat.primitives.asymmetric.ed25519</span> <span class="kn">import</span> <span class="n">Ed25519PrivateKey</span>
+
+<span class="n">private_key</span> <span class="o">=</span> <span class="n">Ed25519PrivateKey</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+<span class="n">public_key</span> <span class="o">=</span> <span class="n">private_key</span><span class="o">.</span><span class="n">public_key</span><span class="p">()</span>
+
+<span class="n">signature</span> <span class="o">=</span> <span class="n">private_key</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
+<span class="n">public_key</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>  <span class="c1"># Raises if invalid</span>
+</code></pre></div>
+
+<h3 id="verify-a-jwt">Verify a JWT</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">jwt</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">public_key</span><span class="p">,</span> <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;RS256&quot;</span><span class="p">])</span>
+    <span class="c1"># Valid token</span>
+<span class="k">except</span> <span class="n">jwt</span><span class="o">.</span><span class="n">ExpiredSignatureError</span><span class="p">:</span>
+    <span class="c1"># Token expired</span>
+<span class="k">except</span> <span class="n">jwt</span><span class="o">.</span><span class="n">InvalidTokenError</span><span class="p">:</span>
+    <span class="c1"># Invalid token</span>
+</code></pre></div>
+
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ol>
+<li><strong>Don't roll your own crypto</strong> - use established libraries</li>
+<li><strong>Use authenticated encryption</strong> - AES-GCM or ChaCha20-Poly1305</li>
+<li><strong>Never reuse nonces</strong> - random or counter, but unique per key</li>
+<li><strong>Hash passwords properly</strong> - Argon2id or bcrypt, not SHA</li>
+<li><strong>Protect your keys</strong> - HSM &gt; KMS &gt; encrypted files &gt; env vars</li>
+<li><strong>Defense in depth</strong> - TLS + app-level encryption + signing</li>
+<li><strong>Plan for key rotation</strong> - it will happen eventually</li>
+<li><strong>Constant-time comparisons</strong> - for any secret comparison</li>
+</ol>
+</body>
+</html>

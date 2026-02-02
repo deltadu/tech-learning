@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra Fundamentals</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="linear-algebra-fundamentals">Linear Algebra Fundamentals</h1>
+<p>The mathematical foundation for machine learning, computer graphics, and robotics.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#why-linear-algebra-matters">Why Linear Algebra Matters</a></li>
+<li><a href="#vectors">Vectors</a></li>
+<li><a href="#matrices">Matrices</a></li>
+<li><a href="#matrix-operations">Matrix Operations</a></li>
+<li><a href="#special-matrices">Special Matrices</a></li>
+<li><a href="#linear-systems">Linear Systems</a></li>
+<li><a href="#vector-spaces">Vector Spaces</a></li>
+<li><a href="#eigenvalues-and-eigenvectors">Eigenvalues and Eigenvectors</a></li>
+<li><a href="#matrix-decompositions">Matrix Decompositions</a></li>
+<li><a href="#quick-reference">Quick Reference</a></li>
+</ol>
+<hr />
+<h2 id="why-linear-algebra-matters">Why Linear Algebra Matters</h2>
+<p>Linear algebra is everywhere in computing:</p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Application</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Machine Learning</strong></td>
+<td>Neural networks are just matrix multiplications</td>
+</tr>
+<tr>
+<td><strong>Computer Graphics</strong></td>
+<td>Transformations (rotate, scale, translate)</td>
+</tr>
+<tr>
+<td><strong>Robotics</strong></td>
+<td>Kinematics, sensor fusion, SLAM</td>
+</tr>
+<tr>
+<td><strong>Data Science</strong></td>
+<td>PCA, regression, recommendations</td>
+</tr>
+<tr>
+<td><strong>Signal Processing</strong></td>
+<td>Fourier transforms, filtering</td>
+</tr>
+<tr>
+<td><strong>Physics Simulations</strong></td>
+<td>Rigid body dynamics, FEM</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="vectors">Vectors</h2>
+<h3 id="what-is-a-vector">What is a Vector?</h3>
+<p>A vector is an ordered list of numbers representing magnitude and direction.</p>
+<div class="highlight"><pre><span></span><code>      ┌   ┐
+      │ 3 │
+v =   │ 4 │   ← 2D vector (column vector)
+      └   ┘
+
+      ┌   ┐
+      │ 1 │
+w =   │ 2 │   ← 3D vector
+      │ 3 │
+      └   ┘
+</code></pre></div>
+
+<p><strong>Notation:</strong><br />
+- <strong>Column vector</strong> (default): n×1 matrix<br />
+- <strong>Row vector</strong>: 1×n matrix, written as vᵀ</p>
+<h3 id="vector-operations">Vector Operations</h3>
+<p><strong>Addition/Subtraction</strong> (element-wise):</p>
+<div class="highlight"><pre><span></span><code>┌ 1 ┐   ┌ 4 ┐   ┌ 5 ┐
+│ 2 │ + │ 5 │ = │ 7 │
+└ 3 ┘   └ 6 ┘   └ 9 ┘
+</code></pre></div>
+
+<p><strong>Scalar Multiplication</strong>:</p>
+<div class="highlight"><pre><span></span><code>    ┌ 1 ┐   ┌ 2 ┐
+2 × │ 2 │ = │ 4 │
+    └ 3 ┘   └ 6 ┘
+</code></pre></div>
+
+<h3 id="dot-product-inner-product">Dot Product (Inner Product)</h3>
+<p>Produces a <strong>scalar</strong>. Measures similarity/projection.</p>
+<div class="highlight"><pre><span></span><code>a · b = a₁b₁ + a₂b₂ + ... + aₙbₙ
+
+┌ 1 ┐   ┌ 4 ┐
+│ 2 │ · │ 5 │ = 1×4 + 2×5 + 3×6 = 4 + 10 + 18 = 32
+└ 3 ┘   └ 6 ┘
+</code></pre></div>
+
+<p><strong>Geometric interpretation:</strong></p>
+<div class="highlight"><pre><span></span><code>a · b = |a| × |b| × cos(θ)
+
+where θ is the angle between vectors
+
+• a · b &gt; 0  →  angle &lt; 90° (same general direction)
+• a · b = 0  →  angle = 90° (perpendicular/orthogonal)
+• a · b &lt; 0  →  angle &gt; 90° (opposite directions)
+</code></pre></div>
+
+<h3 id="cross-product-3d-only">Cross Product (3D only)</h3>
+<p>Produces a <strong>vector</strong> perpendicular to both inputs.</p>
+<div class="highlight"><pre><span></span><code>        ┌ a₂b₃ - a₃b₂ ┐
+a × b = │ a₃b₁ - a₁b₃ │
+        └ a₁b₂ - a₂b₁ ┘
+
+┌ 1 ┐   ┌ 4 ┐   ┌ 2×6 - 3×5 ┐   ┌ -3 ┐
+│ 2 │ × │ 5 │ = │ 3×4 - 1×6 │ = │  6 │
+└ 3 ┘   └ 6 ┘   └ 1×5 - 2×4 ┘   └ -3 ┘
+</code></pre></div>
+
+<p><strong>Properties:</strong><br />
+- Result is perpendicular to both input vectors<br />
+- Magnitude = area of parallelogram formed by the vectors<br />
+- Order matters: a × b = -(b × a)</p>
+<h3 id="vector-norm-lengthmagnitude">Vector Norm (Length/Magnitude)</h3>
+<p><strong>L2 Norm (Euclidean):</strong></p>
+<div class="highlight"><pre><span></span><code>‖v‖₂ = √(v₁² + v₂² + ... + vₙ²)
+
+‖[3, 4]‖₂ = √(9 + 16) = √25 = 5
+</code></pre></div>
+
+<p><strong>Other norms:</strong></p>
+<div class="highlight"><pre><span></span><code>L1 Norm (Manhattan):  ‖v‖₁ = |v₁| + |v₂| + ... + |vₙ|
+L∞ Norm (Max):        ‖v‖∞ = max(|v₁|, |v₂|, ..., |vₙ|)
+</code></pre></div>
+
+<h3 id="unit-vectors">Unit Vectors</h3>
+<p>A vector with length 1. Normalize by dividing by the norm:</p>
+<div class="highlight"><pre><span></span><code>û = v / ‖v‖
+
+v = [3, 4]
+‖v‖ = 5
+û = [3/5, 4/5] = [0.6, 0.8]
+</code></pre></div>
+
+<h3 id="projection">Projection</h3>
+<p>Project vector a onto vector b:</p>
+<div class="highlight"><pre><span></span><code>           (a · b)
+proj_b(a) = ────── × b
+            (b · b)
+
+Or using unit vector:
+proj_b(a) = (a · b̂) × b̂
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>        b
+       ╱
+      ╱
+     ╱───────→ proj_b(a)
+    ╱    ╱
+   ╱    ╱ a
+  ╱    ╱
+ ╱    ↙
+</code></pre></div>
+
+<hr />
+<h2 id="matrices">Matrices</h2>
+<h3 id="what-is-a-matrix">What is a Matrix?</h3>
+<p>A 2D array of numbers. An m×n matrix has m rows and n columns.</p>
+<div class="highlight"><pre><span></span><code>      ┌           ┐
+      │ 1   2   3 │
+A =   │ 4   5   6 │    ← 2×3 matrix (2 rows, 3 columns)
+      └           ┘
+
+Element notation: A[i,j] or aᵢⱼ
+A[1,2] = 2  (row 1, column 2, 1-indexed)
+</code></pre></div>
+
+<h3 id="ways-to-think-about-matrices">Ways to Think About Matrices</h3>
+<p><strong>1. As a collection of column vectors:</strong></p>
+<div class="highlight"><pre><span></span><code>      ┌     ┐
+A =   │ c₁  c₂  c₃ │   where each cᵢ is a column vector
+      └     ┘
+</code></pre></div>
+
+<p><strong>2. As a collection of row vectors:</strong></p>
+<div class="highlight"><pre><span></span><code>      ┌ r₁ ┐
+A =   │ r₂ │   where each rᵢ is a row vector
+      └ r₃ ┘
+</code></pre></div>
+
+<p><strong>3. As a linear transformation:</strong></p>
+<div class="highlight"><pre><span></span><code>Av = w
+
+Matrix A transforms vector v into vector w
+</code></pre></div>
+
+<hr />
+<h2 id="matrix-operations">Matrix Operations</h2>
+<h3 id="additionsubtraction">Addition/Subtraction</h3>
+<p>Element-wise, same dimensions required:</p>
+<div class="highlight"><pre><span></span><code>┌ 1  2 ┐   ┌ 5  6 ┐   ┌ 6   8 ┐
+│ 3  4 │ + │ 7  8 │ = │ 10 12 │
+└      ┘   └      ┘   └       ┘
+</code></pre></div>
+
+<h3 id="scalar-multiplication">Scalar Multiplication</h3>
+<p>Multiply every element:</p>
+<div class="highlight"><pre><span></span><code>    ┌ 1  2 ┐   ┌ 2  4 ┐
+2 × │ 3  4 │ = │ 6  8 │
+    └      ┘   └      ┘
+</code></pre></div>
+
+<h3 id="matrix-multiplication">Matrix Multiplication</h3>
+<p><strong>Rule:</strong> (m×n) × (n×p) = (m×p)</p>
+<p>Inner dimensions must match. Result has outer dimensions.</p>
+<div class="highlight"><pre><span></span><code>(2×3) × (3×2) = (2×2)  ✓
+(2×3) × (2×3) = error  ✗ (3 ≠ 2)
+</code></pre></div>
+
+<p><strong>Computation:</strong> Each element is dot product of row and column.</p>
+<div class="highlight"><pre><span></span><code>┌ 1  2  3 ┐   ┌ 7   8  ┐   ┌ 1×7+2×9+3×11   1×8+2×10+3×12  ┐
+│ 4  5  6 │ × │ 9   10 │ = │ 4×7+5×9+6×11   4×8+5×10+6×12  │
+└         ┘   │ 11  12 │   └                                ┘
+              └        ┘
+            ┌ 58   64  ┐
+          = │ 139  154 │
+            └          ┘
+</code></pre></div>
+
+<p><strong>Properties:</strong><br />
+- NOT commutative: AB ≠ BA (in general)<br />
+- Associative: (AB)C = A(BC)<br />
+- Distributive: A(B + C) = AB + AC</p>
+<h3 id="matrix-vector-multiplication">Matrix-Vector Multiplication</h3>
+<p>Special case of matrix multiplication. Transforms a vector.</p>
+<div class="highlight"><pre><span></span><code>┌ 1  2 ┐   ┌ x ┐   ┌ 1x + 2y ┐
+│ 3  4 │ × │ y │ = │ 3x + 4y │
+└      ┘   └   ┘   └         ┘
+</code></pre></div>
+
+<p><strong>Geometric interpretation:</strong></p>
+<div class="highlight"><pre><span></span><code>┌ cos θ  -sin θ ┐   ┌ x ┐
+│ sin θ   cos θ │ × │ y │  = rotates (x,y) by angle θ
+└               ┘   └   ┘
+</code></pre></div>
+
+<h3 id="transpose">Transpose</h3>
+<p>Flip rows and columns:</p>
+<div class="highlight"><pre><span></span><code>      ┌ 1  2  3 ┐         ┌ 1  4 ┐
+A =   │ 4  5  6 │   Aᵀ =  │ 2  5 │
+      └         ┘         │ 3  6 │
+                          └      ┘
+
+(m×n)ᵀ = (n×m)
+</code></pre></div>
+
+<p><strong>Properties:</strong><br />
+- (Aᵀ)ᵀ = A<br />
+- (A + B)ᵀ = Aᵀ + Bᵀ<br />
+- (AB)ᵀ = BᵀAᵀ  (note the reversal!)<br />
+- (cA)ᵀ = cAᵀ</p>
+<h3 id="element-wise-operations-hadamard">Element-wise Operations (Hadamard)</h3>
+<p>Multiply corresponding elements (same dimensions):</p>
+<div class="highlight"><pre><span></span><code>┌ 1  2 ┐   ┌ 5  6 ┐   ┌ 5   12 ┐
+│ 3  4 │ ⊙ │ 7  8 │ = │ 21  32 │
+└      ┘   └      ┘   └        ┘
+</code></pre></div>
+
+<hr />
+<h2 id="special-matrices">Special Matrices</h2>
+<h3 id="identity-matrix-i">Identity Matrix (I)</h3>
+<p>The "1" of matrix multiplication. AI = IA = A.</p>
+<div class="highlight"><pre><span></span><code>      ┌ 1  0  0 ┐
+I₃ =  │ 0  1  0 │
+      │ 0  0  1 │
+      └         ┘
+</code></pre></div>
+
+<h3 id="diagonal-matrix">Diagonal Matrix</h3>
+<p>Non-zero elements only on the main diagonal:</p>
+<div class="highlight"><pre><span></span><code>      ┌ 3  0  0 ┐
+D =   │ 0  5  0 │     Easy to multiply: just scales each dimension
+      │ 0  0  2 │
+      └         ┘
+</code></pre></div>
+
+<h3 id="symmetric-matrix">Symmetric Matrix</h3>
+<p>Equals its transpose: A = Aᵀ</p>
+<div class="highlight"><pre><span></span><code>      ┌ 1  2  3 ┐
+A =   │ 2  4  5 │     aᵢⱼ = aⱼᵢ
+      │ 3  5  6 │
+      └         ┘
+</code></pre></div>
+
+<h3 id="orthogonal-matrix">Orthogonal Matrix</h3>
+<p>Columns are orthonormal (perpendicular unit vectors).</p>
+<div class="highlight"><pre><span></span><code>QᵀQ = QQᵀ = I
+Q⁻¹ = Qᵀ     (inverse is just transpose!)
+
+Example (2D rotation):
+      ┌ cos θ  -sin θ ┐
+Q =   │ sin θ   cos θ │
+      └               ┘
+</code></pre></div>
+
+<p><strong>Properties:</strong><br />
+- Preserves lengths: ‖Qv‖ = ‖v‖<br />
+- Preserves angles<br />
+- det(Q) = ±1</p>
+<h3 id="inverse-matrix">Inverse Matrix</h3>
+<p>A⁻¹ such that AA⁻¹ = A⁻¹A = I</p>
+<div class="highlight"><pre><span></span><code>A⁻¹ &quot;undoes&quot; the transformation A
+
+Only exists if:
+• Matrix is square (n×n)
+• Determinant ≠ 0 (matrix is &quot;invertible&quot; or &quot;non-singular&quot;)
+</code></pre></div>
+
+<p><strong>2×2 inverse formula:</strong></p>
+<div class="highlight"><pre><span></span><code>      ┌ a  b ┐           1      ┌  d  -b ┐
+A =   │ c  d │   A⁻¹ = ───── × │ -c   a │
+      └      ┘         ad-bc   └        ┘
+
+where (ad - bc) is the determinant
+</code></pre></div>
+
+<h3 id="determinant">Determinant</h3>
+<p>A scalar value that encodes "how much" a matrix scales space.</p>
+<p><strong>2×2:</strong></p>
+<div class="highlight"><pre><span></span><code>      ┌ a  b ┐
+det   │ c  d │ = ad - bc
+      └      ┘
+</code></pre></div>
+
+<p><strong>3×3 (expansion along first row):</strong></p>
+<div class="highlight"><pre><span></span><code>      ┌ a  b  c ┐
+det   │ d  e  f │ = a(ei - fh) - b(di - fg) + c(dh - eg)
+      │ g  h  i │
+      └         ┘
+</code></pre></div>
+
+<p><strong>Interpretation:</strong><br />
+- |det(A)| = factor by which A scales area/volume<br />
+- det(A) &lt; 0 = A flips orientation<br />
+- det(A) = 0 = A collapses dimension (not invertible)</p>
+<h3 id="rank">Rank</h3>
+<p>The number of linearly independent rows (or columns).</p>
+<div class="highlight"><pre><span></span><code>Full rank: rank(A) = min(m, n)
+           Matrix has maximum possible rank
+           Square matrix is invertible iff full rank
+</code></pre></div>
+
+<h3 id="trace">Trace</h3>
+<p>Sum of diagonal elements:</p>
+<div class="highlight"><pre><span></span><code>tr(A) = a₁₁ + a₂₂ + ... + aₙₙ
+
+Properties:
+• tr(A + B) = tr(A) + tr(B)
+• tr(AB) = tr(BA)
+• tr(A) = sum of eigenvalues
+</code></pre></div>
+
+<hr />
+<h2 id="linear-systems">Linear Systems</h2>
+<h3 id="solving-ax-b">Solving Ax = b</h3>
+<p>Find x given matrix A and vector b.</p>
+<div class="highlight"><pre><span></span><code>┌ 2  1 ┐   ┌ x ┐   ┌ 5 ┐
+│ 1  3 │ × │ y │ = │ 5 │
+└      ┘   └   ┘   └   ┘
+
+System of equations:
+2x + 1y = 5
+1x + 3y = 5
+
+Solution: x = 2, y = 1
+</code></pre></div>
+
+<h3 id="solution-cases">Solution Cases</h3>
+<div class="highlight"><pre><span></span><code>Ax = b has:
+
+• Unique solution    when A is invertible (full rank)
+                     x = A⁻¹b
+
+• No solution        when b is outside column space of A
+                     (inconsistent system)
+
+• Infinite solutions when A has dependent columns
+                     (underdetermined system)
+</code></pre></div>
+
+<h3 id="gaussian-elimination">Gaussian Elimination</h3>
+<p>Systematic way to solve linear systems:</p>
+<div class="highlight"><pre><span></span><code>Augmented matrix [A|b]:
+┌ 2  1 | 5 ┐
+│ 1  3 | 5 │
+└          ┘
+
+Row operations to get row echelon form:
+┌ 2  1  | 5   ┐
+│ 0  2.5| 2.5 │   ← (R2 - 0.5×R1)
+└             ┘
+
+Back-substitute:
+y = 1
+x = (5 - 1) / 2 = 2
+</code></pre></div>
+
+<hr />
+<h2 id="vector-spaces">Vector Spaces</h2>
+<h3 id="span">Span</h3>
+<p>All possible linear combinations of a set of vectors:</p>
+<div class="highlight"><pre><span></span><code>span({v₁, v₂}) = {a₁v₁ + a₂v₂ : for all scalars a₁, a₂}
+
+Example:
+span({[1,0], [0,1]}) = all of R² (the entire 2D plane)
+span({[1,0], [2,0]}) = only the x-axis (vectors are collinear)
+</code></pre></div>
+
+<h3 id="linear-independence">Linear Independence</h3>
+<p>Vectors are linearly independent if none can be written as a combination of others:</p>
+<div class="highlight"><pre><span></span><code>c₁v₁ + c₂v₂ + ... + cₙvₙ = 0
+
+Only solution is c₁ = c₂ = ... = cₙ = 0
+
+Independent:  {[1,0], [0,1]}     ← can&#39;t make one from the other
+Dependent:    {[1,0], [2,0], [0,1]} ← [2,0] = 2×[1,0]
+</code></pre></div>
+
+<h3 id="basis">Basis</h3>
+<p>A minimal set of vectors that spans a space:</p>
+<div class="highlight"><pre><span></span><code>Standard basis for R³:
+e₁ = [1, 0, 0]
+e₂ = [0, 1, 0]
+e₃ = [0, 0, 1]
+
+Any vector in R³ can be written as:
+v = a₁e₁ + a₂e₂ + a₃e₃
+</code></pre></div>
+
+<h3 id="column-space-and-null-space">Column Space and Null Space</h3>
+<p><strong>Column Space (Range):</strong><br />
+All possible outputs Ax.</p>
+<div class="highlight"><pre><span></span><code>Col(A) = span of column vectors of A
+</code></pre></div>
+
+<p><strong>Null Space (Kernel):</strong><br />
+All vectors x where Ax = 0.</p>
+<div class="highlight"><pre><span></span><code>Null(A) = {x : Ax = 0}
+</code></pre></div>
+
+<hr />
+<h2 id="eigenvalues-and-eigenvectors">Eigenvalues and Eigenvectors</h2>
+<h3 id="definition">Definition</h3>
+<p>For a square matrix A, eigenvector v and eigenvalue λ satisfy:</p>
+<div class="highlight"><pre><span></span><code>Av = λv
+
+The transformation A only SCALES v, doesn&#39;t change direction.
+</code></pre></div>
+
+<p><strong>Visual:</strong></p>
+<div class="highlight"><pre><span></span><code>Before:  →v
+After:   ────→ Av = λv  (same direction, different length)
+</code></pre></div>
+
+<h3 id="finding-eigenvalues">Finding Eigenvalues</h3>
+<p>Solve the characteristic equation:</p>
+<div class="highlight"><pre><span></span><code>det(A - λI) = 0
+
+For 2×2:
+A = ┌ a  b ┐
+    │ c  d │
+
+det(A - λI) = (a-λ)(d-λ) - bc = 0
+λ² - (a+d)λ + (ad-bc) = 0
+λ² - tr(A)λ + det(A) = 0
+</code></pre></div>
+
+<h3 id="finding-eigenvectors">Finding Eigenvectors</h3>
+<p>For each eigenvalue λ, solve:</p>
+<div class="highlight"><pre><span></span><code>(A - λI)v = 0
+
+Find the null space of (A - λI)
+</code></pre></div>
+
+<h3 id="example">Example</h3>
+<div class="highlight"><pre><span></span><code>A = ┌ 4  1 ┐
+    │ 2  3 │
+
+Characteristic equation:
+det(A - λI) = (4-λ)(3-λ) - 2 = λ² - 7λ + 10 = (λ-5)(λ-2) = 0
+
+Eigenvalues: λ₁ = 5, λ₂ = 2
+
+For λ₁ = 5:
+(A - 5I)v = 0
+┌ -1  1 ┐   ┌ x ┐   ┌ 0 ┐
+│  2 -2 │ × │ y │ = │ 0 │
+-x + y = 0  →  v₁ = [1, 1]
+
+For λ₂ = 2:
+(A - 2I)v = 0
+┌ 2  1 ┐   ┌ x ┐   ┌ 0 ┐
+│ 2  1 │ × │ y │ = │ 0 │
+2x + y = 0  →  v₂ = [1, -2]
+</code></pre></div>
+
+<h3 id="properties">Properties</h3>
+<div class="highlight"><pre><span></span><code>• Sum of eigenvalues = trace(A)
+• Product of eigenvalues = det(A)
+• A matrix is invertible iff all eigenvalues ≠ 0
+• Symmetric matrices have real eigenvalues and orthogonal eigenvectors
+</code></pre></div>
+
+<h3 id="applications">Applications</h3>
+<table>
+<thead>
+<tr>
+<th>Application</th>
+<th>How Eigenvalues Help</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PCA</strong></td>
+<td>Eigenvectors of covariance matrix = principal components</td>
+</tr>
+<tr>
+<td><strong>PageRank</strong></td>
+<td>Dominant eigenvector of link matrix</td>
+</tr>
+<tr>
+<td><strong>Vibrations</strong></td>
+<td>Eigenvalues = natural frequencies</td>
+</tr>
+<tr>
+<td><strong>Stability</strong></td>
+<td>System stable if all eigenvalues have negative real part</td>
+</tr>
+<tr>
+<td><strong>Markov Chains</strong></td>
+<td>Steady state = eigenvector for λ=1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="matrix-decompositions">Matrix Decompositions</h2>
+<h3 id="eigendecomposition">Eigendecomposition</h3>
+<p>For matrices with n linearly independent eigenvectors:</p>
+<div class="highlight"><pre><span></span><code>A = VΛV⁻¹
+
+Where:
+V = matrix of eigenvectors (as columns)
+Λ = diagonal matrix of eigenvalues
+</code></pre></div>
+
+<p><strong>Power of decomposition:</strong></p>
+<div class="highlight"><pre><span></span><code>A² = VΛV⁻¹ × VΛV⁻¹ = VΛ²V⁻¹
+Aⁿ = VΛⁿV⁻¹   ← Λⁿ is trivial (just raise each diagonal element)
+</code></pre></div>
+
+<h3 id="singular-value-decomposition-svd">Singular Value Decomposition (SVD)</h3>
+<p>Works for ANY matrix (not just square):</p>
+<div class="highlight"><pre><span></span><code>A = UΣVᵀ
+
+Where:
+• A is m×n
+• U is m×m orthogonal (left singular vectors)
+• Σ is m×n diagonal (singular values, non-negative)
+• V is n×n orthogonal (right singular vectors)
+</code></pre></div>
+
+<p><strong>Interpretation:</strong></p>
+<div class="highlight"><pre><span></span><code>Any linear transformation = rotation (V) → scale (Σ) → rotation (U)
+</code></pre></div>
+
+<p><strong>Applications:</strong><br />
+- Dimensionality reduction (keep top k singular values)<br />
+- Image compression<br />
+- Recommender systems<br />
+- Pseudoinverse computation</p>
+<h3 id="qr-decomposition">QR Decomposition</h3>
+<p>Decompose into orthogonal × upper triangular:</p>
+<div class="highlight"><pre><span></span><code>A = QR
+
+Where:
+• Q is orthogonal (Qᵀ = Q⁻¹)
+• R is upper triangular
+</code></pre></div>
+
+<p><strong>Uses:</strong><br />
+- Solving least squares<br />
+- Eigenvalue algorithms<br />
+- Gram-Schmidt orthogonalization</p>
+<h3 id="cholesky-decomposition">Cholesky Decomposition</h3>
+<p>For symmetric positive definite matrices:</p>
+<div class="highlight"><pre><span></span><code>A = LLᵀ
+
+Where L is lower triangular.
+</code></pre></div>
+
+<p><strong>Uses:</strong><br />
+- Efficient solving of Ax = b<br />
+- Sampling from multivariate Gaussians<br />
+- Numerical stability</p>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="vector-operations_1">Vector Operations</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Formula</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dot product</td>
+<td>a·b = Σaᵢbᵢ</td>
+<td>Scalar</td>
+</tr>
+<tr>
+<td>Cross product</td>
+<td>a×b</td>
+<td>Vector (3D)</td>
+</tr>
+<tr>
+<td>Norm</td>
+<td>‖v‖ = √(Σvᵢ²)</td>
+<td>Scalar</td>
+</tr>
+<tr>
+<td>Normalize</td>
+<td>v/‖v‖</td>
+<td>Unit vector</td>
+</tr>
+<tr>
+<td>Angle</td>
+<td>cos θ = (a·b)/(‖a‖‖b‖)</td>
+<td>Radians</td>
+</tr>
+</tbody>
+</table>
+<h3 id="matrix-properties">Matrix Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Notation</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transpose</td>
+<td>Aᵀ</td>
+<td>Flip rows/columns</td>
+</tr>
+<tr>
+<td>Inverse</td>
+<td>A⁻¹</td>
+<td>AA⁻¹ = I</td>
+</tr>
+<tr>
+<td>Determinant</td>
+<td>det(A)</td>
+<td>Scaling factor</td>
+</tr>
+<tr>
+<td>Trace</td>
+<td>tr(A)</td>
+<td>Sum of diagonal</td>
+</tr>
+<tr>
+<td>Rank</td>
+<td>rank(A)</td>
+<td># independent rows/cols</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-formulas">Key Formulas</h3>
+<div class="highlight"><pre><span></span><code>(AB)ᵀ = BᵀAᵀ
+(AB)⁻¹ = B⁻¹A⁻¹
+det(AB) = det(A)det(B)
+det(A⁻¹) = 1/det(A)
+det(Aᵀ) = det(A)
+
+For 2×2 inverse:
+[a b]⁻¹ =  1/(ad-bc) × [ d -b]
+[c d]                   [-c  a]
+</code></pre></div>
+
+<h3 id="eigenvalue-summary">Eigenvalue Summary</h3>
+<div class="highlight"><pre><span></span><code>Av = λv                  Definition
+det(A - λI) = 0          Find eigenvalues
+(A - λI)v = 0            Find eigenvectors
+Σλᵢ = tr(A)              Sum = trace
+Πλᵢ = det(A)             Product = determinant
+</code></pre></div>
+
+<hr />
+<p>Next: <a href="./02_PRACTICAL.md">Practical Linear Algebra</a> - Applications in ML, graphics, and robotics</p>
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Transformer Architecture: A Complete Guide</title>
+    <style>
+        /* Print-friendly styling */
+        :root {
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --code-bg: #f5f5f5;
+            --border-color: #ddd;
+            --link-color: #0066cc;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.2em;
+            margin-top: 1.5em;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 1.2em;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 1em;
+        }
+        
+        p {
+            margin: 0.8em 0;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            font-size: 9pt;
+        }
+        
+        p code, li code, td code {
+            background: var(--code-bg);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
+        }
+        
+        li {
+            margin: 0.3em 0;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--border-color);
+            margin: 1em 0;
+            padding: 0.5em 1em;
+            background: #fafafa;
+        }
+        
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2em 0;
+        }
+        
+        /* ASCII diagrams - preserve formatting */
+        pre {
+            white-space: pre;
+            word-wrap: normal;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            
+            pre {
+                font-size: 8pt;
+                border: 1px solid #999;
+            }
+            
+            h1 {
+                font-size: 20pt;
+            }
+            
+            h2 {
+                font-size: 16pt;
+                page-break-after: avoid;
+            }
+            
+            h3 {
+                font-size: 13pt;
+                page-break-after: avoid;
+            }
+            
+            pre, table, blockquote {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: var(--text-color);
+            }
+            
+            /* Avoid orphans */
+            p, li {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+        
+        /* Table of contents */
+        .toc {
+            background: var(--code-bg);
+            padding: 1em;
+            border-radius: 4px;
+            margin: 1em 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 1em;
+        }
+        
+        .toc > ul {
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<h1 id="the-transformer-architecture-a-complete-guide">The Transformer Architecture: A Complete Guide</h1>
+<p>The Transformer architecture, introduced in the paper "Attention Is All You Need" (Vaswani et al., 2017), revolutionized deep learning by replacing recurrence with self-attention. This document explains every component in detail.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#the-big-picture">The Big Picture</a></li>
+<li><a href="#input-embeddings">Input Embeddings</a></li>
+<li><a href="#positional-encoding">Positional Encoding</a></li>
+<li><a href="#self-attention-mechanism">Self-Attention Mechanism</a></li>
+<li><a href="#multi-head-attention">Multi-Head Attention</a></li>
+<li><a href="#feed-forward-network">Feed-Forward Network</a></li>
+<li><a href="#layer-normalization--residual-connections">Layer Normalization &amp; Residual Connections</a></li>
+<li><a href="#the-complete-encoder">The Complete Encoder</a></li>
+<li><a href="#the-complete-decoder">The Complete Decoder</a></li>
+<li><a href="#putting-it-all-together">Putting It All Together</a></li>
+<li><a href="#key-insights">Key Insights</a></li>
+</ol>
+<hr />
+<h2 id="the-big-picture">The Big Picture</h2>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│                      TRANSFORMER                                 │
+│                                                                  │
+│  ┌─────────────────────┐      ┌─────────────────────┐          │
+│  │      ENCODER        │      │      DECODER        │          │
+│  │                     │      │                     │          │
+│  │  ┌───────────────┐  │      │  ┌───────────────┐  │          │
+│  │  │ Encoder Block │  │      │  │ Decoder Block │  │          │
+│  │  │      ×N       │──┼──────┼─▶│      ×N       │  │          │
+│  │  └───────────────┘  │      │  └───────────────┘  │          │
+│  │         ▲           │      │         ▲           │          │
+│  │  ┌──────┴────────┐  │      │  ┌──────┴────────┐  │          │
+│  │  │   Pos Embed   │  │      │  │   Pos Embed   │  │          │
+│  │  └───────────────┘  │      │  └───────────────┘  │          │
+│  │         ▲           │      │         ▲           │          │
+│  │  ┌──────┴────────┐  │      │  ┌──────┴────────┐  │          │
+│  │  │   Embedding   │  │      │  │   Embedding   │  │          │
+│  │  └───────────────┘  │      │  └───────────────┘  │          │
+│  │         ▲           │      │         ▲           │          │
+│  └─────────┼───────────┘      └─────────┼───────────┘          │
+│            │                            │                       │
+│      Input Tokens                 Output Tokens                 │
+│   (source sequence)            (target sequence)                │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<p><strong>Why Transformers?</strong></p>
+<table>
+<thead>
+<tr>
+<th>Problem with RNNs</th>
+<th>Transformer Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sequential processing (slow)</td>
+<td>Parallel processing</td>
+</tr>
+<tr>
+<td>Long-range dependencies hard to learn</td>
+<td>Direct attention to any position</td>
+</tr>
+<tr>
+<td>Vanishing gradients</td>
+<td>Constant path length between positions</td>
+</tr>
+<tr>
+<td>Hard to parallelize on GPUs</td>
+<td>Highly parallelizable</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="input-embeddings">Input Embeddings</h2>
+<p>The first step is converting discrete tokens (words, subwords, or characters) into continuous vectors.</p>
+<div class="highlight"><pre><span></span><code>Token: &quot;The&quot; → Index: 256 → Embedding: [0.21, -0.34, 0.12, ..., 0.45]
+                              └──────────────────────────────────────┘
+                                          d_model dimensions
+                                       (typically 512 or 768)
+</code></pre></div>
+
+<p><strong>Why scale by √d_model?</strong><br />
+- Embeddings are initialized with variance ~1/d_model<br />
+- Positional encodings have variance ~1<br />
+- Scaling brings them to similar magnitudes for addition</p>
+<hr />
+<h2 id="positional-encoding">Positional Encoding</h2>
+<p>Since attention has no inherent notion of order, we must inject position information.</p>
+<h3 id="sinusoidal-positional-encoding">Sinusoidal Positional Encoding</h3>
+<p>The original paper uses sine and cosine functions of different frequencies:</p>
+<div class="highlight"><pre><span></span><code>PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
+PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+</code></pre></div>
+
+<p><strong>Visualization:</strong></p>
+<div class="highlight"><pre><span></span><code>Position 0: [sin(0), cos(0), sin(0), cos(0), ...]
+Position 1: [sin(1/1), cos(1/1), sin(1/10000^(2/512)), cos(...), ...]
+Position 2: [sin(2/1), cos(2/1), sin(2/10000^(2/512)), cos(...), ...]
+    ...
+
+Each position gets a unique &quot;fingerprint&quot; of sine waves at different frequencies
+</code></pre></div>
+
+<p><strong>Why sinusoidal?</strong></p>
+<ol>
+<li><strong>Bounded values</strong>: Always in [-1, 1]</li>
+<li><strong>Unique encodings</strong>: Each position has a distinct pattern</li>
+<li><strong>Relative positions</strong>: For any fixed offset k, PE(pos+k) can be represented as a linear function of PE(pos)</li>
+<li><strong>Extrapolation</strong>: Can handle sequences longer than seen during training</li>
+</ol>
+<h3 id="learned-positional-embeddings">Learned Positional Embeddings</h3>
+<p>Modern models (BERT, GPT) often use learned positional embeddings instead.</p>
+<hr />
+<h2 id="self-attention-mechanism">Self-Attention Mechanism</h2>
+<p>Self-attention is the core innovation of the Transformer. It allows each position to attend to all positions in the sequence.</p>
+<h3 id="intuition">Intuition</h3>
+<p>For the sentence "The cat sat on the mat because it was tired":<br />
+- When processing "it", attention helps determine that "it" refers to "cat"<br />
+- Each word can "look at" every other word to gather context</p>
+<h3 id="the-query-key-value-framework">The Query-Key-Value Framework</h3>
+<p>Think of it like a <strong>soft dictionary lookup</strong>:</p>
+<div class="highlight"><pre><span></span><code>Traditional Dictionary:
+    key: &quot;apple&quot; → value: &quot;a red fruit&quot;
+    Query &quot;apple&quot; → exact match → returns &quot;a red fruit&quot;
+
+Attention (Soft Lookup):
+    Query &quot;fruit&quot; → computes similarity to ALL keys
+                 → returns weighted combination of ALL values
+</code></pre></div>
+
+<p><strong>The three projections:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Analogy</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Query (Q)</strong></td>
+<td>"What am I looking for?"</td>
+<td>Represents current position's request</td>
+</tr>
+<tr>
+<td><strong>Key (K)</strong></td>
+<td>"What do I contain?"</td>
+<td>Represents what each position offers</td>
+</tr>
+<tr>
+<td><strong>Value (V)</strong></td>
+<td>"What information do I provide?"</td>
+<td>The actual content to aggregate</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mathematical-formulation">Mathematical Formulation</h3>
+<div class="highlight"><pre><span></span><code>Attention(Q, K, V) = softmax(QK^T / √d_k) × V
+</code></pre></div>
+
+<p><strong>Step by step:</strong></p>
+<div class="highlight"><pre><span></span><code>1. Input X: (seq_len, d_model)
+
+2. Project to Q, K, V:
+   Q = X × W_Q    →  (seq_len, d_k)
+   K = X × W_K    →  (seq_len, d_k)
+   V = X × W_V    →  (seq_len, d_v)
+
+3. Compute attention scores:
+   scores = Q × K^T    →  (seq_len, seq_len)
+
+4. Scale (prevents softmax saturation):
+   scaled_scores = scores / √d_k
+
+5. Apply softmax (normalize to probabilities):
+   attention_weights = softmax(scaled_scores)    →  (seq_len, seq_len)
+
+6. Aggregate values:
+   output = attention_weights × V    →  (seq_len, d_v)
+</code></pre></div>
+
+<p><strong>Visual representation:</strong></p>
+<div class="highlight"><pre><span></span><code>          Input Sequence
+    ┌─────────────────────────┐
+    │  The   cat   sat   on   │
+    └─────────────────────────┘
+              │
+    ┌─────────┴─────────┐
+    ▼         ▼         ▼
+┌───────┐ ┌───────┐ ┌───────┐
+│   Q   │ │   K   │ │   V   │
+└───────┘ └───────┘ └───────┘
+    │         │         │
+    └────┬────┘         │
+         ▼              │
+    ┌─────────┐         │
+    │  Q×K^T  │  Attention Scores
+    └────┬────┘         │
+         │              │
+         ▼              │
+    ┌─────────┐         │
+    │ softmax │  Attention Weights
+    └────┬────┘         │
+         │              │
+         └──────┬───────┘
+                ▼
+         ┌───────────┐
+         │ weights×V │  Weighted Sum
+         └───────────┘
+                │
+                ▼
+          Output Sequence
+</code></pre></div>
+
+<h3 id="why-d_k-scaling">Why √d_k Scaling?</h3>
+<p>The dot product Q·K grows with dimension d_k. For large d_k:<br />
+- Dot products become very large<br />
+- Softmax pushes values to extremes (0 or 1)<br />
+- Gradients become very small</p>
+<p>Dividing by √d_k keeps the variance at ~1.</p>
+<hr />
+<h2 id="multi-head-attention">Multi-Head Attention</h2>
+<p>Instead of a single attention, we use multiple "heads" that can attend to different aspects.</p>
+<h3 id="intuition_1">Intuition</h3>
+<p>Different heads can learn to focus on:<br />
+- <strong>Head 1</strong>: Subject-verb relationships<br />
+- <strong>Head 2</strong>: Adjective-noun relationships<br />
+- <strong>Head 3</strong>: Coreference (pronouns to their referents)<br />
+- <strong>Head 4</strong>: Syntactic dependencies<br />
+- ...and so on</p>
+<h3 id="architecture">Architecture</h3>
+<div class="highlight"><pre><span></span><code>                    Input (batch, seq_len, d_model)
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+        ▼                     ▼                     ▼
+   ┌─────────┐           ┌─────────┐           ┌─────────┐
+   │ Linear  │           │ Linear  │           │ Linear  │
+   │  (W_Q)  │           │  (W_K)  │           │  (W_V)  │
+   └────┬────┘           └────┬────┘           └────┬────┘
+        │                     │                     │
+        ▼                     ▼                     ▼
+   ┌─────────────────────────────────────────────────────┐
+   │              Split into h heads                      │
+   │  (batch, seq, d_model) → (batch, h, seq, d_k)       │
+   └─────────────────────────────────────────────────────┘
+        │                     │                     │
+        └──────────┬──────────┴──────────┬──────────┘
+                   ▼                     ▼
+        ┌─────────────────────────────────────────┐
+        │    Scaled Dot-Product Attention × h     │
+        │    (parallel for each head)              │
+        └─────────────────────┬───────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────┐
+        │         Concatenate all heads            │
+        │  (batch, h, seq, d_k) → (batch, seq, d_model) │
+        └─────────────────────┬───────────────────┘
+                              │
+                              ▼
+                        ┌─────────┐
+                        │ Linear  │
+                        │  (W_O)  │
+                        └────┬────┘
+                             │
+                             ▼
+               Output (batch, seq_len, d_model)
+</code></pre></div>
+
+<p><strong>Key dimensions:</strong><br />
+- <code>d_model</code> = 512 (total model dimension)<br />
+- <code>h</code> = 8 (number of heads)<br />
+- <code>d_k = d_v = d_model / h</code> = 64 (dimension per head)</p>
+<hr />
+<h2 id="feed-forward-network">Feed-Forward Network</h2>
+<p>After attention, each position passes through a simple feed-forward network independently.</p>
+<div class="highlight"><pre><span></span><code>FFN(x) = ReLU(x × W_1 + b_1) × W_2 + b_2
+</code></pre></div>
+
+<p>Or with GELU (used in BERT, GPT):</p>
+<div class="highlight"><pre><span></span><code>FFN(x) = GELU(x × W_1 + b_1) × W_2 + b_2
+</code></pre></div>
+
+<p><strong>Architecture:</strong></p>
+<div class="highlight"><pre><span></span><code>Input: (batch, seq_len, d_model=512)
+           │
+           ▼
+    ┌─────────────┐
+    │   Linear    │  d_model → d_ff (512 → 2048)
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │    ReLU     │  (or GELU)
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │   Dropout   │
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │   Linear    │  d_ff → d_model (2048 → 512)
+    └──────┬──────┘
+           │
+           ▼
+Output: (batch, seq_len, d_model=512)
+</code></pre></div>
+
+<p><strong>Why expand then contract (512 → 2048 → 512)?</strong><br />
+- The expansion provides more capacity for learning complex transformations<br />
+- The "bottleneck" design is computationally efficient<br />
+- Acts like two matrix factorizations of a larger matrix</p>
+<hr />
+<h2 id="layer-normalization-residual-connections">Layer Normalization &amp; Residual Connections</h2>
+<p>These two techniques are crucial for training deep Transformers.</p>
+<h3 id="residual-connections">Residual Connections</h3>
+<div class="highlight"><pre><span></span><code>output = x + sublayer(x)
+</code></pre></div>
+
+<p><strong>Benefits:</strong><br />
+- Gradients flow directly through the skip connection<br />
+- Easier to learn identity mappings<br />
+- Enables very deep networks (100+ layers)</p>
+<h3 id="layer-normalization">Layer Normalization</h3>
+<p>Normalizes across the feature dimension (not batch dimension like BatchNorm):</p>
+<div class="highlight"><pre><span></span><code>LayerNorm(x) = γ × (x - μ) / (σ + ε) + β
+
+where:
+  μ = mean across features
+  σ = std across features
+  γ, β = learnable parameters
+</code></pre></div>
+
+<p><strong>Why LayerNorm instead of BatchNorm?</strong><br />
+- Works with variable sequence lengths<br />
+- No dependency on batch statistics (important for inference)<br />
+- More stable for sequence data</p>
+<h3 id="pre-norm-vs-post-norm">Pre-Norm vs Post-Norm</h3>
+<p><strong>Post-Norm (Original Paper):</strong></p>
+<div class="highlight"><pre><span></span><code>x = x + sublayer(x)
+x = LayerNorm(x)
+</code></pre></div>
+
+<p><strong>Pre-Norm (Modern Practice):</strong></p>
+<div class="highlight"><pre><span></span><code>x = x + sublayer(LayerNorm(x))
+</code></pre></div>
+
+<p>Pre-norm is more stable for training very deep models.</p>
+<hr />
+<h2 id="the-complete-encoder">The Complete Encoder</h2>
+<p>The encoder processes the input sequence bidirectionally (each position can attend to all positions).</p>
+<div class="highlight"><pre><span></span><code>                        Input Tokens
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Token Embedding │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Positional Enc. │
+                    └────────┬────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────┐
+│              Encoder Block ×N                 │
+│  ┌────────────────────────────────────────┐  │
+│  │        Multi-Head Self-Attention       │  │
+│  │     (all positions attend to all)      │  │
+│  └────────────────────┬───────────────────┘  │
+│           Add &amp; Norm  │                      │
+│  ┌────────────────────▼───────────────────┐  │
+│  │          Feed-Forward Network          │  │
+│  └────────────────────┬───────────────────┘  │
+│           Add &amp; Norm  │                      │
+└───────────────────────┼──────────────────────┘
+                        │
+                        ▼
+              Encoder Output (to Decoder)
+</code></pre></div>
+
+<hr />
+<h2 id="the-complete-decoder">The Complete Decoder</h2>
+<p>The decoder is autoregressive: it generates one token at a time, using previously generated tokens.</p>
+<div class="highlight"><pre><span></span><code>                     Target Tokens (shifted right)
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Token Embedding │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Positional Enc. │
+                    └────────┬────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────┐
+│              Decoder Block ×N                 │
+│                                              │
+│  ┌────────────────────────────────────────┐  │
+│  │      MASKED Multi-Head Self-Attention  │  │
+│  │   (can only attend to earlier tokens)  │◀─┼─── Causal Mask
+│  └────────────────────┬───────────────────┘  │
+│           Add &amp; Norm  │                      │
+│                       ▼                      │
+│  ┌────────────────────────────────────────┐  │
+│  │      Multi-Head Cross-Attention        │  │
+│  │   Q from decoder, K,V from encoder     │◀─┼─── Encoder Output
+│  └────────────────────┬───────────────────┘  │
+│           Add &amp; Norm  │                      │
+│                       ▼                      │
+│  ┌────────────────────────────────────────┐  │
+│  │          Feed-Forward Network          │  │
+│  └────────────────────┬───────────────────┘  │
+│           Add &amp; Norm  │                      │
+└───────────────────────┼──────────────────────┘
+                        │
+                        ▼
+                 ┌──────────────┐
+                 │    Linear    │
+                 └──────┬───────┘
+                        │
+                        ▼
+                 ┌──────────────┐
+                 │   Softmax    │
+                 └──────────────┘
+                        │
+                        ▼
+              Output Probabilities
+</code></pre></div>
+
+<h3 id="the-causal-mask">The Causal Mask</h3>
+<p>The decoder must not "cheat" by looking at future tokens during training:</p>
+<div class="highlight"><pre><span></span><code>Position:      0    1    2    3    4
+             ┌────┬────┬────┬────┬────┐
+Position 0   │ 1  │ 0  │ 0  │ 0  │ 0  │  Can only see position 0
+Position 1   │ 1  │ 1  │ 0  │ 0  │ 0  │  Can see positions 0-1
+Position 2   │ 1  │ 1  │ 1  │ 0  │ 0  │  Can see positions 0-2
+Position 3   │ 1  │ 1  │ 1  │ 1  │ 0  │  Can see positions 0-3
+Position 4   │ 1  │ 1  │ 1  │ 1  │ 1  │  Can see all positions
+             └────┴────┴────┴────┴────┘
+
+(1 = can attend, 0 = cannot attend → masked to -∞ before softmax)
+</code></pre></div>
+
+<hr />
+<h2 id="putting-it-all-together">Putting It All Together</h2>
+<h3 id="using-pytorchs-built-in-transformer">Using PyTorch's Built-in Transformer</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="n">transformer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Transformer</span><span class="p">(</span>
+    <span class="n">d_model</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+    <span class="n">nhead</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">num_encoder_layers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">num_decoder_layers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">dim_feedforward</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>  <span class="c1"># (batch, src_seq_len, d_model)</span>
+<span class="n">tgt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>  <span class="c1"># (batch, tgt_seq_len, d_model)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="key-insights">Key Insights</h2>
+<h3 id="1-attention-complexity">1. Attention Complexity</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Time Complexity</th>
+<th>Space Complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Self-Attention</td>
+<td>O(n² × d)</td>
+<td>O(n²)</td>
+</tr>
+<tr>
+<td>Feed-Forward</td>
+<td>O(n × d²)</td>
+<td>O(d)</td>
+</tr>
+</tbody>
+</table>
+<p>For long sequences, attention becomes the bottleneck → leads to efficient attention variants (Linformer, Performer, etc.)</p>
+<h3 id="2-why-transformers-work-so-well">2. Why Transformers Work So Well</h3>
+<ol>
+<li><strong>Parallel processing</strong>: All positions computed simultaneously</li>
+<li><strong>Long-range dependencies</strong>: Any two positions are one step apart</li>
+<li><strong>Flexibility</strong>: Same architecture works for text, images, audio, etc.</li>
+<li><strong>Scale</strong>: Benefits significantly from more data and parameters</li>
+</ol>
+<h3 id="3-modern-variants">3. Modern Variants</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Architecture</th>
+<th>Key Innovation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BERT</strong></td>
+<td>Encoder-only</td>
+<td>Bidirectional, masked language modeling</td>
+</tr>
+<tr>
+<td><strong>GPT</strong></td>
+<td>Decoder-only</td>
+<td>Autoregressive, causal attention</td>
+</tr>
+<tr>
+<td><strong>T5</strong></td>
+<td>Encoder-Decoder</td>
+<td>Text-to-text framework</td>
+</tr>
+<tr>
+<td><strong>ViT</strong></td>
+<td>Encoder-only</td>
+<td>Treats images as sequences of patches</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-training-tips">4. Training Tips</h3>
+<ul>
+<li><strong>Learning rate warmup</strong>: Gradually increase LR at start of training</li>
+<li><strong>Label smoothing</strong>: Softens one-hot labels for better generalization</li>
+<li><strong>Dropout</strong>: Apply to attention weights, embeddings, and FF layers</li>
+<li><strong>Weight tying</strong>: Share embedding and output projection weights</li>
+</ul>
+<hr />
+<h2 id="references">References</h2>
+<ol>
+<li>Vaswani, A., et al. (2017). "Attention Is All You Need"</li>
+<li>Devlin, J., et al. (2019). "BERT: Pre-training of Deep Bidirectional Transformers"</li>
+<li>Radford, A., et al. (2018). "Improving Language Understanding by Generative Pre-Training" (GPT)</li>
+<li>The Annotated Transformer: https://nlp.seas.harvard.edu/2018/04/03/attention.html</li>
+</ol>
+</body>
+</html>

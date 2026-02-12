@@ -20,6 +20,7 @@ import copy
 # GOTCHA 1: Mutable Default Arguments
 # =====================
 
+
 def demo_mutable_default() -> None:
     print("=== Mutable Default Arguments ===\n")
 
@@ -30,7 +31,9 @@ def demo_mutable_default() -> None:
 
     print(f"bad_append(1): {bad_append(1)}")  # [1]
     print(f"bad_append(2): {bad_append(2)}")  # [1, 2] - Oops!
-    print(f"bad_append(3): {bad_append(3)}")  # [1, 2, 3] - Still accumulating!
+    print(
+        f"bad_append(3): {bad_append(3)}"
+    )  # [1, 2, 3] - Still accumulating!
 
     # GOOD: Use None as default
     def good_append(item: int, lst: list[int] | None = None) -> list[int]:
@@ -48,6 +51,7 @@ def demo_mutable_default() -> None:
 # GOTCHA 2: Late Binding in Closures
 # =====================
 
+
 def demo_late_binding() -> None:
     print("=== Late Binding in Closures ===\n")
 
@@ -61,6 +65,7 @@ def demo_late_binding() -> None:
 
     # Also works with partial
     from functools import partial
+
     funcs_partial = [partial(lambda x: x, i) for i in range(3)]
     print(f"Partial: {[f() for f in funcs_partial]}")  # [0, 1, 2]
     print()
@@ -69,6 +74,7 @@ def demo_late_binding() -> None:
 # =====================
 # GOTCHA 3: is vs ==
 # =====================
+
 
 def demo_is_vs_equal() -> None:
     print("=== is vs == ===\n")
@@ -103,6 +109,7 @@ def demo_is_vs_equal() -> None:
 # GOTCHA 4: Shallow vs Deep Copy
 # =====================
 
+
 def demo_copy() -> None:
     print("=== Shallow vs Deep Copy ===\n")
 
@@ -118,20 +125,25 @@ def demo_copy() -> None:
     # Shallow copy (new list, same inner objects)
     shallow = original.copy()  # or list(original) or original[:]
     shallow[0][0] = 99
-    print(f"Shallow copy: original = {original}")  # [[99, 2], [3, 4]] - Modified!
+    print(
+        f"Shallow copy: original = {original}"
+    )  # [[99, 2], [3, 4]] - Modified!
 
     original = [[1, 2], [3, 4]]  # Reset
 
     # Deep copy (completely independent)
     deep = copy.deepcopy(original)
     deep[0][0] = 99
-    print(f"Deep copy: original = {original}")  # [[1, 2], [3, 4]] - Unchanged!
+    print(
+        f"Deep copy: original = {original}"
+    )  # [[1, 2], [3, 4]] - Unchanged!
     print()
 
 
 # =====================
 # GOTCHA 5: Modifying List While Iterating
 # =====================
+
 
 def demo_modify_while_iterating() -> None:
     print("=== Modifying While Iterating ===\n")
@@ -167,6 +179,7 @@ def demo_modify_while_iterating() -> None:
 # GOTCHA 6: String Formatting Edge Cases
 # =====================
 
+
 def demo_string_formatting() -> None:
     print("=== String Formatting ===\n")
 
@@ -193,15 +206,16 @@ def demo_string_formatting() -> None:
 # GOTCHA 7: Integer Division
 # =====================
 
+
 def demo_division() -> None:
     print("=== Integer Division ===\n")
 
     # / always returns float, // returns int
-    print(f"5 / 2 = {5 / 2}")    # 2.5
+    print(f"5 / 2 = {5 / 2}")  # 2.5
     print(f"5 // 2 = {5 // 2}")  # 2
 
     # Negative division rounds toward negative infinity
-    print(f"-5 // 2 = {-5 // 2}")   # -3 (not -2!)
+    print(f"-5 // 2 = {-5 // 2}")  # -3 (not -2!)
     print(f"int(-5 / 2) = {int(-5 / 2)}")  # -2 (truncates toward zero)
 
     # For truncation toward zero, use int()
@@ -211,6 +225,7 @@ def demo_division() -> None:
 # =====================
 # GOTCHA 8: Boolean Evaluation
 # =====================
+
 
 def demo_boolean() -> None:
     print("=== Boolean Evaluation ===\n")
@@ -224,7 +239,7 @@ def demo_boolean() -> None:
 
     # and/or return values, not True/False
     print(f"'a' or 'b' = {'a' or 'b'}")  # 'a'
-    print(f"'' or 'b' = {'' or 'b'}")    # 'b'
+    print(f"'' or 'b' = {'' or 'b'}")  # 'b'
     print(f"'a' and 'b' = {'a' and 'b'}")  # 'b'
     print(f"'' and 'b' = {'' and 'b'}")  # ''
     print()
@@ -233,6 +248,7 @@ def demo_boolean() -> None:
 # =====================
 # TIP 1: Walrus Operator :=
 # =====================
+
 
 def demo_walrus() -> None:
     print("=== Walrus Operator := (Python 3.8+) ===\n")
@@ -263,6 +279,7 @@ def demo_walrus() -> None:
 # TIP 2: Unpacking
 # =====================
 
+
 def demo_unpacking() -> None:
     print("=== Unpacking ===\n")
 
@@ -290,6 +307,7 @@ def demo_unpacking() -> None:
 # TIP 3: Dict Tricks
 # =====================
 
+
 def demo_dict_tricks() -> None:
     print("=== Dict Tricks ===\n")
 
@@ -301,6 +319,7 @@ def demo_dict_tricks() -> None:
 
     # defaultdict is even better
     from collections import defaultdict
+
     dd: defaultdict[str, list[int]] = defaultdict(list)
     dd["key"].append(1)
     dd["key"].append(2)
@@ -322,6 +341,7 @@ def demo_dict_tricks() -> None:
 # =====================
 # TIP 4: Chained Comparisons
 # =====================
+
 
 def demo_chained_comparisons() -> None:
     print("=== Chained Comparisons ===\n")
@@ -346,6 +366,7 @@ def demo_chained_comparisons() -> None:
 # =====================
 # TIP 5: else with for/while
 # =====================
+
 
 def demo_for_else() -> None:
     print("=== for/else ===\n")

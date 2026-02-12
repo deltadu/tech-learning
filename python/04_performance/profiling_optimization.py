@@ -31,8 +31,10 @@ R = TypeVar("R")
 # Simple Timing Decorator
 # =====================
 
+
 def timed(func: Callable[P, R]) -> Callable[P, R]:
     """Decorator to time function execution."""
+
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         start = time.perf_counter()
@@ -40,12 +42,14 @@ def timed(func: Callable[P, R]) -> Callable[P, R]:
         elapsed = time.perf_counter() - start
         print(f"{func.__name__}: {elapsed:.6f}s")
         return result
+
     return wrapper
 
 
 # =====================
 # Using timeit
 # =====================
+
 
 def demo_timeit() -> None:
     print("=== timeit ===")
@@ -73,6 +77,7 @@ def demo_timeit() -> None:
 # =====================
 # cProfile
 # =====================
+
 
 def slow_function() -> int:
     """Function with performance issues."""
@@ -117,6 +122,7 @@ def demo_cprofile() -> None:
 # =====================
 # Common Optimizations
 # =====================
+
 
 def demo_optimizations() -> None:
     print("=== Common Optimizations ===\n")
@@ -230,6 +236,7 @@ def demo_optimizations() -> None:
 # Memory Optimization
 # =====================
 
+
 def demo_memory() -> None:
     print("=== Memory Optimization ===\n")
 
@@ -251,7 +258,9 @@ def demo_memory() -> None:
 
     print(f"Regular has __dict__: {hasattr(regular, '__dict__')}")
     print(f"Slotted has __dict__: {hasattr(slotted, '__dict__')}")
-    print(f"Regular size: {sys.getsizeof(regular)} + {sys.getsizeof(regular.__dict__)} bytes")
+    print(
+        f"Regular size: {sys.getsizeof(regular)} + {sys.getsizeof(regular.__dict__)} bytes"
+    )
     print(f"Slotted size: {sys.getsizeof(slotted)} bytes")
     print()
 
@@ -272,6 +281,7 @@ def demo_memory() -> None:
 # =====================
 # Caching
 # =====================
+
 
 def demo_caching() -> None:
     print("=== Caching ===\n")
@@ -306,6 +316,7 @@ def demo_caching() -> None:
 # =====================
 # Algorithmic Improvements
 # =====================
+
 
 def demo_algorithmic() -> None:
     print("=== Algorithmic Improvements ===\n")
@@ -342,6 +353,7 @@ def demo_algorithmic() -> None:
 # =====================
 # Summary
 # =====================
+
 
 def print_summary() -> None:
     print("=== Optimization Summary ===\n")

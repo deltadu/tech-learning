@@ -23,6 +23,7 @@ T = TypeVar("T")
 # Classes are Objects
 # =====================
 
+
 def demo_class_as_object() -> None:
     print("=== Classes are Objects ===")
 
@@ -35,7 +36,9 @@ def demo_class_as_object() -> None:
     print(f"isinstance(MyClass, type) = {isinstance(MyClass, type)}")
 
     # Create class dynamically with type()
-    DynamicClass = type("DynamicClass", (object,), {"y": 20, "greet": lambda self: "Hi!"})
+    DynamicClass = type(
+        "DynamicClass", (object,), {"y": 20, "greet": lambda self: "Hi!"}
+    )
     obj = DynamicClass()
     print(f"DynamicClass.y = {obj.y}")
     print(f"obj.greet() = {obj.greet()}")
@@ -46,14 +49,12 @@ def demo_class_as_object() -> None:
 # Basic Metaclass
 # =====================
 
+
 class LoggingMeta(type):
     """Metaclass that logs class creation."""
 
     def __new__(
-        mcs,
-        name: str,
-        bases: tuple[type, ...],
-        namespace: dict[str, Any]
+        mcs, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
         print(f"Creating class: {name}")
         print(f"  Bases: {bases}")
@@ -70,16 +71,14 @@ class MyService(metaclass=LoggingMeta):
 # Registry Pattern
 # =====================
 
+
 class PluginRegistry(type):
     """Auto-register subclasses."""
 
     plugins: dict[str, type] = {}
 
     def __new__(
-        mcs,
-        name: str,
-        bases: tuple[type, ...],
-        namespace: dict[str, Any]
+        mcs, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
         cls = super().__new__(mcs, name, bases, namespace)
         if bases:  # Don't register base class
@@ -90,6 +89,7 @@ class PluginRegistry(type):
 
 class Plugin(metaclass=PluginRegistry):
     """Base class for plugins."""
+
     pass
 
 
@@ -106,6 +106,7 @@ class VideoPlugin(Plugin):
 # =====================
 # Singleton Metaclass
 # =====================
+
 
 class SingletonMeta(type):
     """Metaclass that makes classes singletons."""
@@ -128,16 +129,14 @@ class Database(metaclass=SingletonMeta):
 # Validation Metaclass
 # =====================
 
+
 class ValidatedMeta(type):
     """Ensure subclasses implement required methods."""
 
     required_methods: list[str] = ["validate", "process"]
 
     def __new__(
-        mcs,
-        name: str,
-        bases: tuple[type, ...],
-        namespace: dict[str, Any]
+        mcs, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
         # Skip base class check
         if bases:
@@ -151,6 +150,7 @@ class ValidatedMeta(type):
 
 class Processor(metaclass=ValidatedMeta):
     """Base processor class."""
+
     pass
 
 
@@ -173,18 +173,17 @@ class DataProcessor(Processor):
 # Attribute Auto-Documentation
 # =====================
 
+
 class DocumentedMeta(type):
     """Auto-add docstring listing class attributes."""
 
     def __new__(
-        mcs,
-        name: str,
-        bases: tuple[type, ...],
-        namespace: dict[str, Any]
+        mcs, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
         # Find class-level attributes
         attrs = {
-            k: v for k, v in namespace.items()
+            k: v
+            for k, v in namespace.items()
             if not k.startswith("_") and not callable(v)
         }
 
@@ -201,6 +200,7 @@ class DocumentedMeta(type):
 
 class Config(metaclass=DocumentedMeta):
     """Application configuration."""
+
     host = "localhost"
     port = 8080
     debug = True
@@ -210,12 +210,15 @@ class Config(metaclass=DocumentedMeta):
 # __init_subclass__ (Python 3.6+, simpler alternative)
 # =====================
 
+
 class PluginBase:
     """Base class with subclass hook (no metaclass needed!)."""
 
     registry: dict[str, type] = {}
 
-    def __init_subclass__(cls, plugin_name: str | None = None, **kwargs: Any) -> None:
+    def __init_subclass__(
+        cls, plugin_name: str | None = None, **kwargs: Any
+    ) -> None:
         super().__init_subclass__(**kwargs)
         name = plugin_name or cls.__name__
         PluginBase.registry[name] = cls
@@ -234,6 +237,7 @@ class AnotherPlugin(PluginBase):
 # __class_getitem__ (Generic-like syntax)
 # =====================
 
+
 class Container:
     """Allow Container[T] syntax."""
 
@@ -244,6 +248,7 @@ class Container:
 # =====================
 # Practical: ORM-style Field Definition
 # =====================
+
 
 class Field:
     """Descriptor for ORM-like fields."""
@@ -273,15 +278,9 @@ class ModelMeta(type):
     """Collect fields and create schema."""
 
     def __new__(
-        mcs,
-        name: str,
-        bases: tuple[type, ...],
-        namespace: dict[str, Any]
+        mcs, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
-        fields = {
-            k: v for k, v in namespace.items()
-            if isinstance(v, Field)
-        }
+        fields = {k: v for k, v in namespace.items() if isinstance(v, Field)}
         namespace["_fields"] = fields
         return super().__new__(mcs, name, bases, namespace)
 
@@ -292,10 +291,7 @@ class Model(metaclass=ModelMeta):
     _fields: dict[str, Field]
 
     def __repr__(self) -> str:
-        attrs = ", ".join(
-            f"{k}={getattr(self, k)!r}"
-            for k in self._fields
-        )
+        attrs = ", ".join(f"{k}={getattr(self, k)!r}" for k in self._fields)
         return f"{self.__class__.__name__}({attrs})"
 
 

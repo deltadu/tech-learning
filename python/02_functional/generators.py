@@ -24,6 +24,7 @@ T = TypeVar("T")
 # Basic Generator
 # =====================
 
+
 def countdown(n: int) -> Generator[int, None, None]:
     """Generator that counts down from n to 1."""
     print(f"Starting countdown from {n}")
@@ -44,6 +45,7 @@ def fibonacci() -> Generator[int, None, None]:
 # =====================
 # Generator Expression
 # =====================
+
 
 def demo_generator_expressions() -> None:
     print("=== Generator Expressions ===")
@@ -68,6 +70,7 @@ def demo_generator_expressions() -> None:
 # Reading Large Files
 # =====================
 
+
 def read_large_file(filepath: str) -> Generator[str, None, None]:
     """Memory-efficient file reading."""
     with open(filepath) as f:
@@ -88,6 +91,7 @@ def grep(pattern: str, lines: Iterable[str]) -> Generator[str, None, None]:
 # =====================
 # Generator Pipeline
 # =====================
+
 
 def integers(start: int = 0) -> Generator[int, None, None]:
     """Infinite integers."""
@@ -122,10 +126,12 @@ def demo_pipeline() -> None:
     print("=== Generator Pipeline ===")
 
     # Compose generators: lazy evaluation
-    pipeline = take(5,
-        filter_gen(lambda x: x % 2 == 0,
-            map_gen(lambda x: x ** 2,
-                integers(1))))
+    pipeline = take(
+        5,
+        filter_gen(
+            lambda x: x % 2 == 0, map_gen(lambda x: x**2, integers(1))
+        ),
+    )
 
     print(f"First 5 even squares: {list(pipeline)}")
     print()
@@ -134,6 +140,7 @@ def demo_pipeline() -> None:
 # =====================
 # send() - Coroutine Pattern
 # =====================
+
 
 def accumulator() -> Generator[int, int, None]:
     """Generator that receives values and accumulates them."""
@@ -184,6 +191,7 @@ def demo_send() -> None:
 # yield from (Delegation)
 # =====================
 
+
 def flatten(nested: list) -> Generator:
     """Recursively flatten nested lists."""
     for item in nested:
@@ -213,6 +221,7 @@ def demo_yield_from() -> None:
 # Generator Cleanup
 # =====================
 
+
 def managed_generator() -> Generator[int, None, None]:
     """Generator with cleanup."""
     print("Generator started")
@@ -238,6 +247,7 @@ def demo_cleanup() -> None:
 # =====================
 # throw() - Inject Exception
 # =====================
+
 
 def interruptible() -> Generator[int, None, None]:
     """Generator that handles injected exceptions."""
@@ -266,6 +276,7 @@ def demo_throw() -> None:
 # =====================
 # Iterator Protocol
 # =====================
+
 
 class Range:
     """Custom range-like iterator."""
@@ -302,7 +313,10 @@ def demo_iterator_protocol() -> None:
     print(f"Custom Range(3, 7): {list(Range(3, 7))}")
 
     counter = InfiniteCounter(100)
-    print(f"First 5 from InfiniteCounter(100): {[next(counter) for _ in range(5)]}")
+    print(
+        first_5 = [next(counter) for _ in range(5)]
+    print(f"First 5 from InfiniteCounter(100): {first_5}"
+    )
     print()
 
 
@@ -310,7 +324,10 @@ def demo_iterator_protocol() -> None:
 # Practical: Batching
 # =====================
 
-def batch(iterable: Iterable[T], size: int) -> Generator[list[T], None, None]:
+
+def batch(
+    iterable: Iterable[T], size: int
+) -> Generator[list[T], None, None]:
     """Yield batches of given size."""
     batch_items: list[T] = []
     for item in iterable:

@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">asyncio_basics.py</div>
-    <div class="file-meta">../python/03_advanced/asyncio_basics.py | 385 lines | 2026-01-26 20:54</div>
+    <div class="file-meta">../python/03_advanced/asyncio_basics.py | 397 lines | 2026-02-12 15:54</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -609,7 +609,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
-<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: asyncio &amp; Async Programming</span>
 
 <span class="sd">USE CASES:</span>
@@ -635,6 +647,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Basic Coroutines</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">async</span> <span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple coroutine that waits and returns.&quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>  <span class="c1"># Non-blocking sleep</span>
@@ -651,6 +664,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Running Coroutines</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">demo_basic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Basic Coroutines ===&quot;</span><span class="p">)</span>
@@ -680,6 +694,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Tasks</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">demo_tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Tasks ===&quot;</span><span class="p">)</span>
@@ -712,6 +727,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Timeouts</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">async</span> <span class="k">def</span> <span class="nf">slow_operation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;Done&quot;</span>
@@ -740,9 +756,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Semaphore (Rate Limiting)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_with_limit</span><span class="p">(</span>
-    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">semaphore</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -759,9 +775,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span>
-        <span class="n">fetch_with_limit</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span>
-    <span class="p">])</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">[</span><span class="n">fetch_with_limit</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">semaphore</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetched </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> items in </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
@@ -772,6 +788,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Queue for Producer/Consumer</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">queue</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -809,6 +826,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Lock</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SharedState</span><span class="p">:</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -837,6 +855,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Event (Signaling)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">async</span> <span class="k">def</span> <span class="nf">waiter</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> waiting for event...&quot;</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
@@ -864,6 +883,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Exception Handling</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">async</span> <span class="k">def</span> <span class="nf">might_fail</span><span class="p">(</span><span class="n">should_fail</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">should_fail</span><span class="p">:</span>
@@ -879,7 +899,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="n">might_fail</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">might_fail</span><span class="p">(</span><span class="kc">True</span><span class="p">),</span>
         <span class="n">might_fail</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span>
-        <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Don&#39;t raise, return exceptions</span>
+        <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Don&#39;t raise, return exceptions</span>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
@@ -893,6 +913,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># TaskGroup (Python 3.11+)</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">demo_taskgroup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== TaskGroup (Python 3.11+) ===&quot;</span><span class="p">)</span>
@@ -914,6 +935,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># async for / async with</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">AsyncRange</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Async iterator example.&quot;&quot;&quot;</span>
@@ -947,6 +969,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Run Sync Code in Thread</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">blocking_io_operation</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate blocking I/O.&quot;&quot;&quot;</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Blocking!</span>
@@ -975,6 +998,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Main</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== asyncio Demo ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>

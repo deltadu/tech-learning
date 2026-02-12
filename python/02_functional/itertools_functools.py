@@ -25,6 +25,7 @@ T = TypeVar("T")
 # itertools: Infinite Iterators
 # =====================
 
+
 def demo_infinite() -> None:
     print("=== Infinite Iterators ===")
 
@@ -45,25 +46,36 @@ def demo_infinite() -> None:
 # itertools: Combinatorics
 # =====================
 
+
 def demo_combinatorics() -> None:
     print("=== Combinatorics ===")
 
     items = ["A", "B", "C"]
 
     # permutations: all orderings
-    print(f"permutations({items}, 2): {list(itertools.permutations(items, 2))}")
+    print(
+        f"permutations({items}, 2): {list(itertools.permutations(items, 2))}"
+    )
 
     # combinations: unordered subsets
-    print(f"combinations({items}, 2): {list(itertools.combinations(items, 2))}")
+    print(
+        f"combinations({items}, 2): {list(itertools.combinations(items, 2))}"
+    )
 
     # combinations_with_replacement
-    print(f"comb_w_replacement({items[:2]}, 2): {list(itertools.combinations_with_replacement(items[:2], 2))}")
+    print(
+        f"comb_w_replacement({items[:2]}, 2): {list(itertools.combinations_with_replacement(items[:2], 2))}"
+    )
 
     # product: cartesian product
-    print(f"product([1,2], ['a','b']): {list(itertools.product([1, 2], ['a', 'b']))}")
+    print(
+        f"product([1,2], ['a','b']): {list(itertools.product([1, 2], ['a', 'b']))}"
+    )
 
     # product with repeat
-    print(f"product([0,1], repeat=3): {list(itertools.product([0, 1], repeat=3))}")
+    print(
+        f"product([0,1], repeat=3): {list(itertools.product([0, 1], repeat=3))}"
+    )
     print()
 
 
@@ -71,29 +83,39 @@ def demo_combinatorics() -> None:
 # itertools: Filtering
 # =====================
 
+
 def demo_filtering() -> None:
     print("=== Filtering ===")
 
     data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     # takewhile: take while predicate is true
-    print(f"takewhile(x < 5): {list(itertools.takewhile(lambda x: x < 5, data))}")
+    print(
+        f"takewhile(x < 5): {list(itertools.takewhile(lambda x: x < 5, data))}"
+    )
 
     # dropwhile: skip while predicate is true
-    print(f"dropwhile(x < 5): {list(itertools.dropwhile(lambda x: x < 5, data))}")
+    print(
+        f"dropwhile(x < 5): {list(itertools.dropwhile(lambda x: x < 5, data))}"
+    )
 
     # filterfalse: opposite of filter
-    print(f"filterfalse(is_even): {list(itertools.filterfalse(lambda x: x % 2 == 0, data))}")
+    print(
+        f"filterfalse(is_even): {list(itertools.filterfalse(lambda x: x % 2 == 0, data))}"
+    )
 
     # compress: filter by selector
     selectors = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
-    print(f"compress with selectors: {list(itertools.compress(data, selectors))}")
+    print(
+        f"compress with selectors: {list(itertools.compress(data, selectors))}"
+    )
     print()
 
 
 # =====================
 # itertools: Grouping
 # =====================
+
 
 def demo_grouping() -> None:
     print("=== Grouping ===")
@@ -117,6 +139,7 @@ def demo_grouping() -> None:
 # itertools: Combining
 # =====================
 
+
 def demo_combining() -> None:
     print("=== Combining ===")
 
@@ -127,7 +150,9 @@ def demo_combining() -> None:
 
     # chain.from_iterable: flatten nested
     nested = [[1, 2], [3, 4], [5, 6]]
-    print(f"chain.from_iterable: {list(itertools.chain.from_iterable(nested))}")
+    print(
+        f"chain.from_iterable: {list(itertools.chain.from_iterable(nested))}"
+    )
 
     # zip_longest: zip with fill value
     x = [1, 2, 3]
@@ -143,14 +168,19 @@ def demo_combining() -> None:
 # itertools: Slicing
 # =====================
 
+
 def demo_slicing() -> None:
     print("=== Slicing ===")
 
     data = range(100)
 
     # islice: slice an iterator (can't use [] on iterators)
-    print(f"islice(range(100), 5, 10): {list(itertools.islice(data, 5, 10))}")
-    print(f"islice(range(100), 0, 10, 2): {list(itertools.islice(range(100), 0, 10, 2))}")
+    print(
+        f"islice(range(100), 5, 10): {list(itertools.islice(data, 5, 10))}"
+    )
+    print(
+        f"islice(range(100), 0, 10, 2): {list(itertools.islice(range(100), 0, 10, 2))}"
+    )
 
     # tee: create independent iterators
     original = iter([1, 2, 3, 4, 5])
@@ -163,6 +193,7 @@ def demo_slicing() -> None:
 # =====================
 # functools: reduce
 # =====================
+
 
 def demo_reduce() -> None:
     print("=== functools.reduce ===")
@@ -196,11 +227,12 @@ def demo_reduce() -> None:
 # functools: partial
 # =====================
 
+
 def demo_partial() -> None:
     print("=== functools.partial ===")
 
     def power(base: int, exponent: int) -> int:
-        return base ** exponent
+        return base**exponent
 
     # Create specialized functions
     square = functools.partial(power, exponent=2)
@@ -221,6 +253,7 @@ def demo_partial() -> None:
 # =====================
 # functools: caching
 # =====================
+
 
 def demo_caching() -> None:
     print("=== functools.cache / lru_cache ===")
@@ -248,6 +281,7 @@ def demo_caching() -> None:
 # =====================
 # functools: singledispatch
 # =====================
+
 
 def demo_singledispatch() -> None:
     print("=== functools.singledispatch ===")
@@ -278,6 +312,7 @@ def demo_singledispatch() -> None:
 # =====================
 # functools: total_ordering
 # =====================
+
 
 def demo_total_ordering() -> None:
     print("=== functools.total_ordering ===")
@@ -315,6 +350,7 @@ def demo_total_ordering() -> None:
 # Practical Recipes
 # =====================
 
+
 def chunked(iterable: Iterable[T], size: int) -> Iterable[list[T]]:
     """Split iterable into chunks of given size."""
     it = iter(iterable)
@@ -337,7 +373,9 @@ def demo_recipes() -> None:
     data = list(range(10))
 
     print(f"chunked({data}, 3): {list(chunked(data, 3))}")
-    print(f"sliding_window([0,1,2,3,4], 3): {list(sliding_window(range(5), 3))}")
+    print(
+        f"sliding_window([0,1,2,3,4], 3): {list(sliding_window(range(5), 3))}"
+    )
     print()
 
 

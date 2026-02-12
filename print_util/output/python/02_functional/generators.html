@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">generators.py</div>
-    <div class="file-meta">../python/02_functional/generators.py | 360 lines | 2026-01-26 20:54</div>
+    <div class="file-meta">../python/02_functional/generators.py | 377 lines | 2026-02-12 15:56</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -584,7 +584,24 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">357</span>
 <span class="normal">358</span>
 <span class="normal">359</span>
-<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: Generators &amp; Iterators</span>
 
 <span class="sd">USE CASES:</span>
@@ -610,6 +627,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Basic Generator</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">countdown</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator that counts down from n to 1.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting countdown from </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -630,6 +648,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Generator Expression</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">demo_generator_expressions</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Generator Expressions ===&quot;</span><span class="p">)</span>
@@ -654,6 +673,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Reading Large Files</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">read_large_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Memory-efficient file reading.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -674,6 +694,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Generator Pipeline</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">integers</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Infinite integers.&quot;&quot;&quot;</span>
@@ -708,10 +729,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Generator Pipeline ===&quot;</span><span class="p">)</span>
 
     <span class="c1"># Compose generators: lazy evaluation</span>
-    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span>
-        <span class="n">filter_gen</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="n">map_gen</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">))))</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">take</span><span class="p">(</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="n">filter_gen</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">map_gen</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First 5 even squares: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">()</span>
@@ -720,6 +743,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># send() - Coroutine Pattern</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">accumulator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator that receives values and accumulates them.&quot;&quot;&quot;</span>
@@ -770,6 +794,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># yield from (Delegation)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">nested</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively flatten nested lists.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
@@ -799,6 +824,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Generator Cleanup</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">managed_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator with cleanup.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generator started&quot;</span><span class="p">)</span>
@@ -824,6 +850,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># throw() - Inject Exception</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">interruptible</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator that handles injected exceptions.&quot;&quot;&quot;</span>
@@ -852,6 +879,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Iterator Protocol</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">Range</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom range-like iterator.&quot;&quot;&quot;</span>
@@ -888,7 +916,10 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Custom Range(3, 7): </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">Range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">counter</span> <span class="o">=</span> <span class="n">InfiniteCounter</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First 5 from InfiniteCounter(100): </span><span class="si">{</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="n">first_5</span> <span class="o">=</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First 5 from InfiniteCounter(100): </span><span class="si">{</span><span class="n">first_5</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
     <span class="nb">print</span><span class="p">()</span>
 
 
@@ -896,7 +927,10 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Practical: Batching</span>
 <span class="c1"># =====================</span>
 
-<span class="k">def</span> <span class="nf">batch</span><span class="p">(</span><span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+
+<span class="k">def</span> <span class="nf">batch</span><span class="p">(</span>
+    <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield batches of given size.&quot;&quot;&quot;</span>
     <span class="n">batch_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>

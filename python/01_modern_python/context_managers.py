@@ -25,6 +25,7 @@ from typing import Iterator, Generator, Any
 # Class-Based Context Manager
 # =====================
 
+
 class Timer:
     """Context manager to time code execution."""
 
@@ -41,7 +42,7 @@ class Timer:
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: Any
+        exc_tb: Any,
     ) -> bool:
         self.elapsed = time.perf_counter() - self.start
         print(f"{self.name} took {self.elapsed:.4f}s")
@@ -66,7 +67,7 @@ class DatabaseConnection:
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: Any
+        exc_tb: Any,
     ) -> bool:
         if exc_type is not None:
             print(f"Rolling back due to: {exc_val}")
@@ -87,6 +88,7 @@ class DatabaseConnection:
 # Generator-Based (contextlib)
 # =====================
 
+
 @contextmanager
 def timer(name: str = "Block") -> Generator[None, None, None]:
     """Same as Timer class but using generator."""
@@ -102,6 +104,7 @@ def timer(name: str = "Block") -> Generator[None, None, None]:
 def temporary_directory() -> Generator[str, None, None]:
     """Create and cleanup a temporary directory."""
     import shutil
+
     path = tempfile.mkdtemp()
     print(f"Created temp dir: {path}")
     try:
@@ -127,6 +130,7 @@ def suppress_output() -> Generator[None, None, None]:
     """Suppress stdout temporarily."""
     import sys
     from io import StringIO
+
     old_stdout = sys.stdout
     sys.stdout = StringIO()
     try:
@@ -138,6 +142,7 @@ def suppress_output() -> Generator[None, None, None]:
 # =====================
 # Exception Handling in __exit__
 # =====================
+
 
 class ErrorHandler:
     """Demonstrates exception handling in context manager."""
@@ -153,7 +158,7 @@ class ErrorHandler:
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: Any
+        exc_tb: Any,
     ) -> bool:
         if exc_val is not None:
             self.error = exc_val  # type: ignore
@@ -166,13 +171,11 @@ class ErrorHandler:
 # ExitStack (Dynamic Context Managers)
 # =====================
 
+
 def process_multiple_files(filenames: list[str]) -> None:
     """Open multiple files dynamically."""
     with ExitStack() as stack:
-        files = [
-            stack.enter_context(open(f, "w"))
-            for f in filenames
-        ]
+        files = [stack.enter_context(open(f, "w")) for f in filenames]
         for i, f in enumerate(files):
             f.write(f"Content for file {i}\n")
     # All files automatically closed
@@ -195,6 +198,7 @@ def managed_resources() -> Generator[list[Any], None, None]:
 # =====================
 # Reentrant Context Managers
 # =====================
+
 
 class ReentrantLock:
     """Context manager that can be entered multiple times."""
@@ -222,6 +226,7 @@ class ReentrantLock:
 # =====================
 # Async Context Managers
 # =====================
+
 
 class AsyncDatabase:
     """Async context manager example."""

@@ -25,6 +25,7 @@ T = TypeVar("T")
 # Basic Descriptor
 # =====================
 
+
 class Verbose:
     """Descriptor that logs access."""
 
@@ -52,6 +53,7 @@ class Example:
 # =====================
 # Typed Descriptor
 # =====================
+
 
 class Typed(Generic[T]):
     """Descriptor that enforces type."""
@@ -95,13 +97,14 @@ class Person:
 # Validated Descriptor
 # =====================
 
+
 class Validated:
     """Descriptor with custom validation."""
 
     def __init__(
         self,
         validator: Callable[[Any], bool],
-        error_msg: str = "Validation failed"
+        error_msg: str = "Validation failed",
     ) -> None:
         self.validator = validator
         self.error_msg = error_msg
@@ -122,9 +125,18 @@ class Validated:
 
 
 class Product:
-    name = Validated(lambda x: isinstance(x, str) and len(x) > 0, "must be non-empty string")
-    price = Validated(lambda x: isinstance(x, (int, float)) and x > 0, "must be positive number")
-    quantity = Validated(lambda x: isinstance(x, int) and x >= 0, "must be non-negative integer")
+    name = Validated(
+        lambda x: isinstance(x, str) and len(x) > 0,
+        "must be non-empty string",
+    )
+    price = Validated(
+        lambda x: isinstance(x, (int, float)) and x > 0,
+        "must be positive number",
+    )
+    quantity = Validated(
+        lambda x: isinstance(x, int) and x >= 0,
+        "must be non-negative integer",
+    )
 
     def __init__(self, name: str, price: float, quantity: int = 0) -> None:
         self.name = name
@@ -135,6 +147,7 @@ class Product:
 # =====================
 # Lazy Property (Cached)
 # =====================
+
 
 class LazyProperty:
     """Compute once, then cache result."""
@@ -167,6 +180,7 @@ class DataLoader:
 # Non-Data Descriptor (like methods)
 # =====================
 
+
 class Method:
     """Simulate how methods work."""
 
@@ -176,9 +190,11 @@ class Method:
     def __get__(self, obj: Any, objtype: type | None = None) -> Any:
         if obj is None:
             return self.func  # Unbound
+
         # Return bound method
         def bound_method(*args: Any, **kwargs: Any) -> Any:
             return self.func(obj, *args, **kwargs)
+
         return bound_method
 
 
@@ -191,6 +207,7 @@ class MyClass:
 # =====================
 # Descriptor with WeakRef (no memory leak)
 # =====================
+
 
 class WeakTyped:
     """Type-checked descriptor using WeakKeyDictionary."""
@@ -210,13 +227,16 @@ class WeakTyped:
 
     def __set__(self, obj: Any, value: Any) -> None:
         if not isinstance(value, self.expected_type):
-            raise TypeError(f"{self.name} must be {self.expected_type.__name__}")
+            raise TypeError(
+                f"{self.name} must be {self.expected_type.__name__}"
+            )
         self.data[obj] = value
 
 
 # =====================
 # Computed Property
 # =====================
+
 
 class Computed:
     """Property that depends on other attributes."""
@@ -251,6 +271,7 @@ class Rectangle:
 # How property() Works
 # =====================
 
+
 class PropertyLike:
     """Simplified implementation of property()."""
 
@@ -259,7 +280,7 @@ class PropertyLike:
         fget: Callable | None = None,
         fset: Callable | None = None,
         fdel: Callable | None = None,
-        doc: str | None = None
+        doc: str | None = None,
     ) -> None:
         self.fget = fget
         self.fset = fset

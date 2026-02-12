@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">descriptors.py</div>
-    <div class="file-meta">../python/03_advanced/descriptors.py | 362 lines | 2026-02-12 15:50</div>
+    <div class="file-meta">../python/03_advanced/descriptors.py | 374 lines | 2026-02-12 15:54</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -586,7 +586,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">359</span>
 <span class="normal">360</span>
 <span class="normal">361</span>
-<span class="normal">362</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: Descriptors</span>
 
 <span class="sd">USE CASES:</span>
@@ -612,6 +624,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Basic Descriptor</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">Verbose</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor that logs access.&quot;&quot;&quot;</span>
@@ -640,6 +653,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Typed Descriptor</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">Typed</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor that enforces type.&quot;&quot;&quot;</span>
@@ -683,13 +697,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Validated Descriptor</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">class</span> <span class="nc">Validated</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor with custom validation.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">validator</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
-        <span class="n">error_msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Validation failed&quot;</span>
+        <span class="n">error_msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Validation failed&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">validator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error_msg</span> <span class="o">=</span> <span class="n">error_msg</span>
@@ -712,15 +727,15 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="k">class</span> <span class="nc">Product</span><span class="p">:</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">Validated</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;must be non-empty string&quot;</span>
+        <span class="s2">&quot;must be non-empty string&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">price</span> <span class="o">=</span> <span class="n">Validated</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;must be positive number&quot;</span>
+        <span class="s2">&quot;must be positive number&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">quantity</span> <span class="o">=</span> <span class="n">Validated</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;must be non-negative integer&quot;</span>
+        <span class="s2">&quot;must be non-negative integer&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -732,6 +747,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Lazy Property (Cached)</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">LazyProperty</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute once, then cache result.&quot;&quot;&quot;</span>
@@ -764,6 +780,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Non-Data Descriptor (like methods)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">class</span> <span class="nc">Method</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate how methods work.&quot;&quot;&quot;</span>
 
@@ -773,9 +790,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">objtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span>  <span class="c1"># Unbound</span>
+
         <span class="c1"># Return bound method</span>
         <span class="k">def</span> <span class="nf">bound_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">bound_method</span>
 
 
@@ -788,6 +807,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Descriptor with WeakRef (no memory leak)</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">WeakTyped</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Type-checked descriptor using WeakKeyDictionary.&quot;&quot;&quot;</span>
@@ -807,13 +827,16 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
     <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_type</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
 
 <span class="c1"># =====================</span>
 <span class="c1"># Computed Property</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">Computed</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Property that depends on other attributes.&quot;&quot;&quot;</span>
@@ -848,6 +871,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># How property() Works</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">class</span> <span class="nc">PropertyLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified implementation of property().&quot;&quot;&quot;</span>
 
@@ -856,7 +880,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="n">fget</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fset</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fdel</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">doc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">doc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fget</span> <span class="o">=</span> <span class="n">fget</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fset</span> <span class="o">=</span> <span class="n">fset</span>

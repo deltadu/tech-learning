@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">pytest_patterns.py</div>
-    <div class="file-meta">../python/05_testing/pytest_patterns.py | 388 lines | 2026-01-26 20:54</div>
+    <div class="file-meta">../python/05_testing/pytest_patterns.py | 405 lines | 2026-02-12 15:54</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -612,7 +612,24 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
-<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: Testing with pytest</span>
 
 <span class="sd">USE CASES:</span>
@@ -639,6 +656,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Code to Test</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
@@ -688,6 +706,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Basic Tests</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">test_user_is_adult</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic test with assert.&quot;&quot;&quot;</span>
     <span class="n">adult</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;alice@test.com&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
@@ -715,6 +734,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Testing Exceptions</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">test_divide_by_zero</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that exception is raised.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc_info</span><span class="p">:</span>
@@ -732,6 +752,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Fixtures</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">sample_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
@@ -771,25 +792,32 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Parametrized Tests</span>
 <span class="c1"># =====================</span>
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;a,b,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
-    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
-    <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-<span class="p">])</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span>
+    <span class="s2">&quot;a,b,expected&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+        <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_divide_parametrized</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test multiple cases with parametrize.&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">divide</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;age,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
-    <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-<span class="p">])</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span>
+    <span class="s2">&quot;age,expected&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_is_adult_parametrized</span><span class="p">(</span><span class="n">age</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test boundary conditions.&quot;&quot;&quot;</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="s2">&quot;test@test.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span>
@@ -800,6 +828,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Mocking</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">test_user_service_get_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mock database dependency.&quot;&quot;&quot;</span>
     <span class="c1"># Create mock database</span>
@@ -807,7 +836,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="n">mock_db</span><span class="o">.</span><span class="n">fetch</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
         <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;alice@test.com&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span>
+        <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="n">service</span> <span class="o">=</span> <span class="n">UserService</span><span class="p">(</span><span class="n">mock_db</span><span class="p">)</span>
@@ -846,15 +875,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Patching</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">get_current_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">datetime</span>
+
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">test_patch_datetime</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch module-level import.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;datetime.datetime&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_datetime</span><span class="p">:</span>
-        <span class="n">mock_datetime</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">isoformat</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;2024-01-01T00:00:00&quot;</span>
+        <span class="n">mock_datetime</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">isoformat</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;2024-01-01T00:00:00&quot;</span>
+        <span class="p">)</span>
 
         <span class="c1"># This would use patched datetime</span>
         <span class="c1"># result = get_current_time()</span>
@@ -874,12 +907,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Markers</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
 <span class="k">def</span> <span class="nf">test_slow_operation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Marked as slow test.&quot;&quot;&quot;</span>
     <span class="c1"># Run with: pytest -m slow</span>
     <span class="c1"># Skip with: pytest -m &quot;not slow&quot;</span>
     <span class="kn">import</span> <span class="nn">time</span>
+
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="k">assert</span> <span class="kc">True</span>
 
@@ -890,10 +925,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="k">assert</span> <span class="kc">False</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">skipif</span><span class="p">(</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CI&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Only run in CI&quot;</span>
-<span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">skipif</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CI&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Only run in CI&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_ci_only</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Conditional skip.&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="kc">True</span>
@@ -908,6 +940,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Fixture Scopes</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">expensive_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -941,6 +974,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Async Tests</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_async_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

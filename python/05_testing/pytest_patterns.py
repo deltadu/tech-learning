@@ -26,6 +26,7 @@ import os
 # Code to Test
 # =====================
 
+
 @dataclass
 class User:
     name: str
@@ -74,6 +75,7 @@ def read_config(filepath: str) -> dict[str, str]:
 # Basic Tests
 # =====================
 
+
 def test_user_is_adult() -> None:
     """Basic test with assert."""
     adult = User("Alice", "alice@test.com", 25)
@@ -101,6 +103,7 @@ def test_divide() -> None:
 # Testing Exceptions
 # =====================
 
+
 def test_divide_by_zero() -> None:
     """Test that exception is raised."""
     with pytest.raises(ValueError) as exc_info:
@@ -118,6 +121,7 @@ def test_divide_by_zero_simple() -> None:
 # =====================
 # Fixtures
 # =====================
+
 
 @pytest.fixture
 def sample_user() -> User:
@@ -157,25 +161,32 @@ def test_read_config(temp_config_file: str) -> None:
 # Parametrized Tests
 # =====================
 
-@pytest.mark.parametrize("a,b,expected", [
-    (10, 2, 5),
-    (9, 3, 3),
-    (7, 2, 3.5),
-    (-6, 2, -3),
-    (0, 5, 0),
-])
+
+@pytest.mark.parametrize(
+    "a,b,expected",
+    [
+        (10, 2, 5),
+        (9, 3, 3),
+        (7, 2, 3.5),
+        (-6, 2, -3),
+        (0, 5, 0),
+    ],
+)
 def test_divide_parametrized(a: float, b: float, expected: float) -> None:
     """Test multiple cases with parametrize."""
     assert divide(a, b) == expected
 
 
-@pytest.mark.parametrize("age,expected", [
-    (17, False),
-    (18, True),
-    (19, True),
-    (0, False),
-    (100, True),
-])
+@pytest.mark.parametrize(
+    "age,expected",
+    [
+        (17, False),
+        (18, True),
+        (19, True),
+        (0, False),
+        (100, True),
+    ],
+)
 def test_is_adult_parametrized(age: int, expected: bool) -> None:
     """Test boundary conditions."""
     user = User("Test", "test@test.com", age)
@@ -186,6 +197,7 @@ def test_is_adult_parametrized(age: int, expected: bool) -> None:
 # Mocking
 # =====================
 
+
 def test_user_service_get_user() -> None:
     """Mock database dependency."""
     # Create mock database
@@ -193,7 +205,7 @@ def test_user_service_get_user() -> None:
     mock_db.fetch.return_value = {
         "name": "Alice",
         "email": "alice@test.com",
-        "age": 30
+        "age": 30,
     }
 
     service = UserService(mock_db)
@@ -232,15 +244,19 @@ def test_user_service_create_user() -> None:
 # Patching
 # =====================
 
+
 def get_current_time() -> str:
     import datetime
+
     return datetime.datetime.now().isoformat()
 
 
 def test_patch_datetime() -> None:
     """Patch module-level import."""
     with patch("datetime.datetime") as mock_datetime:
-        mock_datetime.now.return_value.isoformat.return_value = "2024-01-01T00:00:00"
+        mock_datetime.now.return_value.isoformat.return_value = (
+            "2024-01-01T00:00:00"
+        )
 
         # This would use patched datetime
         # result = get_current_time()
@@ -260,12 +276,14 @@ def test_patch_decorator(mock_exists: Mock) -> None:
 # Markers
 # =====================
 
+
 @pytest.mark.slow
 def test_slow_operation() -> None:
     """Marked as slow test."""
     # Run with: pytest -m slow
     # Skip with: pytest -m "not slow"
     import time
+
     time.sleep(0.1)
     assert True
 
@@ -276,10 +294,7 @@ def test_future_feature() -> None:
     assert False
 
 
-@pytest.mark.skipif(
-    os.environ.get("CI") is None,
-    reason="Only run in CI"
-)
+@pytest.mark.skipif(os.environ.get("CI") is None, reason="Only run in CI")
 def test_ci_only() -> None:
     """Conditional skip."""
     assert True
@@ -294,6 +309,7 @@ def test_known_bug() -> None:
 # =====================
 # Fixture Scopes
 # =====================
+
 
 @pytest.fixture(scope="module")
 def expensive_resource() -> str:
@@ -327,6 +343,7 @@ def database_connection() -> str:
 # =====================
 # Async Tests
 # =====================
+
 
 @pytest.mark.asyncio
 async def test_async_function() -> None:

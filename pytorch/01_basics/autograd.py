@@ -2,23 +2,23 @@
 PyTorch Autograd - Automatic Differentiation
 =============================================
 
-Autograd is PyTorch's automatic differentiation engine that powers neural network
-training. It computes gradients automatically through a technique called reverse-mode
-automatic differentiation (backpropagation).
+Autograd is PyTorch's automatic differentiation engine
+that powers neural network training. It computes gradients
+automatically via reverse-mode autodiff (backpropagation).
 """
 
 import torch
 
-# =============================================================================
+# ===========================================================================
 # BASICS OF AUTOGRAD
-# =============================================================================
+# ===========================================================================
 
-# requires_grad=True tells PyTorch to track operations for gradient computation
+# requires_grad=True tells PyTorch to track ops for gradient computation
 x = torch.tensor([2.0, 3.0], requires_grad=True)
 y = torch.tensor([4.0, 5.0], requires_grad=True)
 
 # Operations create a computational graph
-z = x * y + x ** 2
+z = x * y + x**2
 out = z.sum()
 
 print(f"x: {x}")
@@ -35,9 +35,9 @@ print(f"\nGradient of out w.r.t. x: {x.grad}")
 # d(out)/dy = x = [2, 3]
 print(f"Gradient of out w.r.t. y: {y.grad}")
 
-# =============================================================================
+# ===========================================================================
 # THE COMPUTATIONAL GRAPH
-# =============================================================================
+# ===========================================================================
 
 """
 PyTorch builds a Dynamic Computational Graph (DCG):
@@ -58,15 +58,15 @@ Example graph for z = x*y + x^2:
     y ------'
 """
 
-# =============================================================================
+# ===========================================================================
 # GRADIENT ATTRIBUTES
-# =============================================================================
+# ===========================================================================
 
 a = torch.randn(3, requires_grad=True)
 b = a * 2
 
-print(f"\na.requires_grad: {a.requires_grad}")  # True (leaf)
-print(f"b.requires_grad: {b.requires_grad}")    # True (result of operation)
+print(f"\na.requires_grad: {a.requires_grad}")  # True
+print(f"b.requires_grad: {b.requires_grad}")    # True
 print(f"a.is_leaf: {a.is_leaf}")                # True
 print(f"b.is_leaf: {b.is_leaf}")                # False
 print(f"b.grad_fn: {b.grad_fn}")                # MulBackward0
@@ -74,8 +74,8 @@ print(f"b.grad_fn: {b.grad_fn}")                # MulBackward0
 # Only leaf tensors retain gradients by default
 c = b.sum()
 c.backward()
-print(f"a.grad: {a.grad}")    # [2, 2, 2]
-print(f"b.grad: {b.grad}")    # None (non-leaf)
+print(f"a.grad: {a.grad}")  # [2, 2, 2]
+print(f"b.grad: {b.grad}")  # None (non-leaf)
 
 # To retain gradients for non-leaf tensors
 a = torch.randn(3, requires_grad=True)
@@ -85,19 +85,19 @@ c = b.sum()
 c.backward()
 print(f"b.grad (retained): {b.grad}")
 
-# =============================================================================
+# ===========================================================================
 # GRADIENT COMPUTATION PATTERNS
-# =============================================================================
+# ===========================================================================
 
 # Pattern 1: Simple scalar output
 x = torch.tensor([1.0, 2.0, 3.0], requires_grad=True)
-y = (x ** 2).sum()
+y = (x**2).sum()
 y.backward()
 print(f"\ndy/dx where y = sum(x^2): {x.grad}")  # [2, 4, 6]
 
 # Pattern 2: Gradient of vector output requires a vector argument
 x = torch.tensor([1.0, 2.0, 3.0], requires_grad=True)
-y = x ** 2  # vector output
+y = x**2  # vector output
 
 # Must provide gradient argument (usually ones for each output element)
 # This is like computing sum(v * dy/dx) where v is the gradient argument
@@ -107,14 +107,14 @@ print(f"dy/dx with gradient=[1,1,1]: {x.grad}")
 
 # Pattern 3: Jacobian-vector product (JVP)
 x = torch.tensor([1.0, 2.0, 3.0], requires_grad=True)
-y = x ** 2
+y = x**2
 v = torch.tensor([0.1, 1.0, 0.01])
 y.backward(gradient=v)
 print(f"Jacobian-vector product: {x.grad}")  # [0.2, 4.0, 0.06]
 
-# =============================================================================
+# ===========================================================================
 # CONTROLLING GRADIENT COMPUTATION
-# =============================================================================
+# ===========================================================================
 
 # torch.no_grad() - disable gradient tracking (inference mode)
 x = torch.randn(3, requires_grad=True)
@@ -140,15 +140,15 @@ y = x * 2
 z = y.detach()  # z shares data but doesn't track gradients
 print(f"z.requires_grad: {z.requires_grad}")  # False
 
-# =============================================================================
+# ===========================================================================
 # GRADIENT ACCUMULATION
-# =============================================================================
+# ===========================================================================
 
 # Gradients accumulate by default!
 x = torch.tensor([1.0, 2.0], requires_grad=True)
 
 for i in range(3):
-    y = (x ** 2).sum()
+    y = (x**2).sum()
     y.backward()
     print(f"Iteration {i}: x.grad = {x.grad}")
 
@@ -163,18 +163,18 @@ x = torch.tensor([1.0, 2.0], requires_grad=True)
 for i in range(3):
     if x.grad is not None:
         x.grad.zero_()  # zero the gradients
-    y = (x ** 2).sum()
+    y = (x**2).sum()
     y.backward()
     print(f"Iteration {i} (zeroed): x.grad = {x.grad}")
 
-# =============================================================================
+# ===========================================================================
 # HIGHER-ORDER GRADIENTS
-# =============================================================================
+# ===========================================================================
 
 x = torch.tensor([2.0], requires_grad=True)
 
 # First derivative: y = x^3, dy/dx = 3x^2
-y = x ** 3
+y = x**3
 grad1 = torch.autograd.grad(y, x, create_graph=True)[0]
 print(f"\nFirst derivative of x^3 at x=2: {grad1}")  # 12.0
 
@@ -186,12 +186,12 @@ print(f"Second derivative of x^3 at x=2: {grad2}")  # 12.0
 grad3 = torch.autograd.grad(grad2, x)[0]
 print(f"Third derivative of x^3 at x=2: {grad3}")  # 6.0
 
-# =============================================================================
+# ===========================================================================
 # torch.autograd.grad() vs .backward()
-# =============================================================================
+# ===========================================================================
 
 x = torch.tensor([1.0, 2.0, 3.0], requires_grad=True)
-y = (x ** 2).sum()
+y = (x**2).sum()
 
 # .backward() stores gradients in .grad attributes
 # y.backward()
@@ -206,17 +206,19 @@ print(f"\nGradient via autograd.grad: {grad}")
 # 2. Computing gradients w.r.t. non-leaf tensors
 # 3. Higher-order gradients (with create_graph=True)
 
-# =============================================================================
+# ===========================================================================
 # GRADIENT CHECKPOINTING (Memory Optimization)
-# =============================================================================
+# ===========================================================================
 
 from torch.utils.checkpoint import checkpoint
 
+
 def compute_heavy(x):
     """Simulates a memory-intensive computation."""
-    y = x ** 2
-    z = y ** 2
-    return z ** 2
+    y = x**2
+    z = y**2
+    return z**2
+
 
 x = torch.randn(100, requires_grad=True)
 
@@ -227,9 +229,10 @@ y_normal = compute_heavy(x)
 # Recomputes forward pass during backward to save memory
 y_checkpoint = checkpoint(compute_heavy, x, use_reentrant=False)
 
-# =============================================================================
+# ===========================================================================
 # CUSTOM AUTOGRAD FUNCTIONS
-# =============================================================================
+# ===========================================================================
+
 
 class MyReLU(torch.autograd.Function):
     """Custom ReLU implementation with explicit forward and backward."""
@@ -243,10 +246,11 @@ class MyReLU(torch.autograd.Function):
     @staticmethod
     def backward(ctx, grad_output):
         # grad_output is the gradient from the next layer
-        input, = ctx.saved_tensors
+        (input,) = ctx.saved_tensors
         grad_input = grad_output.clone()
         grad_input[input < 0] = 0
         return grad_input
+
 
 # Use the custom function
 my_relu = MyReLU.apply
@@ -256,9 +260,9 @@ y = my_relu(x)
 y.sum().backward()
 print(f"\nCustom ReLU gradient: {x.grad}")
 
-# =============================================================================
+# ===========================================================================
 # COMMON PITFALLS AND SOLUTIONS
-# =============================================================================
+# ===========================================================================
 
 # Pitfall 1: In-place operations can break the graph
 x = torch.randn(3, requires_grad=True)
@@ -281,9 +285,9 @@ x = torch.randn(3, requires_grad=True)
 # z = x * 3.0  # Also OK, PyTorch handles this
 # But be careful with complex expressions
 
-# =============================================================================
+# ===========================================================================
 # DEBUGGING AUTOGRAD
-# =============================================================================
+# ===========================================================================
 
 # Check if a tensor requires gradients
 x = torch.randn(3, requires_grad=True)
@@ -296,6 +300,7 @@ print(f"y.grad_fn: {y.grad_fn}")
 # Enable anomaly detection (slower but helpful for debugging)
 # torch.autograd.set_detect_anomaly(True)
 
+
 # Print the computational graph (for debugging)
 def print_graph(tensor, indent=0):
     """Recursively print the computational graph."""
@@ -304,18 +309,19 @@ def print_graph(tensor, indent=0):
         for t in tensor.grad_fn.next_functions:
             if t[0]:
                 # t[0] is the grad_fn, t[1] is the output index
-                print_graph(type('', (), {'grad_fn': t[0]})(), indent + 1)
+                print_graph(type("", (), {"grad_fn": t[0]})(), indent + 1)
+
 
 x = torch.tensor([1.0], requires_grad=True)
-y = x ** 2
+y = x**2
 z = y * 3
 print("\nComputational graph for z = 3 * x^2:")
 print_graph(z)
 
 if __name__ == "__main__":
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     print("Autograd Demo Complete!")
-    print("="*50)
+    print("=" * 50)
 
     # Simple gradient descent example
     x = torch.tensor([5.0], requires_grad=True)
@@ -323,7 +329,7 @@ if __name__ == "__main__":
 
     print("\nSimple gradient descent to minimize x^2:")
     for i in range(10):
-        y = x ** 2
+        y = x**2
         y.backward()
 
         with torch.no_grad():

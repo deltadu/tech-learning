@@ -50,8 +50,8 @@ def example_2_visualize_circuit():
     print("=" * 60)
 
     qc = QuantumCircuit(2)
-    qc.h(0)        # Hadamard on qubit 0
-    qc.cx(0, 1)    # CNOT: entangle qubits
+    qc.h(0)  # Hadamard on qubit 0
+    qc.cx(0, 1)  # CNOT: entangle qubits
 
     print("\nCircuit diagram:")
     print(qc.draw())
@@ -68,8 +68,8 @@ def example_3_bell_state():
     print("=" * 60)
 
     qc = QuantumCircuit(2, 2)
-    qc.h(0)           # Superposition on qubit 0
-    qc.cx(0, 1)       # Entangle with qubit 1
+    qc.h(0)  # Superposition on qubit 0
+    qc.cx(0, 1)  # Entangle with qubit 1
     qc.measure([0, 1], [0, 1])
 
     print("\nCircuit:")
@@ -162,7 +162,9 @@ def example_6_measurement_bases():
     # Measure in X basis (apply H to convert X-basis to Z-basis)
     qc_x = QuantumCircuit(1, 1)
     qc_x.h(0)  # Create |+⟩
-    qc_x.h(0)  # Convert to Z-basis (H·H = I, but |+⟩ in X-basis = |0⟩ in Z-basis)
+    qc_x.h(
+        0
+    )  # Convert to Z-basis (H·H = I, but |+⟩ in X-basis = |0⟩ in Z-basis)
     qc_x.measure(0, 0)
 
     result_x = sim.run(qc_x, shots=1000).result().get_counts()
@@ -208,7 +210,9 @@ def example_7_grover_search():
 
     print(f"\nResults: {counts}")
     print("→ Found |11⟩ with ~100% probability!")
-    print("→ Classical search needs ~2 tries on average, Grover finds it in 1 iteration")
+    print(
+        "→ Classical search needs ~2 tries on average, Grover finds it in 1 iteration"
+    )
 
 
 def example_8_multi_qubit():

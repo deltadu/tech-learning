@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">context_managers.py</div>
-    <div class="file-meta">../python/01_modern_python/context_managers.py | 320 lines | 2026-01-26 20:54</div>
+    <div class="file-meta">../python/01_modern_python/context_managers.py | 325 lines | 2026-02-12 15:54</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -544,7 +544,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
-<span class="normal">320</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: Context Managers</span>
 
 <span class="sd">USE CASES:</span>
@@ -571,6 +576,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Class-Based Context Manager</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">class</span> <span class="nc">Timer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager to time code execution.&quot;&quot;&quot;</span>
 
@@ -587,7 +593,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exc_val</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
@@ -612,7 +618,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exc_val</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rolling back due to: </span><span class="si">{</span><span class="n">exc_val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -633,6 +639,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Generator-Based (contextlib)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Same as Timer class but using generator.&quot;&quot;&quot;</span>
@@ -648,6 +655,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="k">def</span> <span class="nf">temporary_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create and cleanup a temporary directory.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">shutil</span>
+
     <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created temp dir: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -673,6 +681,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Suppress stdout temporarily.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
     <span class="n">old_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
@@ -684,6 +693,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Exception Handling in __exit__</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">ErrorHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrates exception handling in context manager.&quot;&quot;&quot;</span>
@@ -699,7 +709,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exc_val</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">exc_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">exc_val</span>  <span class="c1"># type: ignore</span>
@@ -712,13 +722,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># ExitStack (Dynamic Context Managers)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">process_multiple_files</span><span class="p">(</span><span class="n">filenames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open multiple files dynamically.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span>
-        <span class="p">]</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content for file </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># All files automatically closed</span>
@@ -741,6 +749,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Reentrant Context Managers</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">ReentrantLock</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager that can be entered multiple times.&quot;&quot;&quot;</span>
@@ -768,6 +777,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Async Context Managers</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">class</span> <span class="nc">AsyncDatabase</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Async context manager example.&quot;&quot;&quot;</span>

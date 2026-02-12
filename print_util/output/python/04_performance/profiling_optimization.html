@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">profiling_optimization.py</div>
-    <div class="file-meta">../python/04_performance/profiling_optimization.py | 377 lines | 2026-01-26 20:54</div>
+    <div class="file-meta">../python/04_performance/profiling_optimization.py | 389 lines | 2026-02-12 15:56</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -601,7 +601,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
-<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: Profiling &amp; Optimization</span>
 
 <span class="sd">USE CASES:</span>
@@ -634,8 +646,10 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Simple Timing Decorator</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">timed</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to time function execution.&quot;&quot;&quot;</span>
+
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
@@ -643,12 +657,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
+
     <span class="k">return</span> <span class="n">wrapper</span>
 
 
 <span class="c1"># =====================</span>
 <span class="c1"># Using timeit</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">demo_timeit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== timeit ===&quot;</span><span class="p">)</span>
@@ -676,6 +692,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># cProfile</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">slow_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function with performance issues.&quot;&quot;&quot;</span>
@@ -720,6 +737,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Common Optimizations</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">demo_optimizations</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Common Optimizations ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -833,6 +851,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Memory Optimization</span>
 <span class="c1"># =====================</span>
 
+
 <span class="k">def</span> <span class="nf">demo_memory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Memory Optimization ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -854,7 +873,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Regular has __dict__: </span><span class="si">{</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">regular</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;__dict__&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slotted has __dict__: </span><span class="si">{</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">slotted</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;__dict__&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Regular size: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">regular</span><span class="p">)</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">regular</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Regular size: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">regular</span><span class="p">)</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">regular</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span>
+    <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slotted size: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">slotted</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">()</span>
 
@@ -875,6 +896,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Caching</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">demo_caching</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Caching ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -909,6 +931,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Algorithmic Improvements</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">demo_algorithmic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Algorithmic Improvements ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -945,6 +968,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Summary</span>
 <span class="c1"># =====================</span>
+
 
 <span class="k">def</span> <span class="nf">print_summary</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Optimization Summary ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>

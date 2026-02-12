@@ -22,6 +22,7 @@ from dataclasses import dataclass
 # Basic Type Hints
 # =====================
 
+
 def greet(name: str, times: int = 1) -> str:
     return (f"Hello, {name}! " * times).strip()
 
@@ -38,6 +39,7 @@ def log_message(msg: str) -> None:
 # =====================
 # Optional & Union
 # =====================
+
 
 # Optional[X] = X | None
 def find_user(user_id: int) -> Optional[str]:
@@ -56,6 +58,7 @@ def parse_input(value: int | str) -> int:
 # Collections
 # =====================
 
+
 def process_mapping(data: dict[str, int]) -> list[tuple[str, int]]:
     return sorted(data.items(), key=lambda x: x[1])
 
@@ -68,6 +71,7 @@ def first_or_default(items: Sequence[str], default: str = "") -> str:
 # =====================
 # Callable Types
 # =====================
+
 
 # Function that takes a function as argument
 def apply_twice(func: Callable[[int], int], value: int) -> int:
@@ -141,7 +145,15 @@ def get_user_name(users: UserMap, user_id: UserId) -> UserName | None:
 
 
 # Complex type alias
-JsonValue = str | int | float | bool | None | list["JsonValue"] | dict[str, "JsonValue"]
+JsonValue = (
+    str
+    | int
+    | float
+    | bool
+    | None
+    | list["JsonValue"]
+    | dict[str, "JsonValue"]
+)
 
 
 # =====================

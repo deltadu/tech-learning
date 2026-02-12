@@ -24,6 +24,7 @@ from dataclasses import dataclass
 # Basic Coroutines
 # =====================
 
+
 async def say_hello(name: str, delay: float = 1.0) -> str:
     """Simple coroutine that waits and returns."""
     await asyncio.sleep(delay)  # Non-blocking sleep
@@ -40,6 +41,7 @@ async def fetch_data(url: str) -> dict[str, Any]:
 # =====================
 # Running Coroutines
 # =====================
+
 
 async def demo_basic() -> None:
     print("=== Basic Coroutines ===")
@@ -69,6 +71,7 @@ async def demo_basic() -> None:
 # =====================
 # Tasks
 # =====================
+
 
 async def demo_tasks() -> None:
     print("=== Tasks ===")
@@ -101,6 +104,7 @@ async def demo_tasks() -> None:
 # Timeouts
 # =====================
 
+
 async def slow_operation() -> str:
     await asyncio.sleep(5)
     return "Done"
@@ -129,9 +133,9 @@ async def demo_timeouts() -> None:
 # Semaphore (Rate Limiting)
 # =====================
 
+
 async def fetch_with_limit(
-    url: str,
-    semaphore: asyncio.Semaphore
+    url: str, semaphore: asyncio.Semaphore
 ) -> dict[str, Any]:
     async with semaphore:
         print(f"Fetching {url}")
@@ -148,9 +152,9 @@ async def demo_semaphore() -> None:
     semaphore = asyncio.Semaphore(2)
 
     start = time.perf_counter()
-    results = await asyncio.gather(*[
-        fetch_with_limit(url, semaphore) for url in urls
-    ])
+    results = await asyncio.gather(
+        *[fetch_with_limit(url, semaphore) for url in urls]
+    )
     elapsed = time.perf_counter() - start
 
     print(f"Fetched {len(results)} items in {elapsed:.2f}s")
@@ -161,6 +165,7 @@ async def demo_semaphore() -> None:
 # =====================
 # Queue for Producer/Consumer
 # =====================
+
 
 async def producer(queue: asyncio.Queue[int], n: int) -> None:
     for i in range(n):
@@ -198,6 +203,7 @@ async def demo_queue() -> None:
 # Lock
 # =====================
 
+
 @dataclass
 class SharedState:
     value: int = 0
@@ -226,6 +232,7 @@ async def demo_lock() -> None:
 # Event (Signaling)
 # =====================
 
+
 async def waiter(event: asyncio.Event, name: str) -> None:
     print(f"{name} waiting for event...")
     await event.wait()
@@ -253,6 +260,7 @@ async def demo_event() -> None:
 # Exception Handling
 # =====================
 
+
 async def might_fail(should_fail: bool) -> str:
     await asyncio.sleep(0.1)
     if should_fail:
@@ -268,7 +276,7 @@ async def demo_exceptions() -> None:
         might_fail(False),
         might_fail(True),
         might_fail(False),
-        return_exceptions=True  # Don't raise, return exceptions
+        return_exceptions=True,  # Don't raise, return exceptions
     )
 
     for i, result in enumerate(results):
@@ -282,6 +290,7 @@ async def demo_exceptions() -> None:
 # =====================
 # TaskGroup (Python 3.11+)
 # =====================
+
 
 async def demo_taskgroup() -> None:
     print("=== TaskGroup (Python 3.11+) ===")
@@ -303,6 +312,7 @@ async def demo_taskgroup() -> None:
 # =====================
 # async for / async with
 # =====================
+
 
 class AsyncRange:
     """Async iterator example."""
@@ -336,6 +346,7 @@ async def demo_async_iteration() -> None:
 # Run Sync Code in Thread
 # =====================
 
+
 def blocking_io_operation(data: str) -> str:
     """Simulate blocking I/O."""
     time.sleep(0.5)  # Blocking!
@@ -364,6 +375,7 @@ async def demo_run_in_executor() -> None:
 # =====================
 # Main
 # =====================
+
 
 async def main() -> None:
     print("=== asyncio Demo ===\n")

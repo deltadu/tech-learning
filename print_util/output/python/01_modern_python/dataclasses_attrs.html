@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">dataclasses_attrs.py</div>
-    <div class="file-meta">../python/01_modern_python/dataclasses_attrs.py | 262 lines | 2026-01-26 20:54</div>
+    <div class="file-meta">../python/01_modern_python/dataclasses_attrs.py | 273 lines | 2026-02-12 15:54</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -486,7 +486,18 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">TOPIC: Dataclasses &amp; Modern Data Structures</span>
 
 <span class="sd">USE CASES:</span>
@@ -511,18 +522,20 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Basic Dataclass</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Point</span><span class="p">:</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">y</span><span class="p">:</span> <span class="nb">float</span>
 
     <span class="k">def</span> <span class="nf">distance_from_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
 
 
 <span class="c1"># =====================</span>
 <span class="c1"># Default Values &amp; Field</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
@@ -540,6 +553,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Frozen (Immutable)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ImmutableConfig</span><span class="p">:</span>
     <span class="n">host</span><span class="p">:</span> <span class="nb">str</span>
@@ -552,6 +566,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Post-Init Processing</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Rectangle</span><span class="p">:</span>
@@ -569,6 +584,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Inheritance</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -585,6 +601,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Slots (Memory Efficient, Python 3.10+)</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CompactPoint</span><span class="p">:</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
@@ -595,6 +612,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Ordering</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Version</span><span class="p">:</span>
@@ -611,6 +629,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Conversion Utilities</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
@@ -630,6 +649,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Field Metadata</span>
 <span class="c1"># =====================</span>
 
+
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Product</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -640,6 +660,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># KW_ONLY (Python 3.10+)</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Request</span><span class="p">:</span>
@@ -658,6 +679,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># =====================</span>
 <span class="c1"># Replace (Copy with Changes)</span>
 <span class="c1"># =====================</span>
+
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>

@@ -26,6 +26,7 @@ R = TypeVar("R")
 # Basic Decorator
 # =====================
 
+
 def simple_logger(func: Callable[P, R]) -> Callable[P, R]:
     @functools.wraps(func)  # Preserves __name__, __doc__, etc.
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -33,6 +34,7 @@ def simple_logger(func: Callable[P, R]) -> Callable[P, R]:
         result = func(*args, **kwargs)
         print(f"{func.__name__} returned {result}")
         return result
+
     return wrapper
 
 
@@ -46,6 +48,7 @@ def add(a: int, b: int) -> int:
 # Timing Decorator
 # =====================
 
+
 def timer(func: Callable[P, R]) -> Callable[P, R]:
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -54,6 +57,7 @@ def timer(func: Callable[P, R]) -> Callable[P, R]:
         elapsed = time.perf_counter() - start
         print(f"{func.__name__} took {elapsed:.4f}s")
         return result
+
     return wrapper
 
 
@@ -67,8 +71,10 @@ def slow_function() -> str:
 # Decorator with Arguments
 # =====================
 
+
 def repeat(times: int) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorator that repeats function call."""
+
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -76,7 +82,9 @@ def repeat(times: int) -> Callable[[Callable[P, R]], Callable[P, R]]:
             for _ in range(times):
                 result = func(*args, **kwargs)
             return result  # type: ignore
+
         return wrapper
+
     return decorator
 
 
@@ -89,12 +97,14 @@ def say_hello(name: str) -> None:
 # Retry Decorator
 # =====================
 
+
 def retry(
     max_attempts: int = 3,
     delay: float = 1.0,
-    exceptions: tuple[type[Exception], ...] = (Exception,)
+    exceptions: tuple[type[Exception], ...] = (Exception,),
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Retry on failure with exponential backoff."""
+
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -104,17 +114,22 @@ def retry(
                     return func(*args, **kwargs)
                 except exceptions as e:
                     last_exception = e
-                    wait = delay * (2 ** attempt)
-                    print(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait}s...")
+                    wait = delay * (2**attempt)
+                    print(
+                        f"Attempt {attempt + 1} failed: {e}. Retrying in {wait}s..."
+                    )
                     time.sleep(wait)
             raise last_exception  # type: ignore
+
         return wrapper
+
     return decorator
 
 
 # =====================
 # Memoization (Caching)
 # =====================
+
 
 def memoize(func: Callable[P, R]) -> Callable[P, R]:
     """Simple memoization decorator."""
@@ -126,6 +141,7 @@ def memoize(func: Callable[P, R]) -> Callable[P, R]:
         if key not in cache:
             cache[key] = func(*args, **kwargs)
         return cache[key]
+
     return wrapper
 
 
@@ -141,13 +157,18 @@ def fibonacci(n: int) -> int:
 # Decorator that Works with/without Parentheses
 # =====================
 
-def debug(_func: Callable[P, R] | None = None, *, prefix: str = "DEBUG") -> Callable:
+
+def debug(
+    _func: Callable[P, R] | None = None, *, prefix: str = "DEBUG"
+) -> Callable:
     """Can be used as @debug or @debug(prefix='INFO')."""
+
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             print(f"[{prefix}] {func.__name__}({args}, {kwargs})")
             return func(*args, **kwargs)
+
         return wrapper
 
     if _func is not None:
@@ -168,6 +189,7 @@ def func2() -> str:
 # =====================
 # Class as Decorator
 # =====================
+
 
 class CountCalls:
     """Decorator that counts function calls."""
@@ -191,6 +213,7 @@ def greet(name: str) -> str:
 # Class Decorator
 # =====================
 
+
 def singleton(cls: type) -> type:
     """Make a class a singleton."""
     instances: dict[type, Any] = {}
@@ -200,6 +223,7 @@ def singleton(cls: type) -> type:
         if cls not in instances:
             instances[cls] = cls(*args, **kwargs)
         return instances[cls]
+
     return get_instance  # type: ignore
 
 
@@ -214,13 +238,18 @@ class Database:
 # Method Decorators
 # =====================
 
+
 def validate_positive(func: Callable) -> Callable:
     """Validate that first numeric argument is positive."""
+
     @functools.wraps(func)
     def wrapper(self: Any, value: float, *args: Any, **kwargs: Any) -> Any:
         if value <= 0:
-            raise ValueError(f"{func.__name__}: value must be positive, got {value}")
+            raise ValueError(
+                f"{func.__name__}: value must be positive, got {value}"
+            )
         return func(self, value, *args, **kwargs)
+
     return wrapper
 
 
@@ -243,11 +272,12 @@ class BankAccount:
 # Stacking Decorators
 # =====================
 
+
 @timer
 @simple_logger
 def compute(x: int) -> int:
     """Compute something."""
-    return x ** 2
+    return x**2
 
 
 # Equivalent to: compute = timer(simple_logger(compute))

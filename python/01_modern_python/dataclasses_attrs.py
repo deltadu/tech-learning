@@ -23,18 +23,20 @@ import json
 # Basic Dataclass
 # =====================
 
+
 @dataclass
 class Point:
     x: float
     y: float
 
     def distance_from_origin(self) -> float:
-        return (self.x ** 2 + self.y ** 2) ** 0.5
+        return (self.x**2 + self.y**2) ** 0.5
 
 
 # =====================
 # Default Values & Field
 # =====================
+
 
 @dataclass
 class User:
@@ -52,6 +54,7 @@ class User:
 # Frozen (Immutable)
 # =====================
 
+
 @dataclass(frozen=True)
 class ImmutableConfig:
     host: str
@@ -64,6 +67,7 @@ class ImmutableConfig:
 # =====================
 # Post-Init Processing
 # =====================
+
 
 @dataclass
 class Rectangle:
@@ -81,6 +85,7 @@ class Rectangle:
 # Inheritance
 # =====================
 
+
 @dataclass
 class Person:
     name: str
@@ -97,6 +102,7 @@ class Employee(Person):
 # Slots (Memory Efficient, Python 3.10+)
 # =====================
 
+
 @dataclass(slots=True)
 class CompactPoint:
     x: float
@@ -107,6 +113,7 @@ class CompactPoint:
 # =====================
 # Ordering
 # =====================
+
 
 @dataclass(order=True)
 class Version:
@@ -123,6 +130,7 @@ class Version:
 # =====================
 # Conversion Utilities
 # =====================
+
 
 @dataclass
 class Config:
@@ -142,6 +150,7 @@ class Config:
 # Field Metadata
 # =====================
 
+
 @dataclass
 class Product:
     name: str
@@ -152,6 +161,7 @@ class Product:
 # =====================
 # KW_ONLY (Python 3.10+)
 # =====================
+
 
 @dataclass
 class Request:
@@ -170,6 +180,7 @@ class Request:
 # =====================
 # Replace (Copy with Changes)
 # =====================
+
 
 @dataclass(frozen=True)
 class Settings:

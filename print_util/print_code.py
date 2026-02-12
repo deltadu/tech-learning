@@ -281,24 +281,55 @@ def create_individual_html(file_path: Path, output_dir: Path) -> Path:
     return output_path
 
 
-def find_code_files(paths: list[str], extensions: set = {'.py'}) -> list[Path]:
+def find_code_files(
+    paths: list[str], extensions: set = {".py"}
+) -> list[Path]:
     """Find all code files in given paths."""
     files = []
-    
+
     for path_str in paths:
         path = Path(path_str)
-        
+
         if path.is_file() and path.suffix in extensions:
             files.append(path)
         elif path.is_dir():
             for ext in extensions:
                 files.extend(path.rglob(f"*{ext}"))
-    
+
     # Exclude common non-essential files
-    exclude_patterns = ['__pycache__', '.git', 'venv', 'node_modules', '.egg']
-    files = [f for f in files if not any(p in str(f) for p in exclude_patterns)]
-    
+    exclude_patterns = [
+        "__pycache__",
+        ".git",
+        "venv",
+        "node_modules",
+        ".egg",
+    ]
+    files = [
+        f for f in files if not any(p in str(f) for p in exclude_patterns)
+    ]
+
     return sorted(files)
+
+
+def detect_extensions(paths: list[str]) -> set:
+    """Detect which extensions to use based on paths."""
+    for path_str in paths:
+        path = Path(path_str)
+        if path.is_file():
+            return {path.suffix}
+        elif path.is_dir():
+            # Check directory name for hints
+            name = path.name.lower()
+            if name in ("cpp", "c++", "cxx"):
+                return {".cpp", ".cc", ".h", ".hpp"}
+            elif name in ("python", "py"):
+                return {".py"}
+            # Check what files exist in the directory
+            cpp_files = list(path.rglob("*.cpp")) + list(path.rglob("*.cc"))
+            py_files = list(path.rglob("*.py"))
+            if cpp_files and not py_files:
+                return {".cpp", ".cc", ".h", ".hpp"}
+    return {".py"}  # default
 
 
 def main():
@@ -307,19 +338,23 @@ def main():
         search_paths = sys.argv[1:]
     else:
         search_paths = [str(Path(__file__).parent.parent)]
-    
-    # Find Python files
-    files = find_code_files(search_paths)
-    
+
+    # Detect file extensions based on paths
+    extensions = detect_extensions(search_paths)
+
+    # Find code files
+    files = find_code_files(search_paths, extensions)
+
+    ext_str = ", ".join(extensions)
     if not files:
-        print("No Python files found.")
+        print(f"No code files found ({ext_str}).")
         print("\nUsage:")
-        print("  python print_code.py                     # All .py in project")
-        print("  python print_code.py ../python/          # Specific folder")
-        print("  python print_code.py ../file1.py         # Specific files")
+        print("  python print_code.py ../python/    # Python files")
+        print("  python print_code.py ../cpp/       # C++ files")
+        print("  python print_code.py ../file.cpp   # Specific file")
         return
-    
-    print(f"Found {len(files)} Python files\n")
+
+    print(f"Found {len(files)} code files ({ext_str})\n")
     
     # Create output directory inside print_util
     output_dir = Path(__file__).parent / "output"

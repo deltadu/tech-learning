@@ -11,9 +11,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# =============================================================================
+# ===========================================================================
 # POSITIONAL ENCODING
-# =============================================================================
+# ===========================================================================
+
 
 class PositionalEncoding(nn.Module):
     """Sinusoidal positional encoding from the original paper."""
@@ -25,29 +26,34 @@ class PositionalEncoding(nn.Module):
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(
-            torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)
+            torch.arange(0, d_model, 2).float()
+            * (-math.log(10000.0) / d_model)
         )
 
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
         pe = pe.unsqueeze(0)  # (1, max_len, d_model)
 
-        self.register_buffer('pe', pe)
+        self.register_buffer("pe", pe)
 
     def forward(self, x):
-        x = x + self.pe[:, :x.size(1), :]
+        x = x + self.pe[:, : x.size(1), :]
         return self.dropout(x)
 
-# =============================================================================
+
+# ===========================================================================
 # MULTI-HEAD ATTENTION
-# =============================================================================
+# ===========================================================================
+
 
 class MultiHeadAttention(nn.Module):
     """Multi-head attention mechanism."""
 
     def __init__(self, d_model, num_heads, dropout=0.1):
         super().__init__()
-        assert d_model % num_heads == 0, "d_model must be divisible by num_heads"
+        assert (
+            d_model % num_heads == 0
+        ), "d_model must be divisible by num_heads"
 
         self.d_model = d_model
         self.num_heads = num_heads
@@ -77,7 +83,7 @@ class MultiHeadAttention(nn.Module):
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
 
         if mask is not None:
-            scores = scores.masked_fill(mask == 0, float('-inf'))
+            scores = scores.masked_fill(mask == 0, float("-inf"))
 
         attention_weights = F.softmax(scores, dim=-1)
         attention_weights = self.dropout(attention_weights)
@@ -85,16 +91,20 @@ class MultiHeadAttention(nn.Module):
         context = torch.matmul(attention_weights, V)
 
         # Concatenate heads: (batch, num_heads, seq, d_k) -> (batch, seq, d_model)
-        context = context.transpose(1, 2).contiguous().view(
-            batch_size, -1, self.d_model
+        context = (
+            context.transpose(1, 2)
+            .contiguous()
+            .view(batch_size, -1, self.d_model)
         )
 
         output = self.W_o(context)
         return output
 
-# =============================================================================
+
+# ===========================================================================
 # FEED-FORWARD NETWORK
-# =============================================================================
+# ===========================================================================
+
 
 class FeedForward(nn.Module):
     """Position-wise feed-forward network."""
@@ -108,9 +118,11 @@ class FeedForward(nn.Module):
     def forward(self, x):
         return self.linear2(self.dropout(F.gelu(self.linear1(x))))
 
-# =============================================================================
+
+# ===========================================================================
 # ENCODER LAYER & ENCODER
-# =============================================================================
+# ===========================================================================
+
 
 class EncoderLayer(nn.Module):
     """Single encoder layer with pre-normalization."""
@@ -138,17 +150,27 @@ class EncoderLayer(nn.Module):
 class TransformerEncoder(nn.Module):
     """Transformer encoder stack."""
 
-    def __init__(self, vocab_size, d_model, num_heads, d_ff, num_layers,
-                 max_len=5000, dropout=0.1):
+    def __init__(
+        self,
+        vocab_size,
+        d_model,
+        num_heads,
+        d_ff,
+        num_layers,
+        max_len=5000,
+        dropout=0.1,
+    ):
         super().__init__()
         self.d_model = d_model
         self.embedding = nn.Embedding(vocab_size, d_model)
         self.pos_encoding = PositionalEncoding(d_model, max_len, dropout)
 
-        self.layers = nn.ModuleList([
-            EncoderLayer(d_model, num_heads, d_ff, dropout)
-            for _ in range(num_layers)
-        ])
+        self.layers = nn.ModuleList(
+            [
+                EncoderLayer(d_model, num_heads, d_ff, dropout)
+                for _ in range(num_layers)
+            ]
+        )
 
         self.norm = nn.LayerNorm(d_model)
 
@@ -161,9 +183,11 @@ class TransformerEncoder(nn.Module):
 
         return self.norm(x)
 
-# =============================================================================
+
+# ===========================================================================
 # DECODER LAYER & DECODER
-# =============================================================================
+# ===========================================================================
+
 
 class DecoderLayer(nn.Module):
     """Single decoder layer with masked self-attention and cross-attention."""
@@ -171,7 +195,9 @@ class DecoderLayer(nn.Module):
     def __init__(self, d_model, num_heads, d_ff, dropout=0.1):
         super().__init__()
         self.self_attention = MultiHeadAttention(d_model, num_heads, dropout)
-        self.cross_attention = MultiHeadAttention(d_model, num_heads, dropout)
+        self.cross_attention = MultiHeadAttention(
+            d_model, num_heads, dropout
+        )
         self.feed_forward = FeedForward(d_model, d_ff, dropout)
 
         self.norm1 = nn.LayerNorm(d_model)
@@ -187,7 +213,9 @@ class DecoderLayer(nn.Module):
         # Cross-attention
         x2 = self.norm2(x)
         x = x + self.dropout(
-            self.cross_attention(x2, encoder_output, encoder_output, src_mask)
+            self.cross_attention(
+                x2, encoder_output, encoder_output, src_mask
+            )
         )
 
         # Feed-forward
@@ -200,17 +228,27 @@ class DecoderLayer(nn.Module):
 class TransformerDecoder(nn.Module):
     """Transformer decoder stack."""
 
-    def __init__(self, vocab_size, d_model, num_heads, d_ff, num_layers,
-                 max_len=5000, dropout=0.1):
+    def __init__(
+        self,
+        vocab_size,
+        d_model,
+        num_heads,
+        d_ff,
+        num_layers,
+        max_len=5000,
+        dropout=0.1,
+    ):
         super().__init__()
         self.d_model = d_model
         self.embedding = nn.Embedding(vocab_size, d_model)
         self.pos_encoding = PositionalEncoding(d_model, max_len, dropout)
 
-        self.layers = nn.ModuleList([
-            DecoderLayer(d_model, num_heads, d_ff, dropout)
-            for _ in range(num_layers)
-        ])
+        self.layers = nn.ModuleList(
+            [
+                DecoderLayer(d_model, num_heads, d_ff, dropout)
+                for _ in range(num_layers)
+            ]
+        )
 
         self.norm = nn.LayerNorm(d_model)
 
@@ -223,9 +261,11 @@ class TransformerDecoder(nn.Module):
 
         return self.norm(x)
 
-# =============================================================================
+
+# ===========================================================================
 # COMPLETE TRANSFORMER
-# =============================================================================
+# ===========================================================================
+
 
 class Transformer(nn.Module):
     """Complete Transformer for sequence-to-sequence tasks."""
@@ -241,18 +281,28 @@ class Transformer(nn.Module):
         num_decoder_layers=6,
         max_len=5000,
         dropout=0.1,
-        share_embeddings=False
+        share_embeddings=False,
     ):
         super().__init__()
 
         self.encoder = TransformerEncoder(
-            src_vocab_size, d_model, num_heads, d_ff,
-            num_encoder_layers, max_len, dropout
+            src_vocab_size,
+            d_model,
+            num_heads,
+            d_ff,
+            num_encoder_layers,
+            max_len,
+            dropout,
         )
 
         self.decoder = TransformerDecoder(
-            tgt_vocab_size, d_model, num_heads, d_ff,
-            num_decoder_layers, max_len, dropout
+            tgt_vocab_size,
+            d_model,
+            num_heads,
+            d_ff,
+            num_decoder_layers,
+            max_len,
+            dropout,
         )
 
         self.output_projection = nn.Linear(d_model, tgt_vocab_size)
@@ -281,7 +331,9 @@ class Transformer(nn.Module):
         if tgt_mask is None:
             tgt_mask = self.generate_causal_mask(tgt.size(1), tgt.device)
 
-        decoder_output = self.decoder(tgt, encoder_output, src_mask, tgt_mask)
+        decoder_output = self.decoder(
+            tgt, encoder_output, src_mask, tgt_mask
+        )
 
         logits = self.output_projection(decoder_output)
         return logits
@@ -295,12 +347,16 @@ class Transformer(nn.Module):
 
         encoder_output = self.encoder(src, src_mask)
 
-        tgt = torch.full((batch_size, 1), start_token, dtype=torch.long, device=device)
+        tgt = torch.full(
+            (batch_size, 1), start_token, dtype=torch.long, device=device
+        )
 
         for _ in range(max_len - 1):
             tgt_mask = self.generate_causal_mask(tgt.size(1), device)
 
-            decoder_output = self.decoder(tgt, encoder_output, src_mask, tgt_mask)
+            decoder_output = self.decoder(
+                tgt, encoder_output, src_mask, tgt_mask
+            )
             logits = self.output_projection(decoder_output[:, -1:, :])
 
             next_token = logits.argmax(dim=-1)
@@ -311,9 +367,11 @@ class Transformer(nn.Module):
 
         return tgt
 
-# =============================================================================
+
+# ===========================================================================
 # DECODER-ONLY TRANSFORMER (GPT-style)
-# =============================================================================
+# ===========================================================================
+
 
 class GPTBlock(nn.Module):
     """Single GPT block (decoder-only transformer layer)."""
@@ -347,7 +405,7 @@ class GPT(nn.Module):
         d_ff=3072,
         num_layers=12,
         max_len=1024,
-        dropout=0.1
+        dropout=0.1,
     ):
         super().__init__()
         self.d_model = d_model
@@ -357,10 +415,12 @@ class GPT(nn.Module):
         self.position_embedding = nn.Embedding(max_len, d_model)
         self.dropout = nn.Dropout(dropout)
 
-        self.blocks = nn.ModuleList([
-            GPTBlock(d_model, num_heads, d_ff, dropout)
-            for _ in range(num_layers)
-        ])
+        self.blocks = nn.ModuleList(
+            [
+                GPTBlock(d_model, num_heads, d_ff, dropout)
+                for _ in range(num_layers)
+            ]
+        )
 
         self.norm = nn.LayerNorm(d_model)
         self.lm_head = nn.Linear(d_model, vocab_size, bias=False)
@@ -383,7 +443,9 @@ class GPT(nn.Module):
         x = self.dropout(x)
 
         if mask is None:
-            mask = torch.triu(torch.ones(seq_len, seq_len, device=device), diagonal=1)
+            mask = torch.triu(
+                torch.ones(seq_len, seq_len, device=device), diagonal=1
+            )
             mask = (mask == 0).unsqueeze(0).unsqueeze(0)
 
         for block in self.blocks:
@@ -401,14 +463,18 @@ class GPT(nn.Module):
         device = prompt.device
 
         for _ in range(max_new_tokens):
-            x = prompt if prompt.size(1) <= self.max_len else prompt[:, -self.max_len:]
+            x = (
+                prompt
+                if prompt.size(1) <= self.max_len
+                else prompt[:, -self.max_len :]
+            )
 
             logits = self(x)
             logits = logits[:, -1, :] / temperature
 
             if top_k is not None:
                 v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-                logits[logits < v[:, [-1]]] = float('-inf')
+                logits[logits < v[:, [-1]]] = float("-inf")
 
             probs = F.softmax(logits, dim=-1)
             next_token = torch.multinomial(probs, num_samples=1)
@@ -417,13 +483,14 @@ class GPT(nn.Module):
 
         return prompt
 
-# =============================================================================
+
+# ===========================================================================
 # EXAMPLE USAGE
-# =============================================================================
+# ===========================================================================
 
 if __name__ == "__main__":
     print("Testing Transformer implementation...")
-    print("="*50)
+    print("=" * 50)
 
     # Test encoder-decoder Transformer
     src_vocab = 10000
@@ -436,7 +503,7 @@ if __name__ == "__main__":
         d_ff=512,
         num_encoder_layers=3,
         num_decoder_layers=3,
-        dropout=0.1
+        dropout=0.1,
     )
 
     total_params = sum(p.numel() for p in model.parameters())
@@ -457,7 +524,7 @@ if __name__ == "__main__":
         d_ff=512,
         num_layers=4,
         max_len=512,
-        dropout=0.1
+        dropout=0.1,
     )
 
     gpt_params = sum(p.numel() for p in gpt.parameters())
@@ -468,7 +535,9 @@ if __name__ == "__main__":
     print(f"GPT output shape: {output.shape}")
 
     prompt = torch.randint(0, 10000, (1, 5))
-    generated = gpt.generate(prompt, max_new_tokens=10, temperature=0.8, top_k=50)
+    generated = gpt.generate(
+        prompt, max_new_tokens=10, temperature=0.8, top_k=50
+    )
     print(f"Generated sequence length: {generated.shape[1]}")
 
     print()

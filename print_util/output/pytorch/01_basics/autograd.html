@@ -224,7 +224,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <div class="file-section">
     <div class="file-header">autograd.py</div>
-    <div class="file-meta">../pytorch/01_basics/autograd.py | 333 lines | 2026-01-26 21:12</div>
+    <div class="file-meta">pytorch/01_basics/autograd.py | 339 lines | 2026-02-12 15:59</div>
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -557,27 +557,33 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
-<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">PyTorch Autograd - Automatic Differentiation</span>
 <span class="sd">=============================================</span>
 
-<span class="sd">Autograd is PyTorch&#39;s automatic differentiation engine that powers neural network</span>
-<span class="sd">training. It computes gradients automatically through a technique called reverse-mode</span>
-<span class="sd">automatic differentiation (backpropagation).</span>
+<span class="sd">Autograd is PyTorch&#39;s automatic differentiation engine</span>
+<span class="sd">that powers neural network training. It computes gradients</span>
+<span class="sd">automatically via reverse-mode autodiff (backpropagation).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># BASICS OF AUTOGRAD</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
-<span class="c1"># requires_grad=True tells PyTorch to track operations for gradient computation</span>
+<span class="c1"># requires_grad=True tells PyTorch to track ops for gradient computation</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Operations create a computational graph</span>
-<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x: </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -594,9 +600,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># d(out)/dy = x = [2, 3]</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient of out w.r.t. y: </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># THE COMPUTATIONAL GRAPH</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">PyTorch builds a Dynamic Computational Graph (DCG):</span>
@@ -617,15 +623,15 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="sd">    y ------&#39;</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># GRADIENT ATTRIBUTES</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">a.requires_grad: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># True (leaf)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.requires_grad: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># True (result of operation)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">a.requires_grad: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.requires_grad: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># True</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a.is_leaf: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">is_leaf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                <span class="c1"># True</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.is_leaf: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">is_leaf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                <span class="c1"># False</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad_fn: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                <span class="c1"># MulBackward0</span>
@@ -633,8 +639,8 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Only leaf tensors retain gradients by default</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">c</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a.grad: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># [2, 2, 2]</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># None (non-leaf)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a.grad: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># [2, 2, 2]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># None (non-leaf)</span>
 
 <span class="c1"># To retain gradients for non-leaf tensors</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -644,19 +650,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="n">c</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad (retained): </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># GRADIENT COMPUTATION PATTERNS</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="c1"># Pattern 1: Simple scalar output</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">dy/dx where y = sum(x^2): </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># [2, 4, 6]</span>
 
 <span class="c1"># Pattern 2: Gradient of vector output requires a vector argument</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># vector output</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># vector output</span>
 
 <span class="c1"># Must provide gradient argument (usually ones for each output element)</span>
 <span class="c1"># This is like computing sum(v * dy/dx) where v is the gradient argument</span>
@@ -666,14 +672,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <span class="c1"># Pattern 3: Jacobian-vector product (JVP)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span>
 <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">gradient</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jacobian-vector product: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># [0.2, 4.0, 0.06]</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># CONTROLLING GRADIENT COMPUTATION</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="c1"># torch.no_grad() - disable gradient tracking (inference mode)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -699,15 +705,15 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="n">z</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>  <span class="c1"># z shares data but doesn&#39;t track gradients</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z.requires_grad: </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># False</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># GRADIENT ACCUMULATION</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="c1"># Gradients accumulate by default!</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: x.grad = </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -722,18 +728,18 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>  <span class="c1"># zero the gradients</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> (zeroed): x.grad = </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># HIGHER-ORDER GRADIENTS</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">2.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># First derivative: y = x^3, dy/dx = 3x^2</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">3</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
 <span class="n">grad1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">First derivative of x^3 at x=2: </span><span class="si">{</span><span class="n">grad1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># 12.0</span>
 
@@ -745,12 +751,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="n">grad3</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">grad2</span><span class="p">,</span> <span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Third derivative of x^3 at x=2: </span><span class="si">{</span><span class="n">grad3</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># 6.0</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># torch.autograd.grad() vs .backward()</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
 <span class="c1"># .backward() stores gradients in .grad attributes</span>
 <span class="c1"># y.backward()</span>
@@ -765,17 +771,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># 2. Computing gradients w.r.t. non-leaf tensors</span>
 <span class="c1"># 3. Higher-order gradients (with create_graph=True)</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># GRADIENT CHECKPOINTING (Memory Optimization)</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="kn">from</span> <span class="nn">torch.utils.checkpoint</span> <span class="kn">import</span> <span class="n">checkpoint</span>
 
+
 <span class="k">def</span> <span class="nf">compute_heavy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulates a memory-intensive computation.&quot;&quot;&quot;</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="k">return</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span>
+
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -786,9 +794,10 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Recomputes forward pass during backward to save memory</span>
 <span class="n">y_checkpoint</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">(</span><span class="n">compute_heavy</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">use_reentrant</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># CUSTOM AUTOGRAD FUNCTIONS</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
+
 
 <span class="k">class</span> <span class="nc">MyReLU</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom ReLU implementation with explicit forward and backward.&quot;&quot;&quot;</span>
@@ -802,10 +811,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
         <span class="c1"># grad_output is the gradient from the next layer</span>
-        <span class="nb">input</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
+        <span class="p">(</span><span class="nb">input</span><span class="p">,)</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
         <span class="n">grad_input</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="n">grad_input</span><span class="p">[</span><span class="nb">input</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">grad_input</span>
+
 
 <span class="c1"># Use the custom function</span>
 <span class="n">my_relu</span> <span class="o">=</span> <span class="n">MyReLU</span><span class="o">.</span><span class="n">apply</span>
@@ -815,9 +825,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Custom ReLU gradient: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># COMMON PITFALLS AND SOLUTIONS</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="c1"># Pitfall 1: In-place operations can break the graph</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -840,9 +850,9 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># z = x * 3.0  # Also OK, PyTorch handles this</span>
 <span class="c1"># But be careful with complex expressions</span>
 
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 <span class="c1"># DEBUGGING AUTOGRAD</span>
-<span class="c1"># =============================================================================</span>
+<span class="c1"># ===========================================================================</span>
 
 <span class="c1"># Check if a tensor requires gradients</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -855,6 +865,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># Enable anomaly detection (slower but helpful for debugging)</span>
 <span class="c1"># torch.autograd.set_detect_anomaly(True)</span>
 
+
 <span class="c1"># Print the computational graph (for debugging)</span>
 <span class="k">def</span> <span class="nf">print_graph</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively print the computational graph.&quot;&quot;&quot;</span>
@@ -863,18 +874,19 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tensor</span><span class="o">.</span><span class="n">grad_fn</span><span class="o">.</span><span class="n">next_functions</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="c1"># t[0] is the grad_fn, t[1] is the output index</span>
-                <span class="n">print_graph</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span><span class="s1">&#39;grad_fn&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]})(),</span> <span class="n">indent</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">print_graph</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;grad_fn&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]})(),</span> <span class="n">indent</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="mi">3</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Computational graph for z = 3 * x^2:&quot;</span><span class="p">)</span>
 <span class="n">print_graph</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Autograd Demo Complete!&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
 
     <span class="c1"># Simple gradient descent example</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">5.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -882,7 +894,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Simple gradient descent to minimize x^2:&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
         <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>

@@ -24,6 +24,7 @@ from typing import Any
 # Threading (I/O-bound)
 # =====================
 
+
 def io_task(task_id: int, duration: float) -> str:
     """Simulate I/O operation."""
     print(f"Task {task_id} starting")
@@ -62,6 +63,7 @@ def demo_threading() -> None:
 # Thread Synchronization
 # =====================
 
+
 class Counter:
     def __init__(self) -> None:
         self.value = 0
@@ -96,6 +98,7 @@ def demo_thread_sync() -> None:
 # Thread Pool
 # =====================
 
+
 def demo_thread_pool() -> None:
     print("=== Thread Pool ===\n")
 
@@ -118,6 +121,7 @@ def demo_thread_pool() -> None:
 # =====================
 # Multiprocessing (CPU-bound)
 # =====================
+
 
 def cpu_task(n: int) -> int:
     """CPU-intensive computation."""
@@ -148,6 +152,7 @@ def demo_multiprocessing() -> None:
 # Future Objects
 # =====================
 
+
 def demo_futures() -> None:
     print("=== Future Objects ===\n")
 
@@ -171,15 +176,18 @@ def demo_futures() -> None:
         # Can also use wait()
         done, not_done = concurrent.futures.wait(
             [executor.submit(compute, i) for i in range(3)],
-            return_when=concurrent.futures.FIRST_COMPLETED
+            return_when=concurrent.futures.FIRST_COMPLETED,
         )
-        print(f"First completed: {len(done)}, still running: {len(not_done)}")
+        print(
+            f"First completed: {len(done)}, still running: {len(not_done)}"
+        )
     print()
 
 
 # =====================
 # Producer-Consumer with Queue
 # =====================
+
 
 def demo_producer_consumer() -> None:
     print("=== Producer-Consumer ===\n")
@@ -230,6 +238,7 @@ def demo_producer_consumer() -> None:
 # Thread-Local Data
 # =====================
 
+
 def demo_thread_local() -> None:
     print("=== Thread-Local Data ===\n")
 
@@ -238,7 +247,9 @@ def demo_thread_local() -> None:
     def worker(value: int) -> None:
         local_data.value = value
         time.sleep(0.1)
-        print(f"Thread {threading.current_thread().name}: {local_data.value}")
+        print(
+            f"Thread {threading.current_thread().name}: {local_data.value}"
+        )
 
     threads = [
         threading.Thread(target=worker, args=(i,), name=f"Worker-{i}")
@@ -255,6 +266,7 @@ def demo_thread_local() -> None:
 # =====================
 # When to Use What
 # =====================
+
 
 def print_summary() -> None:
     print("=== When to Use What ===\n")

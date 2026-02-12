@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pytest_patterns.py</title>
+    <style>
+        /* Base styles - optimized for 4-up printing */
+        @page {
+            size: letter;
+            margin: 0.3in;
+            
+            @bottom-center {
+                content: "pytest_patterns.py - Page " counter(page);
+                font-size: 8pt;
+                color: #666;
+            }
+        }
+        
+        :root {
+            --font-size: 10pt;  /* Sized for 4-up printing */
+            --line-height: 1.3;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Courier New", Courier, monospace;
+            font-size: var(--font-size);
+            letter-spacing: 0;
+            font-variant-ligatures: none;
+            line-height: var(--line-height);
+            background: white;
+            color: #1a1a1a;
+        }
+        
+        .file-section {
+            page-break-after: always;
+            padding: 0.5em;
+        }
+        
+        .file-section:last-child {
+            page-break-after: avoid;
+        }
+        
+        .file-header {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 8px 12px;
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        
+        .file-meta {
+            background: #3d3d3d;
+            color: #999;
+            padding: 4px 12px;
+            font-size: 9pt;
+        }
+        
+        /* Syntax highlighting container */
+        .highlight {
+            background: #fafafa;
+            overflow-x: auto;
+        }
+        
+        .highlight pre {
+            margin: 0;
+            padding: 12px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: var(--font-size);
+            line-height: var(--line-height);
+            white-space: pre;
+            word-wrap: normal;
+            letter-spacing: 0;
+            font-variant-ligatures: none;
+        }
+        
+        /* Line numbers - minimal */
+        .linenodiv {
+            background: #f5f5f5;
+            padding: 12px 3px 12px 2px;
+            text-align: right;
+            color: #aaa;
+            font-size: 8pt;
+            user-select: none;
+            width: 1%;
+            min-width: 1.5em;
+            white-space: nowrap;
+        }
+        
+        .linenodiv pre {
+            margin: 0;
+            line-height: var(--line-height);
+        }
+        
+        /* Code table layout */
+        .highlighttable {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .highlighttable td {
+            vertical-align: top;
+            padding: 0;
+        }
+        
+        .highlighttable td.code {
+            width: 100%;
+        }
+        
+        /* Footer on each page */
+        .page-footer {
+            position: running(footer);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+            padding-top: 0.5em;
+        }
+        
+        @media print {
+            body {
+                font-size: var(--font-size);
+            }
+            
+            .file-section {
+                page-break-after: always;
+            }
+            
+            .highlight {
+                background: white;
+            }
+            
+            /* Running footer */
+            @page {
+                @bottom-center {
+                    content: "pytest_patterns.py | Page " counter(page) " of " counter(pages);
+                }
+            }
+        }
+        
+        /* Pygments syntax highlighting - Light theme */
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #E40000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #687822 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #767600 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+    </style>
+</head>
+<body>
+
+<div class="file-section">
+    <div class="file-header">pytest_patterns.py</div>
+    <div class="file-meta">../python/05_testing/pytest_patterns.py | 388 lines | 2026-01-26 20:54</div>
+    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TOPIC: Testing with pytest</span>
+
+<span class="sd">USE CASES:</span>
+<span class="sd">  - Unit testing</span>
+<span class="sd">  - Integration testing</span>
+<span class="sd">  - Parametrized tests</span>
+<span class="sd">  - Mocking external dependencies</span>
+
+<span class="sd">KEY POINTS:</span>
+<span class="sd">  - pytest discovers tests automatically (test_*.py, *_test.py)</span>
+<span class="sd">  - Simple assert statements (no self.assertEqual)</span>
+<span class="sd">  - Fixtures for setup/teardown</span>
+<span class="sd">  - Parametrize for multiple test cases</span>
+<span class="sd">  - Markers for categorizing tests</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># =====================</span>
+<span class="c1"># Code to Test</span>
+<span class="c1"># =====================</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span> <span class="nf">is_adult</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">&gt;=</span> <span class="mi">18</span>
+
+    <span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hello, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UserService</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">db</span>
+
+    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">age</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="n">age</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+
+<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot divide by zero&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+
+
+<span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+            <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">config</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Basic Tests</span>
+<span class="c1"># =====================</span>
+
+<span class="k">def</span> <span class="nf">test_user_is_adult</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic test with assert.&quot;&quot;&quot;</span>
+    <span class="n">adult</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;alice@test.com&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="n">child</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;bob@test.com&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">adult</span><span class="o">.</span><span class="n">is_adult</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">child</span><span class="o">.</span><span class="n">is_adult</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">test_user_greeting</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test string output.&quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Charlie&quot;</span><span class="p">,</span> <span class="s2">&quot;charlie@test.com&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">greeting</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Hello, Charlie!&quot;</span>
+    <span class="k">assert</span> <span class="s2">&quot;Charlie&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">greeting</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">test_divide</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test function output.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">divide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
+    <span class="k">assert</span> <span class="n">divide</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mf">3.5</span>
+    <span class="k">assert</span> <span class="n">divide</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">3</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Testing Exceptions</span>
+<span class="c1"># =====================</span>
+
+<span class="k">def</span> <span class="nf">test_divide_by_zero</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that exception is raised.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc_info</span><span class="p">:</span>
+        <span class="n">divide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="s2">&quot;Cannot divide by zero&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc_info</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_divide_by_zero_simple</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simpler exception check.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;divide by zero&quot;</span><span class="p">):</span>
+        <span class="n">divide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Fixtures</span>
+<span class="c1"># =====================</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">sample_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture providing a test user.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Test User&quot;</span><span class="p">,</span> <span class="s2">&quot;test@example.com&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">temp_config_file</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture with cleanup.&quot;&quot;&quot;</span>
+    <span class="c1"># Setup</span>
+    <span class="n">fd</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.cfg&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;host=localhost</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;port=8080</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">yield</span> <span class="n">path</span>  <span class="c1"># Test runs here</span>
+
+    <span class="c1"># Teardown</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_with_fixture</span><span class="p">(</span><span class="n">sample_user</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test using fixture.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">sample_user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Test User&quot;</span>
+    <span class="k">assert</span> <span class="n">sample_user</span><span class="o">.</span><span class="n">is_adult</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">test_read_config</span><span class="p">(</span><span class="n">temp_config_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test with file fixture.&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">(</span><span class="n">temp_config_file</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;8080&quot;</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Parametrized Tests</span>
+<span class="c1"># =====================</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;a,b,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span>
+    <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_divide_parametrized</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test multiple cases with parametrize.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">divide</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;age,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_is_adult_parametrized</span><span class="p">(</span><span class="n">age</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test boundary conditions.&quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="s2">&quot;test@test.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">is_adult</span><span class="p">()</span> <span class="o">==</span> <span class="n">expected</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Mocking</span>
+<span class="c1"># =====================</span>
+
+<span class="k">def</span> <span class="nf">test_user_service_get_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mock database dependency.&quot;&quot;&quot;</span>
+    <span class="c1"># Create mock database</span>
+    <span class="n">mock_db</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_db</span><span class="o">.</span><span class="n">fetch</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;alice@test.com&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span>
+    <span class="p">}</span>
+
+    <span class="n">service</span> <span class="o">=</span> <span class="n">UserService</span><span class="p">(</span><span class="n">mock_db</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Alice&quot;</span>
+    <span class="n">mock_db</span><span class="o">.</span><span class="n">fetch</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_user_service_user_not_found</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mock returning None.&quot;&quot;&quot;</span>
+    <span class="n">mock_db</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="n">mock_db</span><span class="o">.</span><span class="n">fetch</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">service</span> <span class="o">=</span> <span class="n">UserService</span><span class="p">(</span><span class="n">mock_db</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">999</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">test_user_service_create_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify mock was called correctly.&quot;&quot;&quot;</span>
+    <span class="n">mock_db</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+
+    <span class="n">service</span> <span class="o">=</span> <span class="n">UserService</span><span class="p">(</span><span class="n">mock_db</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;bob@test.com&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Bob&quot;</span>
+    <span class="n">mock_db</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+    <span class="n">saved_user</span> <span class="o">=</span> <span class="n">mock_db</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">call_args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">saved_user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Bob&quot;</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Patching</span>
+<span class="c1"># =====================</span>
+
+<span class="k">def</span> <span class="nf">get_current_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">datetime</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">test_patch_datetime</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch module-level import.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;datetime.datetime&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_datetime</span><span class="p">:</span>
+        <span class="n">mock_datetime</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">isoformat</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;2024-01-01T00:00:00&quot;</span>
+
+        <span class="c1"># This would use patched datetime</span>
+        <span class="c1"># result = get_current_time()</span>
+        <span class="c1"># assert result == &quot;2024-01-01T00:00:00&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Simplified for demo</span>
+
+
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;os.path.exists&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_patch_decorator</span><span class="p">(</span><span class="n">mock_exists</span><span class="p">:</span> <span class="n">Mock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch using decorator.&quot;&quot;&quot;</span>
+    <span class="n">mock_exists</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/fake/path&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+    <span class="n">mock_exists</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/fake/path&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Markers</span>
+<span class="c1"># =====================</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">slow</span>
+<span class="k">def</span> <span class="nf">test_slow_operation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Marked as slow test.&quot;&quot;&quot;</span>
+    <span class="c1"># Run with: pytest -m slow</span>
+    <span class="c1"># Skip with: pytest -m &quot;not slow&quot;</span>
+    <span class="kn">import</span> <span class="nn">time</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="kc">True</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Not implemented yet&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_future_feature</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Skipped test.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="kc">False</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">skipif</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CI&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Only run in CI&quot;</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_ci_only</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Conditional skip.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="kc">True</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Known bug&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_known_bug</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected to fail.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">3</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Fixture Scopes</span>
+<span class="c1"># =====================</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">expensive_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture created once per module.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Creating expensive resource...&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;expensive_data&quot;</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">database_connection</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture created once per test session.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Establishing database connection...&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;db_connection&quot;</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Conftest.py (shared fixtures)</span>
+<span class="c1"># =====================</span>
+
+<span class="c1"># In conftest.py, you can define fixtures available to all tests:</span>
+<span class="c1">#</span>
+<span class="c1"># @pytest.fixture</span>
+<span class="c1"># def app():</span>
+<span class="c1">#     return create_app(testing=True)</span>
+<span class="c1">#</span>
+<span class="c1"># @pytest.fixture</span>
+<span class="c1"># def client(app):</span>
+<span class="c1">#     return app.test_client()</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Async Tests</span>
+<span class="c1"># =====================</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_async_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test async function (requires pytest-asyncio).&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">asyncio</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_add</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">5</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Test Organization Summary</span>
+<span class="c1"># =====================</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Project structure:</span>
+<span class="sd">├── src/</span>
+<span class="sd">│   └── mypackage/</span>
+<span class="sd">│       ├── __init__.py</span>
+<span class="sd">│       └── module.py</span>
+<span class="sd">├── tests/</span>
+<span class="sd">│   ├── conftest.py      # Shared fixtures</span>
+<span class="sd">│   ├── test_module.py   # Unit tests</span>
+<span class="sd">│   └── integration/</span>
+<span class="sd">│       └── test_api.py  # Integration tests</span>
+<span class="sd">└── pytest.ini           # pytest configuration</span>
+
+<span class="sd">pytest.ini example:</span>
+<span class="sd">[pytest]</span>
+<span class="sd">testpaths = tests</span>
+<span class="sd">markers =</span>
+<span class="sd">    slow: marks tests as slow</span>
+<span class="sd">    integration: marks tests as integration tests</span>
+<span class="sd">addopts = -v --tb=short</span>
+
+<span class="sd">Common commands:</span>
+<span class="sd">  pytest                     # Run all tests</span>
+<span class="sd">  pytest tests/test_foo.py   # Run specific file</span>
+<span class="sd">  pytest -k &quot;test_user&quot;      # Run tests matching pattern</span>
+<span class="sd">  pytest -m slow             # Run marked tests</span>
+<span class="sd">  pytest -x                  # Stop on first failure</span>
+<span class="sd">  pytest --pdb               # Drop to debugger on failure</span>
+<span class="sd">  pytest -v                  # Verbose output</span>
+<span class="sd">  pytest --cov=src           # With coverage (pytest-cov)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># =====================</span>
+<span class="c1"># Run Demo</span>
+<span class="c1"># =====================</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Run with: pytest pytest_patterns.py -v</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Run with: pytest pytest_patterns.py -v&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Or: python -m pytest pytest_patterns.py -v&quot;</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+
+</div>
+
+</body>
+</html>

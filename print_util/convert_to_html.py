@@ -4,9 +4,10 @@ Convert all markdown files to print-friendly HTML.
 
 Usage:
     pip install markdown pygments
+    cd print_util
     python convert_to_html.py
 
-Output: Creates .html file next to each .md file
+Output: Creates html/ subfolder in each topic directory with .html files
 """
 
 import markdown
@@ -276,8 +277,8 @@ def convert_md_to_html(md_path: Path) -> Path:
 def main():
     """Convert all markdown files to HTML."""
     
-    # Find all markdown files
-    root = Path(__file__).parent
+    # Find all markdown files (parent directory of print_util)
+    root = Path(__file__).parent.parent
     md_files = list(root.rglob('*.md'))
     
     # Exclude this script's directory if any

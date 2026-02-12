@@ -260,14 +260,12 @@ def print_summary() -> None:
     print("=== When to Use What ===\n")
 
     summary = """
-╔════════════════════╦═══════════════════════════════════════════╗
-║ Workload Type      ║ Best Approach                             ║
-╠════════════════════╬═══════════════════════════════════════════╣
-║ I/O-bound          ║ asyncio (best) or threading               ║
-║ CPU-bound          ║ multiprocessing                           ║
-║ Mixed              ║ ProcessPoolExecutor + asyncio/threading   ║
-║ Simple parallelism ║ concurrent.futures (ThreadPool/ProcessPool)║
-╚════════════════════╩═══════════════════════════════════════════╝
+Workload Type       | Best Approach
+--------------------|----------------------------------
+I/O-bound           | asyncio (best) or threading
+CPU-bound           | multiprocessing
+Mixed               | ProcessPoolExecutor + asyncio
+Simple parallelism  | concurrent.futures
 
 Key Points:
 - GIL: Threads can't run Python code in parallel (only I/O)

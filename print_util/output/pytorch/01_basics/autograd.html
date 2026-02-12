@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>autograd.py</title>
+    <style>
+        /* Base styles - optimized for 4-up printing */
+        @page {
+            size: letter;
+            margin: 0.3in;
+            
+            @bottom-center {
+                content: "autograd.py - Page " counter(page);
+                font-size: 8pt;
+                color: #666;
+            }
+        }
+        
+        :root {
+            --font-size: 10pt;  /* Sized for 4-up printing */
+            --line-height: 1.3;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Courier New", Courier, monospace;
+            font-size: var(--font-size);
+            letter-spacing: 0;
+            font-variant-ligatures: none;
+            line-height: var(--line-height);
+            background: white;
+            color: #1a1a1a;
+        }
+        
+        .file-section {
+            page-break-after: always;
+            padding: 0.5em;
+        }
+        
+        .file-section:last-child {
+            page-break-after: avoid;
+        }
+        
+        .file-header {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 8px 12px;
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        
+        .file-meta {
+            background: #3d3d3d;
+            color: #999;
+            padding: 4px 12px;
+            font-size: 9pt;
+        }
+        
+        /* Syntax highlighting container */
+        .highlight {
+            background: #fafafa;
+            overflow-x: auto;
+        }
+        
+        .highlight pre {
+            margin: 0;
+            padding: 12px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: var(--font-size);
+            line-height: var(--line-height);
+            white-space: pre;
+            word-wrap: normal;
+            letter-spacing: 0;
+            font-variant-ligatures: none;
+        }
+        
+        /* Line numbers - minimal */
+        .linenodiv {
+            background: #f5f5f5;
+            padding: 12px 3px 12px 2px;
+            text-align: right;
+            color: #aaa;
+            font-size: 8pt;
+            user-select: none;
+            width: 1%;
+            min-width: 1.5em;
+            white-space: nowrap;
+        }
+        
+        .linenodiv pre {
+            margin: 0;
+            line-height: var(--line-height);
+        }
+        
+        /* Code table layout */
+        .highlighttable {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .highlighttable td {
+            vertical-align: top;
+            padding: 0;
+        }
+        
+        .highlighttable td.code {
+            width: 100%;
+        }
+        
+        /* Footer on each page */
+        .page-footer {
+            position: running(footer);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+            padding-top: 0.5em;
+        }
+        
+        @media print {
+            body {
+                font-size: var(--font-size);
+            }
+            
+            .file-section {
+                page-break-after: always;
+            }
+            
+            .highlight {
+                background: white;
+            }
+            
+            /* Running footer */
+            @page {
+                @bottom-center {
+                    content: "autograd.py | Page " counter(page) " of " counter(pages);
+                }
+            }
+        }
+        
+        /* Pygments syntax highlighting - Light theme */
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #E40000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #687822 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #767600 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+    </style>
+</head>
+<body>
+
+<div class="file-section">
+    <div class="file-header">autograd.py</div>
+    <div class="file-meta">../pytorch/01_basics/autograd.py | 333 lines | 2026-01-26 21:12</div>
+    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PyTorch Autograd - Automatic Differentiation</span>
+<span class="sd">=============================================</span>
+
+<span class="sd">Autograd is PyTorch&#39;s automatic differentiation engine that powers neural network</span>
+<span class="sd">training. It computes gradients automatically through a technique called reverse-mode</span>
+<span class="sd">automatic differentiation (backpropagation).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># BASICS OF AUTOGRAD</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># requires_grad=True tells PyTorch to track operations for gradient computation</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Operations create a computational graph</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x: </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y: </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z = x*y + x^2: </span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out = sum(z): </span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute gradients via backpropagation</span>
+<span class="n">out</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+<span class="c1"># Gradients are stored in .grad attribute</span>
+<span class="c1"># d(out)/dx = y + 2x = [4+4, 5+6] = [8, 11]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Gradient of out w.r.t. x: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># d(out)/dy = x = [2, 3]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient of out w.r.t. y: </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># THE COMPUTATIONAL GRAPH</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PyTorch builds a Dynamic Computational Graph (DCG):</span>
+
+<span class="sd">1. Each tensor with requires_grad=True is a &quot;leaf&quot; node</span>
+<span class="sd">2. Operations create &quot;intermediate&quot; nodes</span>
+<span class="sd">3. The graph is built on-the-fly during forward pass</span>
+<span class="sd">4. backward() traverses the graph in reverse to compute gradients</span>
+<span class="sd">5. The graph is destroyed after backward() (unless retain_graph=True)</span>
+
+<span class="sd">Example graph for z = x*y + x^2:</span>
+
+<span class="sd">    x -----&gt; (*) -----&gt; (+) -----&gt; z -----&gt; sum -----&gt; out</span>
+<span class="sd">      \       ^          ^</span>
+<span class="sd">       \      |          |</span>
+<span class="sd">        `-&gt; (^2)--------&#39;</span>
+<span class="sd">             |</span>
+<span class="sd">    y ------&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># GRADIENT ATTRIBUTES</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">a.requires_grad: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># True (leaf)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.requires_grad: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># True (result of operation)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a.is_leaf: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">is_leaf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.is_leaf: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">is_leaf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                <span class="c1"># False</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad_fn: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                <span class="c1"># MulBackward0</span>
+
+<span class="c1"># Only leaf tensors retain gradients by default</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;a.grad: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># [2, 2, 2]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad: </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># None (non-leaf)</span>
+
+<span class="c1"># To retain gradients for non-leaf tensors</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">b</span><span class="o">.</span><span class="n">retain_grad</span><span class="p">()</span>  <span class="c1"># explicitly retain</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;b.grad (retained): </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># GRADIENT COMPUTATION PATTERNS</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># Pattern 1: Simple scalar output</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">dy/dx where y = sum(x^2): </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># [2, 4, 6]</span>
+
+<span class="c1"># Pattern 2: Gradient of vector output requires a vector argument</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># vector output</span>
+
+<span class="c1"># Must provide gradient argument (usually ones for each output element)</span>
+<span class="c1"># This is like computing sum(v * dy/dx) where v is the gradient argument</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">gradient</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dy/dx with gradient=[1,1,1]: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Pattern 3: Jacobian-vector product (JVP)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">])</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">gradient</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jacobian-vector product: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># [0.2, 4.0, 0.06]</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># CONTROLLING GRADIENT COMPUTATION</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># torch.no_grad() - disable gradient tracking (inference mode)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">In no_grad: y.requires_grad = </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># False</span>
+
+<span class="c1"># torch.enable_grad() - enable gradient tracking (nested in no_grad)</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">enable_grad</span><span class="p">():</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In enable_grad: y.requires_grad = </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># True</span>
+
+<span class="c1"># torch.inference_mode() - faster than no_grad, but more restrictive</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="c1"># Can&#39;t use y for anything requiring gradients later</span>
+
+<span class="c1"># .detach() - returns a tensor detached from the graph</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>  <span class="c1"># z shares data but doesn&#39;t track gradients</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z.requires_grad: </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># False</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># GRADIENT ACCUMULATION</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># Gradients accumulate by default!</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: x.grad = </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Output shows accumulation:</span>
+<span class="c1"># Iteration 0: x.grad = [2, 4]</span>
+<span class="c1"># Iteration 1: x.grad = [4, 8]</span>
+<span class="c1"># Iteration 2: x.grad = [6, 12]</span>
+
+<span class="c1"># IMPORTANT: Zero gradients before each backward pass</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>  <span class="c1"># zero the gradients</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> (zeroed): x.grad = </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># HIGHER-ORDER GRADIENTS</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">2.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># First derivative: y = x^3, dy/dx = 3x^2</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">3</span>
+<span class="n">grad1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">First derivative of x^3 at x=2: </span><span class="si">{</span><span class="n">grad1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># 12.0</span>
+
+<span class="c1"># Second derivative: d2y/dx2 = 6x</span>
+<span class="n">grad2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">grad1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Second derivative of x^3 at x=2: </span><span class="si">{</span><span class="n">grad2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># 12.0</span>
+
+<span class="c1"># Third derivative: d3y/dx3 = 6</span>
+<span class="n">grad3</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">grad2</span><span class="p">,</span> <span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Third derivative of x^3 at x=2: </span><span class="si">{</span><span class="n">grad3</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># 6.0</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># torch.autograd.grad() vs .backward()</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="c1"># .backward() stores gradients in .grad attributes</span>
+<span class="c1"># y.backward()</span>
+<span class="c1"># grad = x.grad</span>
+
+<span class="c1"># torch.autograd.grad() returns gradients directly</span>
+<span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Gradient via autograd.grad: </span><span class="si">{</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Useful for:</span>
+<span class="c1"># 1. Computing gradients without modifying .grad</span>
+<span class="c1"># 2. Computing gradients w.r.t. non-leaf tensors</span>
+<span class="c1"># 3. Higher-order gradients (with create_graph=True)</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># GRADIENT CHECKPOINTING (Memory Optimization)</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="kn">from</span> <span class="nn">torch.utils.checkpoint</span> <span class="kn">import</span> <span class="n">checkpoint</span>
+
+<span class="k">def</span> <span class="nf">compute_heavy</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulates a memory-intensive computation.&quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Normal forward pass: stores all intermediate activations</span>
+<span class="n">y_normal</span> <span class="o">=</span> <span class="n">compute_heavy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Checkpointed: trades compute for memory</span>
+<span class="c1"># Recomputes forward pass during backward to save memory</span>
+<span class="n">y_checkpoint</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">(</span><span class="n">compute_heavy</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">use_reentrant</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># CUSTOM AUTOGRAD FUNCTIONS</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="k">class</span> <span class="nc">MyReLU</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Function</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom ReLU implementation with explicit forward and backward.&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="c1"># ctx is a context object to save tensors for backward</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">save_for_backward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
+        <span class="c1"># grad_output is the gradient from the next layer</span>
+        <span class="nb">input</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">saved_tensors</span>
+        <span class="n">grad_input</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">grad_input</span><span class="p">[</span><span class="nb">input</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">grad_input</span>
+
+<span class="c1"># Use the custom function</span>
+<span class="n">my_relu</span> <span class="o">=</span> <span class="n">MyReLU</span><span class="o">.</span><span class="n">apply</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">my_relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Custom ReLU gradient: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># COMMON PITFALLS AND SOLUTIONS</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># Pitfall 1: In-place operations can break the graph</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="c1"># y.add_(1)  # This would cause an error during backward!</span>
+<span class="c1"># Solution: Use out-of-place operations</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Creates new tensor instead</span>
+
+<span class="c1"># Pitfall 2: Modifying tensor data directly</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># x.data[0] = 0  # Bypasses autograd, gradients may be wrong</span>
+<span class="c1"># Solution: Create new tensor with modifications</span>
+
+<span class="c1"># Pitfall 3: Forgetting to zero gradients</span>
+<span class="c1"># Always zero gradients before backward (see Gradient Accumulation section)</span>
+
+<span class="c1"># Pitfall 4: Using Python scalars instead of tensors</span>
+<span class="c1"># x = torch.tensor(2.0, requires_grad=True)</span>
+<span class="c1"># y = x * 3  # OK</span>
+<span class="c1"># z = x * 3.0  # Also OK, PyTorch handles this</span>
+<span class="c1"># But be careful with complex expressions</span>
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># DEBUGGING AUTOGRAD</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="c1"># Check if a tensor requires gradients</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">x.requires_grad: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">requires_grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check the gradient function</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y.grad_fn: </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">grad_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Enable anomaly detection (slower but helpful for debugging)</span>
+<span class="c1"># torch.autograd.set_detect_anomaly(True)</span>
+
+<span class="c1"># Print the computational graph (for debugging)</span>
+<span class="k">def</span> <span class="nf">print_graph</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively print the computational graph.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">grad_fn</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">grad_fn</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tensor</span><span class="o">.</span><span class="n">grad_fn</span><span class="o">.</span><span class="n">next_functions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="c1"># t[0] is the grad_fn, t[1] is the output index</span>
+                <span class="n">print_graph</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span><span class="s1">&#39;grad_fn&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]})(),</span> <span class="n">indent</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="mi">3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Computational graph for z = 3 * x^2:&quot;</span><span class="p">)</span>
+<span class="n">print_graph</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Autograd Demo Complete!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+
+    <span class="c1"># Simple gradient descent example</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">5.0</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Simple gradient descent to minimize x^2:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">x</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">grad</span>
+
+        <span class="n">x</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Step </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: x = </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, x^2 = </span><span class="si">{</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+
+</div>
+
+</body>
+</html>

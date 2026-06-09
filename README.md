@@ -41,6 +41,12 @@ Personal learning notes for programming languages, ML, infrastructure, and syste
 │   ├── 01_FUNDAMENTALS.md  # Vectors, matrices, eigenvalues, decompositions
 │   └── 02_PRACTICAL.md     # NumPy, ML applications, graphics transforms, robotics
 │
+├── biochemistry-gene-editing/ # Biochemistry, gene editing, and mRNA cancer vaccines
+│   ├── README.md           # Learning path and topic overview
+│   ├── 01_FUNDAMENTALS.md  # Central dogma, mRNA, immunity, neoantigens, CRISPR
+│   ├── 02_PRACTICAL.md     # Paper-reading workflow, case studies, checklists
+│   └── CHEATSHEET.md       # Concepts, pipelines, and paper-card template
+│
 └── embedded-systems/       # Embedded systems & microcontroller programming
     ├── 01_FUNDAMENTALS.md  # MCU architecture, memory, interrupts, peripherals, protocols
     └── 02_PRACTICAL.md     # Debugging, patterns, state machines, FreeRTOS, gotchas
@@ -55,3 +61,4 @@ Personal learning notes for programming languages, ML, infrastructure, and syste
 - **K8s Practical**: Essential kubectl commands and debugging in `kubernetes/02_PRACTICAL.md`
 - **Linear Algebra Practical**: NumPy, ML, graphics, and robotics in `linear-algebra/02_PRACTICAL.md`
 - **Embedded Practical**: Debugging, state machines, FreeRTOS in `embedded-systems/02_PRACTICAL.md`
+- **mRNA Cancer Vaccines**: Biochemistry, CRISPR, neoantigens, and clinical reading workflow in `biochemistry-gene-editing/README.md`
